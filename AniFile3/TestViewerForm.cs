@@ -14,96 +14,96 @@ namespace AniFile3
 {
     public partial class TestViewerForm : Form
     {
-        private IScriper _scriper;
-        private TaskCompletionSource<string> _compeltionSource;
+        public struct Program
+        {
+            public string subject;
+            public string magnet;
+            public int episode;
+        }
+
+        private IScriper _scriper;        
 
         public TestViewerForm()
         {
             InitializeComponent();
-
-            _compeltionSource = new TaskCompletionSource<string>();
-
-            string url = "https://torrentkim10.net/";
-
+            
             webBrowser1.ScriptErrorsSuppressed = true;
-            webBrowser1.DocumentCompleted += FirstOnPageCompleted;
-            webBrowser1.Navigate(url);
+        }
 
-            //var task = GetPageAsync(null);
-
-            //task.Start();
-
-            //string some = task.Result;
+        private async void TestViewerForm_Load(object sender, EventArgs e)
+        {
+            string outerHtml = await GetPageAsync((document) =>
+            {
+                string url = "https://torrentkim10.net/";
+                webBrowser1.Navigate(url);
+            }, 
+            (document, contents) => document.GetElementById("k") != null);
 
             //using (var stream = new StreamWriter("test.txt", false))
             //{
-            //    stream.Write(task.Result);
+            //    stream.Write(outerHtml);
             //}
+
+            SearchBox("비정상");
         }
 
-        async void FirstOnPageCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        private async Task<string> GetPageAsync(Action<HtmlDocument> requestWork, Func<HtmlDocument, string, bool> finishingCondition = null)
         {
-            webBrowser1.DocumentCompleted -= FirstOnPageCompleted;
+            var compeltionSource = new TaskCompletionSource<string>();
+
+            void OnPageCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+            {
+                // 여기서 결과를 파싱
+                var browser = sender as WebBrowser;
+                if (browser != null)
+                {
+                    HtmlDocument document = browser.Document;
+                    string outerHtml = document.Body.OuterHtml;
+
+                    if (finishingCondition == null ||
+                        finishingCondition(document, outerHtml))
+                    {
+                        compeltionSource.SetResult(outerHtml);
+                        webBrowser1.DocumentCompleted -= OnPageCompleted;
+                    }
+                }
+
+                Console.WriteLine("OnPageCompleted");
+            }
 
             webBrowser1.DocumentCompleted += OnPageCompleted;
 
-            string result = await GetPageAsync(null);
+            if (requestWork != null)
+                requestWork(webBrowser1.Document);
 
-            int a = 20;
+            return await compeltionSource.Task;
         }
 
-        void OnPageCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        private async void SearchBox(string keyword)
         {
-            // 여기서 결과를 파싱
-            var browser = sender as WebBrowser;
-            if (browser != null)
+            await GetPageAsync(document =>
             {
-                HtmlDocument document = browser.Document;
-                _compeltionSource.SetResult(document.Body.OuterHtml);
-            }
+                HtmlElement searchBox = document.GetElementById("k");
+                if (searchBox != null)
+                {
+                    searchBox.SetAttribute("value", keyword);
+
+                    var collection = document.GetElementsByTagName("input");
+                    foreach (HtmlElement element in collection)
+                    {
+                        if (element.GetAttribute("className") == "thumb_up"
+                            && element.GetAttribute("type") == "submit")
+                        {
+                            element.InvokeMember("click");
+                            break;
+                        }
+                    }
+                }
+            });
+
+            // 파싱 도큐먼트
+            
         }
-
-        private async Task<string> GetPageAsync(Action<HtmlDocument> exWorking)
-        {
-            if(_compeltionSource.Task.Status == TaskStatus.Running)
-                _compeltionSource.SetCanceled();
-
-            if(exWorking != null)
-                exWorking(webBrowser1.Document);
-
-            // need to wait
-            return await _compeltionSource.Task;
-        }
-
-        private void TestParsing(HtmlDocument document)
-        {
-
-        }
-
-        //private async void SearchBox(string keyword)
-        //{
-        //    HtmlDocument doc = webBrowser1.Document;
-
-        //    HtmlElement searchBox = doc.GetElementById("k");
-        //    if (searchBox != null)
-        //    {
-        //        searchBox.SetAttribute("value", keyword);
-
-        //        var collection = doc.GetElementsByTagName("input");
-        //        foreach (HtmlElement element in collection)
-        //        {
-        //            if (element.GetAttribute("className") == "thumb_up"
-        //                && element.GetAttribute("type") == "submit")
-        //            {
-        //                element.InvokeMember("click");
-                       
-        //                var result = await SearchCompleted();
-
-        //                // get list
-        //            }
-        //        }
-        //    }
-        //}
 
         //struct SearchResult
         //{

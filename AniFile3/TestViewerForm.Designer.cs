@@ -48,6 +48,7 @@
             this.Controls.Add(this.webBrowser1);
             this.Name = "TestViewerForm";
             this.Text = "TestViewerForm";
+            this.Load += new System.EventHandler(this.TestViewerForm_Load);
             this.ResumeLayout(false);
 
         }

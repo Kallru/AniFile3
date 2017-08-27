@@ -28,6 +28,8 @@ namespace AniFile3
         {
             InitializeComponent();
 
+            Console.SetOut(new LogWriter(_testLog));
+
             var form = new TestViewerForm();
             //var interoper = new WindowInteropHelper(this);
             //interoper.Owner = form.Handle;

@@ -58,6 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="LogWriter.cs" />
     <Compile Include="TestViewerForm.cs">
       <SubType>Form</SubType>
     </Compile>
