@@ -189,18 +189,33 @@ namespace AniFile3
                     if (magneticLinkElement != null)
                     {
                         Console.WriteLine("[Magnetic]" + magneticLinkElement.OuterHtml);
+
+                        testFlag = false;
                         
                         var result = await GetPageAsync((document) =>
                         {
+                            // TestCode - Capture GET
+                            SHDocVw.WebBrowser web = webBrowser1.ActiveXInstance as SHDocVw.WebBrowser;
+
+                            web.BeforeNavigate2 -= Web_BeforeNavigate2;
+                            web.BeforeNavigate2 += Web_BeforeNavigate2;
+                            //-----------------------
+
                             var linkElement = magneticLinkElement.GetElementsByTagName("a");
                             var aaa = linkElement[0].InvokeMember("click");
+
                         },
                         (document) =>
                         {
-                            Console.WriteLine("--[After Click Link]--");
-                            Console.WriteLine(document.Body.OuterHtml);
-                            Console.WriteLine("--[Done]--");
-                            return false;
+                            return testFlag;
+
+                            //Console.WriteLine("--[After Click Link]--");
+                            //Console.WriteLine(document.Body.OuterHtml);
+
+                            ////var firstFrame = document.Window.Frames[0].WindowFrameElement;
+                            ////var contents = firstFrame.OuterHtml;
+                            //Console.WriteLine("--[Done]--");
+                            //return false;
                         });
 
                         if (result == PageAsyncResult.None)
@@ -209,6 +224,16 @@ namespace AniFile3
                         }
                     }
                 }
+            }
+        }
+
+        private void Web_BeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
+        {
+            if(PostData == null)
+            {
+                // GET
+                int a = 20;
+                a = 50;
             }
         }
 
@@ -222,12 +247,22 @@ namespace AniFile3
 
         private void webBrowser1_Navigated(object sender, WebBrowserNavigatedEventArgs e)
         {
-            MessageBox.Show(e.Url.AbsoluteUri);
+            //MessageBox.Show(e.Url.AbsoluteUri);
         }
 
+        int testCount = 0;
+        bool testFlag = false;
         private void webBrowser1_Navigating(object sender, WebBrowserNavigatingEventArgs e)
         {
-
+            if (e.Url.OriginalString.Contains("magnet:"))
+            {
+                using (var stream = new StreamWriter(string.Format("test{0}.txt", testCount++), false))
+                {
+                    stream.Write(e.Url.OriginalString);
+                }
+                testFlag = true;
+                e.Cancel = true;
+            }
         }
 
         //struct SearchResult
