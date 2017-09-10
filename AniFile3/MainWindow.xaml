@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <DockPanel HorizontalAlignment="Left" LastChildFill="True" >
-        <TextBox Name="_testLog" Height="200" HorizontalAlignment="Left" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" DockPanel.Dock="Bottom"/>
+        <TextBox Name="_testLog" Height="200" HorizontalAlignment="Left" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" DockPanel.Dock="Bottom" ScrollViewer.CanContentScroll="True"/>
         <WebBrowser Name="_testWebBrowser" HorizontalAlignment="Left" DockPanel.Dock="Top" />
     </DockPanel>
 </Window>

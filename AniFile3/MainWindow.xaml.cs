@@ -22,8 +22,6 @@ namespace AniFile3
     /// </summary>
     public partial class MainWindow : Window
     {
-        IScriper _test_scriper;
-
         public MainWindow()
         {
             InitializeComponent();

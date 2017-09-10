@@ -41,8 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataStorage.Contetns.cs" />
+    <Compile Include="DataStorage.cs" />
     <Compile Include="FirstSite.cs" />
-    <Compile Include="IScriper.cs" />
+    <Compile Include="ScriperBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
