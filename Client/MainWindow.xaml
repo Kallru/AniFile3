@@ -1,0 +1,72 @@
+﻿<Controls:MetroWindow x:Class="AniFile3.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                      xmlns:Behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:local="clr-namespace:AniFile3"
+                      
+                      Title="MainWindow" 
+                      Height="600"
+                      Width="800"
+                      ShowIconOnTitleBar="True"
+                      ShowMaxRestoreButton="False"
+                      ResizeMode="CanResizeWithGrip"
+                      WindowStartupLocation="CenterScreen"                      
+                      GlowBrush="{DynamicResource AccentColorBrush}">
+    
+    <!-- 이거 어따씀? 작동안하는거 같은데 -->
+    <i:Interaction.Behaviors>
+        <Behaviours:BorderlessWindowBehavior/>
+    </i:Interaction.Behaviors>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="150*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 왼쪽 컨텐츠 영역 -->
+        <StackPanel Grid.Column="0">
+            <TreeView>
+                
+            </TreeView>
+            <TextBlock>dkdkdkdk</TextBlock>
+        </StackPanel>
+
+        <!-- 열 나누기 -->
+        <GridSplitter Grid.Column="1" 
+                      VerticalAlignment="Stretch" 
+                      Background="{DynamicResource AccentColorBrush}" 
+                      ShowsPreview="True" 
+                      Width="2" Opacity="0.7" />
+
+        <!-- 우측 컨텐츠 영역 -->
+        <DockPanel Grid.Column="2" LastChildFill="True" DockPanel.Dock="Right">
+            <TextBox Name="_testLog" 
+                     Height="200" 
+                     HorizontalAlignment="Stretch" 
+                     TextWrapping="Wrap" 
+                     AcceptsReturn="True" 
+                     VerticalAlignment="Top" 
+                     ScrollViewer.CanContentScroll="True" 
+                     DockPanel.Dock="Bottom"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Top">
+                <Button>dfdsfds</Button>
+            </StackPanel>
+
+            <DockPanel LastChildFill="True" DockPanel.Dock="Top">
+                
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" DockPanel.Dock="Top">
+                    <TextBox Width="200" />
+                    <Button>검색</Button>
+                </StackPanel>                
+                <WebBrowser Name="_testWebBrowser" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,5,0" />
+            </DockPanel>
+            
+        </DockPanel>
+    </Grid>
+</Controls:MetroWindow>

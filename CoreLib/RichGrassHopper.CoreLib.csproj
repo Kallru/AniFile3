@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{74DCF45F-0D9E-4CFC-86C9-CFA8E47D2BCE}</ProjectGuid>
+    <ProjectGuid>{0D3C052E-AD95-4AE9-97B4-1A58CBD113E9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Scriping</RootNamespace>
-    <AssemblyName>Scriping</AssemblyName>
+    <RootNamespace>CoreLib</RootNamespace>
+    <AssemblyName>CoreLib</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,7 +32,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,10 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataStorage\DataStorage.Contetns.cs" />
-    <Compile Include="DataStorage\DataStorage.cs" />
-    <Compile Include="Sites\FirstSite.cs" />
-    <Compile Include="Sites\ScriperBase.cs" />
+    <Compile Include="IO\LogWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

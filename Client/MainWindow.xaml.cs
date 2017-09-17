@@ -1,4 +1,5 @@
-﻿using Scriping;
+﻿using MahApps.Metro.Controls;
+using RichGrassHopper.Core.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace AniFile3
     /// <summary>
     /// MainWindow.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         public MainWindow()
         {
@@ -28,10 +29,8 @@ namespace AniFile3
 
             Console.SetOut(new LogWriter(_testLog));
 
-            var form = new TestViewerForm();
-            //var interoper = new WindowInteropHelper(this);
-            //interoper.Owner = form.Handle;
-            form.ShowDialog();
+            Console.WriteLine("ddddd");
+            //_testWebBrowser.Navigate("http://www.naver.com");
         }
 
         //private void _testWebBrowser_LoadCompleted(object sender, NavigationEventArgs e)

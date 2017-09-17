@@ -1,4 +1,5 @@
-﻿using Scriping;
+﻿using RichGrassHopper.Core.IO;
+using Scriping;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,16 +12,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AniFile3
+namespace CacheServerForms
 {
-    public partial class TestViewerForm : Form
+    public partial class ViewerForm : Form
     {
         private FirstSite _scriper;
         private DataStorage _storage;
 
-        public TestViewerForm()
+        public ViewerForm()
         {
             InitializeComponent();
+
+            Console.SetOut(new LogWriter(logTextBox));
+
+            _storage = new DataStorage();
+            _storage.CreateStandard();
 
             _scriper = new FirstSite(webBrowser1, _storage);
         }
@@ -35,22 +41,22 @@ namespace AniFile3
             _scriper.Initialize();
         }
         
-        private void Web_BeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
-        {
-            if(PostData == null)
-            {
-                string url = URL as string;
-                if (string.IsNullOrEmpty(url) == false && 
-                    url.Contains("magnet:"))
-                {
-                    // GET
-                    int a = 20;
-                    a = 50;
-                    Cancel = true;
-                    //testFlag = true;
-                }   
-            }
-        }
+        //private void Web_BeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
+        //{
+        //    if(PostData == null)
+        //    {
+        //        string url = URL as string;
+        //        if (string.IsNullOrEmpty(url) == false && 
+        //            url.Contains("magnet:"))
+        //        {
+        //            // GET
+        //            int a = 20;
+        //            a = 50;
+        //            Cancel = true;
+        //            //testFlag = true;
+        //        }   
+        //    }
+        //}
 
         private void DebugSaveDocument()
         {

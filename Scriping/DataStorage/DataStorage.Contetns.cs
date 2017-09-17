@@ -41,10 +41,10 @@ namespace Scriping
                     // Episode, E로 시작하며 숫자 1~3개까지
                     Regex regex = new Regex(@"E\d{1,3}");
                     var results = regex.Matches(_subject);
-                    if (results.Count >= 2)
+                    if (results.Count >= 1)
                     {
-                        _subject = results[0].Value;
-                        Episode = int.Parse(results[1].Value.Substring(1));
+                        _subject = _subject.Replace(results[0].Value, "");
+                        Episode = int.Parse(results[0].Value.Substring(1));
                     }
                     else
                     {

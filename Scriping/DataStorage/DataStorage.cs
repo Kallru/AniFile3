@@ -17,6 +17,15 @@ namespace Scriping
             _storage = new DataTable("Standard");
         }
 
+        public void CreateStandard()
+        {
+            _storage.Columns.Clear();
+            _storage.Columns.Add(new DataColumn("subject", typeof(string)));
+            _storage.Columns.Add(new DataColumn("resolution", typeof(string)));
+            _storage.Columns.Add(new DataColumn("magnet", typeof(string)));
+            _storage.Columns.Add(new DataColumn("episode", typeof(int)));
+        }
+
         public void Load(string fileName)
         {
             _storage.ReadXml(fileName);
