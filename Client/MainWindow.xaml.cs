@@ -1,4 +1,6 @@
-﻿using MahApps.Metro.Controls;
+﻿using AniFile3.DataStruct;
+using CoreLib.MessagePackets;
+using MahApps.Metro.Controls;
 using RichGrassHopper.Core.IO;
 using System;
 using System.Collections.Generic;
@@ -23,33 +25,72 @@ namespace AniFile3
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        private Subscriptions _subscriptions;
+        private List<string> _tempResponse;
+
         public MainWindow()
         {
             InitializeComponent();
 
+            _tempResponse = new List<string>();
+
             Console.SetOut(new LogWriter(_testLog));
 
-            Console.WriteLine("ddddd");
-            //_testWebBrowser.Navigate("http://www.naver.com");
+            _subscriptions = new Subscriptions();
+
+            _MainTreeView.ItemsSource = _subscriptions;
+            _TempResultList.ItemsSource = _tempResponse;
+
+            //---- Test Data
+            var node = new Subscriptions.Node()
+            {
+                Subject = "구독중"
+            };
+            node.Children.Add(new Subscriptions.Node()
+            {
+                Subject = "무한도전"
+            });
+
+            node.Count = node.Children.Count;
+
+            _subscriptions.Add(node);
+
+            _tempResponse.Add("11111");
+            _tempResponse.Add("22222");
+            _tempResponse.Add("333333");
+            _tempResponse.Add("4444");
+            _tempResponse.Add("무한도전");
+            _tempResponse.Add("5555");
+
+            // TestCode - Serialize and Deserialize
+            var aaa = MessagePack.Serialize(_tempResponse);
+            var bbb = MessagePack.Deserialize<List<string>>(aaa);
+        }
+        
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            //_SerachText.Text
         }
 
-        //private void _testWebBrowser_LoadCompleted(object sender, NavigationEventArgs e)
-        //{
-        //    dynamic doc = _testWebBrowser.Document;
+        private void Subscription_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
 
-        //    dynamic searchBox = doc.GetElementById("k");
-        //    searchBox.SetAttribute("value", "비정상");
-
-        //    var collection = doc.GetElementsByTagName("input");
-        //    foreach (dynamic element in collection)
-        //    {
-        //        if (element.GetAttribute("className") == "thumb_up"
-        //            && element.GetAttribute("type") == "submit")
-        //        {
-        //            element.InvokeMember("click");
-        //            break;
-        //        }
-        //    }
-        //}
+            string subject = button.DataContext as string;
+            
+            var result = _subscriptions.FirstOrDefault((element) => element.Subject == subject);
+            if(result == null)
+            {
+                var node = new Subscriptions.Node()
+                {
+                    Subject = subject
+                };
+                _subscriptions.Add(node);
+            }
+            else
+            {
+                Console.WriteLine("이미 같은 것을 구독중입니다");
+            }
+        }
     }
 }

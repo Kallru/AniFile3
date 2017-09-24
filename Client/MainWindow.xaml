@@ -15,12 +15,12 @@
                       ResizeMode="CanResizeWithGrip"
                       WindowStartupLocation="CenterScreen"                      
                       GlowBrush="{DynamicResource AccentColorBrush}">
-    
+
     <!-- 이거 어따씀? 작동안하는거 같은데 -->
     <i:Interaction.Behaviors>
         <Behaviours:BorderlessWindowBehavior/>
     </i:Interaction.Behaviors>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30*"/>
@@ -30,10 +30,18 @@
 
         <!-- 왼쪽 컨텐츠 영역 -->
         <StackPanel Grid.Column="0">
-            <TreeView>
-                
+            <TreeView Name="_MainTreeView" >
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Subject}" />
+                            <TextBlock Text="("/>
+                            <TextBlock Text="{Binding Count}"/>
+                            <TextBlock Text=")"/>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
             </TreeView>
-            <TextBlock>dkdkdkdk</TextBlock>
         </StackPanel>
 
         <!-- 열 나누기 -->
@@ -59,14 +67,22 @@
             </StackPanel>
 
             <DockPanel LastChildFill="True" DockPanel.Dock="Top">
-                
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" DockPanel.Dock="Top">
-                    <TextBox Width="200" />
-                    <Button>검색</Button>
-                </StackPanel>                
-                <WebBrowser Name="_testWebBrowser" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,5,0" />
+                    <TextBox Name="_SerachText" Width="200" />
+                    <Button Click="Search_Click" >검색</Button>
+                </StackPanel>
+                <ListView Name="_TempResultList">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding}" VerticalAlignment="Center" />
+                                <Button Click="Subscription_Click">구독</Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </DockPanel>
-            
+
         </DockPanel>
     </Grid>
 </Controls:MetroWindow>
