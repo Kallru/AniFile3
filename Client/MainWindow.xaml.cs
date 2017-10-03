@@ -1,4 +1,5 @@
-﻿using AniFile3.DataStruct;
+﻿using AniFile3.Contetns;
+using AniFile3.DataStruct;
 using CoreLib.MessagePackets;
 using MahApps.Metro.Controls;
 using MonoTorrent;
@@ -34,143 +35,165 @@ namespace AniFile3
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        private enum Category
+        {
+            Home,
+            Subscription,
+        }
+
         private Subscriptions _subscriptions;
-        private List<string> _tempResponse;
+        private Dictionary<Category, Subscriptions.Node> _categories;
+
+        // 자주 쓰는 것
+        private Subscriptions.Node SubscriptionNode
+        {
+            get => _categories[Category.Subscription];
+            set => _categories[Category.Subscription] = value;
+        }
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _tempResponse = new List<string>();
-
-            //Console.SetOut(new LogWriter(_testLog));
+            Console.SetOut(new LogWriter(_testLog));
 
             _subscriptions = new Subscriptions();
+            _categories = new Dictionary<Category, Subscriptions.Node>();
 
             _MainTreeView.ItemsSource = _subscriptions;
-            _TempResultList.ItemsSource = _tempResponse;
+            
+            // Home 셋팅
+            _subscriptions.Add(new Subscriptions.Node()
+            {
+                Subject = "홈",
+                CurrentPage = new HomePage(),
+            });
 
-            //---- Test Data
+            _categories[Category.Home] = _subscriptions[0];
+            
+            // 최초 페이지 뷰잉
+            _MainFrame.Navigate(_subscriptions[0].CurrentPage);
+
+            var searchPage = new SearchResultPage();
+            searchPage.SubsriptionClicked += Subscription_Click;
+
             var node = new Subscriptions.Node()
             {
-                Subject = "구독중"
+                Subject = "구독중",
+                CurrentPage = searchPage,
             };
-            node.Children.Add(new Subscriptions.Node()
-            {
-                Subject = "무한도전"
-            });
+
+            // '구독' 셋팅
+            SubscriptionNode = node;
 
             node.Count = node.Children.Count;
-
             _subscriptions.Add(node);
 
-            _tempResponse.Add("11111");
-            _tempResponse.Add("22222");
-            _tempResponse.Add("333333");
-            _tempResponse.Add("4444");
-            _tempResponse.Add("무한도전");
-            _tempResponse.Add("5555");
-
             // TestCode - Serialize and Deserialize
-            var aaa = MessagePack.Serialize(_tempResponse);
-            var bbb = MessagePack.Deserialize<List<string>>(aaa);
+            //var aaa = MessagePack.Serialize(_tempResponse);
+            //var bbb = MessagePack.Deserialize<List<string>>(aaa);
         }
-        
+
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
-            //_SerachText.Text
 
-            //string magnetLink = @"magnet:?xt=urn:btih:B4D3A91D9CE527AA7C5B6EDACB969E5486B76EF2&dn= tvN  삼시세끼 바다목장편.E09.170929.720p-NEXT&tr=http://720pier.ru/tracker/announce.php?passkey=3t3mrdei39bxn7x9114tv9vy1reubs8g&tr=http://mgtracker.org:2710/announce&tr=http://tracker.kamigami.org:2710/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker2.wasabii.com.tw:6969/announce&tr=udp://9.rarbg.me:2720/announce&tr=udp://bt.xxx-tracker.com:2710/announce&tr=udp://opentrackr.org:1337/announce&tr=udp://www.eddie4.nl:6969/announce&tr=udp://zer0day.to:1337/announce&tr=udp://tracker1.wasabii.com.tw:6969/announce&tr=udp://185.50.198.188:1337/announce&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://tracker2.indowebster.com:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=http://bt.ttk.artvid.ru:6969/announce&tr=http://bt.artvid.ru:6969/announce&tr=udp://thetracker.org./announce&tr=udp://tracker4.piratux.com:6969/announce&tr=udp://tracker.zer0day.to:1337/announce&tr=udp://62.212.85.66:2710/announce&tr=udp://eddie4.nl:6969/announce&tr=udp://public.popcorn-tracker.org:6969/announce&tr=udp://tracker.grepler.com:6969/announce&tr=http://tracker.dler.org:6969/announce&tr=http://tracker.tiny-vps.com:6969/announce&tr=http://tracker.filetracker.pl:8089/announce&tr=http://tracker.tvunderground.org.ru:3218/announce&tr=http://tracker.grepler.com:6969/announce&tr=http://tracker.kuroy.me:5944/announce&tr=http://210.244.71.26:6969/announce";
+        }
 
-            string magnetLink = @"magnet:?xt=urn:btih:B4D3A91D9CE527AA7C5B6EDACB969E5486B76EF2";
+        //private async void Search_Click(object sender, RoutedEventArgs e)
+        //{
+        //    //_SerachText.Text
 
-            // TestCode - Mono Torrent
-            EngineSettings settings = new EngineSettings();
-            settings.AllowedEncryption = EncryptionTypes.All;
-            settings.SavePath = System.IO.Path.Combine(Environment.CurrentDirectory, "download");
+        //    //string magnetLink = @"magnet:?xt=urn:btih:B4D3A91D9CE527AA7C5B6EDACB969E5486B76EF2&dn= tvN  삼시세끼 바다목장편.E09.170929.720p-NEXT&tr=http://720pier.ru/tracker/announce.php?passkey=3t3mrdei39bxn7x9114tv9vy1reubs8g&tr=http://mgtracker.org:2710/announce&tr=http://tracker.kamigami.org:2710/announce&tr=http://tracker.mg64.net:6881/announce&tr=http://tracker2.wasabii.com.tw:6969/announce&tr=udp://9.rarbg.me:2720/announce&tr=udp://bt.xxx-tracker.com:2710/announce&tr=udp://opentrackr.org:1337/announce&tr=udp://www.eddie4.nl:6969/announce&tr=udp://zer0day.to:1337/announce&tr=udp://tracker1.wasabii.com.tw:6969/announce&tr=udp://185.50.198.188:1337/announce&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://tracker2.indowebster.com:6969/announce&tr=udp://tracker.coppersurfer.tk:6969&tr=http://bt.ttk.artvid.ru:6969/announce&tr=http://bt.artvid.ru:6969/announce&tr=udp://thetracker.org./announce&tr=udp://tracker4.piratux.com:6969/announce&tr=udp://tracker.zer0day.to:1337/announce&tr=udp://62.212.85.66:2710/announce&tr=udp://eddie4.nl:6969/announce&tr=udp://public.popcorn-tracker.org:6969/announce&tr=udp://tracker.grepler.com:6969/announce&tr=http://tracker.dler.org:6969/announce&tr=http://tracker.tiny-vps.com:6969/announce&tr=http://tracker.filetracker.pl:8089/announce&tr=http://tracker.tvunderground.org.ru:3218/announce&tr=http://tracker.grepler.com:6969/announce&tr=http://tracker.kuroy.me:5944/announce&tr=http://210.244.71.26:6969/announce";
 
-            var engine = new ClientEngine(settings);
-            engine.ChangeListenEndpoint(new IPEndPoint(IPAddress.Any, 6969));
+        //    string magnetLink = @"magnet:?xt=urn:btih:B4D3A91D9CE527AA7C5B6EDACB969E5486B76EF2";
 
-            TorrentSettings torrentSettings = new TorrentSettings(1,10);
-            var torrentSavePath = System.IO.Path.Combine(settings.SavePath, "torrent");
+        //    // TestCode - Mono Torrent
+        //    EngineSettings settings = new EngineSettings();
+        //    settings.AllowedEncryption = EncryptionTypes.All;
+        //    settings.SavePath = System.IO.Path.Combine(Environment.CurrentDirectory, "download");
 
-            if (!Directory.Exists(settings.SavePath))
-                Directory.CreateDirectory(settings.SavePath);
+        //    var engine = new ClientEngine(settings);
+        //    engine.ChangeListenEndpoint(new IPEndPoint(IPAddress.Any, 6969));
 
-            if (!Directory.Exists(torrentSavePath))
-                Directory.CreateDirectory(torrentSavePath);
+        //    TorrentSettings torrentSettings = new TorrentSettings(1,10);
+        //    var torrentSavePath = System.IO.Path.Combine(settings.SavePath, "torrent");
+
+        //    if (!Directory.Exists(settings.SavePath))
+        //        Directory.CreateDirectory(settings.SavePath);
+
+        //    if (!Directory.Exists(torrentSavePath))
+        //        Directory.CreateDirectory(torrentSavePath);
             
-            var magnet = new MagnetLink(magnetLink);
-            var hash = InfoHash.FromMagnetLink(magnetLink);
-            var hashHex = InfoHash.FromHex("B4D3A91D9CE527AA7C5B6EDACB969E5486B76EF2");
+        //    var magnet = new MagnetLink(magnetLink);
+        //    var hash = InfoHash.FromMagnetLink(magnetLink);
+        //    var hashHex = InfoHash.FromHex("B4D3A91D9CE527AA7C5B6EDACB969E5486B76EF2");
 
-            var manager = new TorrentManager(magnet, settings.SavePath, torrentSettings, torrentSavePath);
+        //    var manager = new TorrentManager(magnet, settings.SavePath, torrentSettings, torrentSavePath);
 
-            engine.Register(manager);
+        //    engine.Register(manager);
 
-            // DH
-            var DL = new DhtListener(new IPEndPoint(IPAddress.Any, 6969));
-            var DH = new DhtEngine(DL);
-            engine.RegisterDht(DH);
+        //    // DH
+        //    var DL = new DhtListener(new IPEndPoint(IPAddress.Any, 6969));
+        //    var DH = new DhtEngine(DL);
+        //    engine.RegisterDht(DH);
 
-            //manager.Start();
+        //    //manager.Start();
 
-            DH.Start();
-            DL.Start();
+        //    DH.Start();
+        //    DL.Start();
+            
+        //    manager.Start();
 
-            DL.MessageReceived += DL_MessageReceived;
-
-            manager.Start();
-
-            await Task.Run(()=>
-            {  
-                while (manager.State != TorrentState.Stopped
-                && manager.State != TorrentState.Paused)
-                {
-                    _testLog.Invoke(() =>
-                    {
-                        Console.WriteLine(manager.Progress);
-                    });
+        //    await Task.Run(()=>
+        //    {  
+        //        while (manager.State != TorrentState.Stopped
+        //        && manager.State != TorrentState.Paused)
+        //        {
+        //            _testLog.Invoke(() =>
+        //            {
+        //                //Console.WriteLine(manager.Progress);
+        //            });
                     
-                    Thread.Sleep(1000);
+        //            Thread.Sleep(1000);
 
-                    if(manager.Progress >= 100)
-                    {
-                        manager.Stop();
-                        break;
-                    }
-                }
-            });
-        }
+        //            if(manager.Progress >= 100)
+        //            {
+        //                manager.Stop();
+        //                break;
+        //            }
+        //        }
+        //    });
+        //}
 
-        private void DL_MessageReceived(byte[] buffer, IPEndPoint endpoint)
-        {
-            using (FileStream file = new FileStream("test.torrent", FileMode.Create))
-            {
-                file.Write(buffer, 0, buffer.Length);
-            }
-        }
-
-        private void Subscription_Click(object sender, RoutedEventArgs e)
+        private void Subscription_Click(object sender)
         {
             var button = sender as Button;
 
             string subject = button.DataContext as string;
             
-            var result = _subscriptions.FirstOrDefault((element) => element.Subject == subject);
-            if(result == null)
+            var result = SubscriptionNode.Children.FirstOrDefault((element) => element.Subject == subject);
+            if (result == null)
             {
-                var node = new Subscriptions.Node()
+                var node = new Subscriptions.EpisodeNode()
                 {
                     Subject = subject
                 };
-                _subscriptions.Add(node);
+
+                node.Episodes.Add(new EpisodeInfo());
+                node.Episodes.Add(new EpisodeInfo());
+
+                SubscriptionNode.Children.Add(node);
             }
             else
             {
                 Console.WriteLine("이미 같은 것을 구독중입니다");
             }
+        }
+
+        private void _MainTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            var node = e.NewValue as Subscriptions.Node;
+            _MainFrame.Navigate(node.CurrentPage);
         }
     }
 }

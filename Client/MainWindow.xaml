@@ -30,7 +30,7 @@
 
         <!-- 왼쪽 컨텐츠 영역 -->
         <StackPanel Grid.Column="0">
-            <TreeView Name="_MainTreeView" >
+            <TreeView Name="_MainTreeView" SelectedItemChanged="_MainTreeView_SelectedItemChanged" >
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                         <StackPanel Orientation="Horizontal">
@@ -71,16 +71,7 @@
                     <TextBox Name="_SerachText" Width="200" />
                     <Button Click="Search_Click" >검색</Button>
                 </StackPanel>
-                <ListView Name="_TempResultList">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding}" VerticalAlignment="Center" />
-                                <Button Click="Subscription_Click">구독</Button>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <Frame Name="_MainFrame" JournalOwnership="UsesParentJournal" />
             </DockPanel>
 
         </DockPanel>

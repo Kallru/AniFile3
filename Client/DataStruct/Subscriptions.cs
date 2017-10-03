@@ -5,15 +5,15 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace AniFile3.DataStruct
 {
-    public class Subscriptions : ObservableCollection<Subscriptions.Node>
+    public partial class Subscriptions : ObservableCollection<Subscriptions.Node>
     {
         public class Node : INotifyPropertyChanged
         {
-            private ObservableCollection<Node> _children = new ObservableCollection<Node>();
-
+            private ObservableCollection<Node> _children;
             private string _subject;
             private int _count;
 
@@ -26,13 +26,24 @@ namespace AniFile3.DataStruct
             public int Count
             {
                 get => _count;
-                set { _count = value; NotifyPropertyChanged("Subject"); }
+                set { _count = value; NotifyPropertyChanged("Count"); }
             }
 
             public ObservableCollection<Node> Children
             {
                 get => _children;
                 set { _children = value; NotifyPropertyChanged("Children"); }
+            }
+
+            public Page CurrentPage { get; set; }
+
+            public Node()
+            {
+                _children = new ObservableCollection<Node>();
+                _children.CollectionChanged += (sender, e) =>
+                {
+                    Count = _children.Count;
+                };
             }
 
             public event PropertyChangedEventHandler PropertyChanged;
