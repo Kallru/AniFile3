@@ -41,6 +41,7 @@
                                         </RectangleGeometry>
                                     </TextBlock.Clip>
                                 </TextBlock>
+                                <Rectangle x:Name="rectangle" Fill="{TemplateBinding Background}" RadiusY="2" RadiusX="2"/>
                                 <Rectangle x:Name="PART_Track"/>
                                 <Decorator x:Name="PART_Indicator" HorizontalAlignment="Left" >
                                     <Rectangle x:Name="Indicator" Fill="{TemplateBinding Foreground}"/>

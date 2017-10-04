@@ -60,5 +60,13 @@ namespace AniFile3.DataStruct
                 frameUI.Navigate(CurrentPage);
             }
         }
+
+        // '홈'을 위한 노드
+        public class HomeNode : Node
+        {
+            public HomeNode(Page page)
+                :base(page)
+            { }
+        }
     }
 }

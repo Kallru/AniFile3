@@ -2,6 +2,7 @@
 using AniFile3.DataStruct;
 using CoreLib.MessagePackets;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using MonoTorrent;
 using MonoTorrent.Client;
 using MonoTorrent.Client.Encryption;
@@ -75,7 +76,7 @@ namespace AniFile3
             _episodePage = new EpisodePage();
 
             // Home 셋팅
-            _subscriptionStorage.Add(new Subscriptions.Node(new HomePage())
+            _subscriptionStorage.Add(new Subscriptions.HomeNode(new HomePage())
             {
                 Subject = "홈",
             });
@@ -204,6 +205,21 @@ namespace AniFile3
         {
             var node = e.NewValue as Subscriptions.Node;
             node.Navigate(_MainFrame);
+        }
+
+        private async void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var result = await this.ShowMessageAsync("확인","모든 데이터가 삭제됩니다\n정말로 삭제하시겠습니까?", MessageDialogStyle.AffirmativeAndNegative);
+            if(result == MessageDialogResult.Affirmative)
+            {
+                var button = sender as Button;
+                var node = button.DataContext as Subscriptions.EpisodeNode;
+
+                if(SubscriptionNode.Children.Remove(node) == false)
+                {
+                    Console.WriteLine("잉 삭제 실패");
+                }
+            }
         }
     }
 }
