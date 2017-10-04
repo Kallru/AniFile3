@@ -79,10 +79,12 @@
     <Compile Include="Contetns\SearchResultPage.xaml.cs">
       <DependentUpon>SearchResultPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataStruct\EpisodeInfoClient.cs" />
     <Compile Include="DataStruct\Subscriptions.Episode.cs" />
-    <Compile Include="TorrentControl.xaml.cs">
+    <Compile Include="UI\TorrentControl.xaml.cs">
       <DependentUpon>TorrentControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\RectConverter.cs" />
     <Page Include="Contetns\EpisodePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -116,7 +118,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="TorrentControl.xaml">
+    <Page Include="UI\TorrentControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

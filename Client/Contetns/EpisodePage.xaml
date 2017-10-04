@@ -4,15 +4,16 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:AniFile3.Contetns"
+      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
       mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="300"
+      d:DesignHeight="300" d:DesignWidth="500"
       Title="EpisodePage">
 
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
-            </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary.MergedDictionaries>            
         </ResourceDictionary>
     </Page.Resources>
 
@@ -22,6 +23,21 @@
                 <VisualBrush Visual="{StaticResource appbar_xbox}" Stretch="Fill" />
             </Rectangle.Fill>
         </Rectangle>
-        <ListView></ListView>
+        <ListView Name="_EpsiodeListView">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="에피소드" Width="70" DisplayMemberBinding="{Binding Episode}" />
+                    <GridViewColumn Header="제목" Width="200" DisplayMemberBinding="{Binding Subject}" />
+                    <GridViewColumn Header="상태" Width="150" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Controls:MetroProgressBar Tag="진행중(%60)" Value="50" Style="{DynamicResource ProgressBarInsideTextStyle}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="해상도" Width="70" DisplayMemberBinding="{Binding Resolution}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
     </StackPanel>
 </Page>

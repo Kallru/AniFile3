@@ -35,10 +35,12 @@ namespace AniFile3.DataStruct
                 set { _children = value; NotifyPropertyChanged("Children"); }
             }
 
-            public Page CurrentPage { get; set; }
+            public Page CurrentPage { get; private set; }
 
-            public Node()
+            public Node(Page page)
             {
+                CurrentPage = page;
+
                 _children = new ObservableCollection<Node>();
                 _children.CollectionChanged += (sender, e) =>
                 {
@@ -51,6 +53,11 @@ namespace AniFile3.DataStruct
             {
                 if (this.PropertyChanged != null)
                     this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+            public virtual void Navigate(Frame frameUI)
+            {
+                frameUI.Navigate(CurrentPage);
             }
         }
     }

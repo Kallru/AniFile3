@@ -14,6 +14,42 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <local:RectConverter x:Key="RectConverter" />
+            <Style x:Key="ProgressBarInsideTextStyle" TargetType="{x:Type ProgressBar}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ProgressBar}">
+                            <Grid x:Name="TemplateRoot" SnapsToDevicePixels="true">
+                                <TextBlock Text="{TemplateBinding Tag}" Grid.ZIndex="2" Foreground="Black"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                <TextBlock Text="{TemplateBinding Tag}"
+                                Grid.ZIndex="3" Foreground="White"
+                                Width="{Binding ElementName=rectangle, Path=ActualWidth}"
+                                TextAlignment="Center"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center">
+                                    <TextBlock.Clip>
+                                        <RectangleGeometry>
+                                            <RectangleGeometry.Rect>
+                                                <MultiBinding Converter="{StaticResource RectConverter}">
+                                                    <Binding ElementName="Indicator" Path="ActualWidth"/>
+                                                    <Binding ElementName="Indicator" Path="ActualHeight"/>
+                                                </MultiBinding>
+                                            </RectangleGeometry.Rect>
+                                        </RectangleGeometry>
+                                    </TextBlock.Clip>
+                                </TextBlock>
+                                <Rectangle x:Name="PART_Track"/>
+                                <Decorator x:Name="PART_Indicator" HorizontalAlignment="Left" >
+                                    <Rectangle x:Name="Indicator" Fill="{TemplateBinding Foreground}"/>
+                                </Decorator>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 

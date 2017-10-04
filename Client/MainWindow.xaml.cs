@@ -41,8 +41,10 @@ namespace AniFile3
             Subscription,
         }
 
-        private Subscriptions _subscriptions;
+        // This is Main datas for client, All of client's data is in this
+        private Subscriptions _subscriptionStorage;
         private Dictionary<Category, Subscriptions.Node> _categories;
+        private EpisodePage _episodePage;
 
         // 자주 쓰는 것
         private Subscriptions.Node SubscriptionNode
@@ -57,44 +59,52 @@ namespace AniFile3
 
             Console.SetOut(new LogWriter(_testLog));
 
-            _subscriptions = new Subscriptions();
-            _categories = new Dictionary<Category, Subscriptions.Node>();
+            // If Local data file exists, it has to load
+            _subscriptionStorage = new Subscriptions();
 
-            _MainTreeView.ItemsSource = _subscriptions;
-            
+            // In file existing case
+            //using (Stream file = new FileStream("datastorage.bin", FileMode.Open))
+            //{
+            //    _dataStorage = MessagePack.Deserialize<Subscriptions>(_subscriptionStorage);
+            //}
+
+            _categories = new Dictionary<Category, Subscriptions.Node>();            
+
+            _MainTreeView.ItemsSource = _subscriptionStorage;
+
+            _episodePage = new EpisodePage();
+
             // Home 셋팅
-            _subscriptions.Add(new Subscriptions.Node()
+            _subscriptionStorage.Add(new Subscriptions.Node(new HomePage())
             {
                 Subject = "홈",
-                CurrentPage = new HomePage(),
             });
 
-            _categories[Category.Home] = _subscriptions[0];
+            _categories[Category.Home] = _subscriptionStorage[0];
             
             // 최초 페이지 뷰잉
-            _MainFrame.Navigate(_subscriptions[0].CurrentPage);
+            _MainFrame.Navigate(_subscriptionStorage[0].CurrentPage);
 
             var searchPage = new SearchResultPage();
             searchPage.SubsriptionClicked += Subscription_Click;
 
-            var node = new Subscriptions.Node()
+            var node = new Subscriptions.Node(searchPage)
             {
                 Subject = "구독중",
-                CurrentPage = searchPage,
             };
 
             // '구독' 셋팅
             SubscriptionNode = node;
 
             node.Count = node.Children.Count;
-            _subscriptions.Add(node);
+            _subscriptionStorage.Add(node);
 
             // TestCode - Serialize and Deserialize
             //var aaa = MessagePack.Serialize(_tempResponse);
             //var bbb = MessagePack.Deserialize<List<string>>(aaa);
         }
 
-        private async void Search_Click(object sender, RoutedEventArgs e)
+        private void Search_Click(object sender, RoutedEventArgs e)
         {
 
         }
@@ -174,13 +184,13 @@ namespace AniFile3
             var result = SubscriptionNode.Children.FirstOrDefault((element) => element.Subject == subject);
             if (result == null)
             {
-                var node = new Subscriptions.EpisodeNode()
+                var node = new Subscriptions.EpisodeNode(_episodePage)
                 {
                     Subject = subject
                 };
 
-                node.Episodes.Add(new EpisodeInfo());
-                node.Episodes.Add(new EpisodeInfo());
+                node.Episodes.Add(new EpisodeInfoClient(new EpisodeInfo(subject, "1080p", 5, "마그넷주소")));
+                node.Episodes.Add(new EpisodeInfoClient(new EpisodeInfo(subject, "720p", 4, "마그넷주소")));
 
                 SubscriptionNode.Children.Add(node);
             }
@@ -193,7 +203,7 @@ namespace AniFile3
         private void _MainTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             var node = e.NewValue as Subscriptions.Node;
-            _MainFrame.Navigate(node.CurrentPage);
+            node.Navigate(_MainFrame);
         }
     }
 }
