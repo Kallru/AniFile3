@@ -15,3 +15,15 @@
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
 #include <string>
+#include <boost/shared_ptr.hpp>
+
+#include <libtorrent/session.hpp>
+#include <libtorrent/add_torrent_params.hpp>
+#include <libtorrent/torrent_handle.hpp>
+#include <libtorrent/alert_types.hpp>
+#include <libtorrent/bencode.hpp>
+#include <libtorrent/torrent_status.hpp>
+#include <libtorrent/torrent_info.hpp>
+#include <libtorrent/torrent.hpp>
+
+#include "EngineInterface.h"

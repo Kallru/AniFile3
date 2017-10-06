@@ -29,6 +29,7 @@
     <ClInclude Include="EngineInterface.h">
       <Filter>EngineInterface</Filter>
     </ClInclude>
+    <ClInclude Include="BinaryWriter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllexport.cpp">
