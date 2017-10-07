@@ -13,6 +13,8 @@ namespace TestTorrentWithCpp
         {
             NativeInterface.Initialize();
             NativeInterface.Request();
+
+            Console.ReadKey();
         }
     }
 }

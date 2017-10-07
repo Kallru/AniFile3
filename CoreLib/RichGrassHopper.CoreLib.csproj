@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="IO\LogWriter.cs" />
     <Compile Include="MessagePackets\EpisodeInfo.cs" />
-    <Compile Include="MessagePackets\MessagePack.cs" />
     <Compile Include="MessagePackets\SearchResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

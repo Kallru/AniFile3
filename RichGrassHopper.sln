@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheServerForms", "CacheServerForms\CacheServerForms.csproj", "{2DF7AD0B-5438-446D-89D6-02F69A8DE14E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{FC1F4630-D419-4C02-923D-5D906EE3DE09}"
+	ProjectSection(ProjectDependencies) = postProject
+		{17089713-2E2D-4123-A1F6-913913F79ED1} = {17089713-2E2D-4123-A1F6-913913F79ED1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scriping", "Scriping\Scriping.csproj", "{74DCF45F-0D9E-4CFC-86C9-CFA8E47D2BCE}"
 EndProject

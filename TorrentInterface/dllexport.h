@@ -5,5 +5,6 @@
 extern "C"
 {
 	DLL_EXPORT void InitializeEngine();
+	DLL_EXPORT void UninitializeEngine();
 	DLL_EXPORT bool Request(const char* message, const char* pRequest, unsigned int bufferSize, const void*& pResponse, unsigned int& outputDataSize);
 }

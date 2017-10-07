@@ -26,4 +26,7 @@
 #include <libtorrent/torrent_info.hpp>
 #include <libtorrent/torrent.hpp>
 
+#include <iostream>
+#include <fstream>
+
 #include "EngineInterface.h"
