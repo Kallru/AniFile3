@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "EngineInterface.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -13,9 +12,7 @@ std::string toLower(std::string str)
 
 EngineInterface::EngineInterface()
 	:_pSession(nullptr),
-	_outputBuffer(nullptr),
-	_currentStateInfo({}),
-	bAbort(false)
+	_outputBuffer(nullptr)
 {
 	_commandMap =
 	{
@@ -32,9 +29,9 @@ EngineInterface::~EngineInterface()
 	Uninitialize();
 }
 
-void EngineInterface::Initialize()
+void EngineInterface::Initialize(CShapCallback callback)
 {
-	settings_pack settings;
+	lt::settings_pack settings;
 
 	settings.set_int(lt::settings_pack::alert_mask
 			, lt::alert::error_notification
@@ -42,38 +39,33 @@ void EngineInterface::Initialize()
 			| lt::alert::status_notification);
 
 	_pSession = new lt::session(settings);
+
+	_cshapCallback = callback;
 }
 
 void EngineInterface::Uninitialize()
 {
-	bAbort = true;
-	_updateRoutine.wait();
+	for (auto element : _torrents)
+	{
+		SAFT_DELETE(element.second);
+	}
+
+	_torrents.clear();
 
 	SAFT_DELETE(_pSession);
 	SAFT_DELETE(_outputBuffer);
 	_outputBufferSize = 0;
 }
 
-bool EngineInterface::ProcessRequest(const std::string& message, const msgpack::object& request)
+bool EngineInterface::ProcessRequest(boost::int64_t id, const std::string& message, const msgpack::object& request)
 {
 	SAFT_DELETE(_outputBuffer);
 	_outputBufferSize = 0;
 
-	return _commandMap[toLower(message)](this, request);
+	return _commandMap[toLower(message)](this, id, request);
 }
 
-template<typename T>
-void EngineInterface::PackOutputBuffer(const T& some)
-{
-	std::stringstream buffer;
-	msgpack::pack(buffer, some);
-
-	_outputBufferSize = buffer.str().size();
-	_outputBuffer = new char[_outputBufferSize];
-	memcpy(_outputBuffer, buffer.str().data(), _outputBufferSize);
-}
-
-bool EngineInterface::StartDownload(const msgpack::object& input)
+bool EngineInterface::StartDownload(boost::int64_t id, const msgpack::object& input)
 {
 	// 1.Magent Link
 	// 2.SavePath
@@ -87,137 +79,62 @@ bool EngineInterface::StartDownload(const msgpack::object& input)
 	torrentParams.resume_data.assign(std::istream_iterator<char>(ifs), std::istream_iterator<char>());
 
 	std::tie(torrentParams.url, torrentParams.save_path) = requestInfo;
-
+		
 	_pSession->async_add_torrent(torrentParams);
 
-	_updateRoutine = UpdateTorrent();
-
-	lt::torrent_status::checking_files
-
-	//_updateRoutine.
-	//bool result = _updateRoutine.get();
-	//bool result = await _updateRoutine;
+	auto pTorrent = new Torrent(this, id);
+	_torrents.insert({ id, pTorrent });
+	pTorrent->Start();
 	return true;
 }
 
-struct Someawit
-{
-	bool await_ready()
-	{
-		return false;
-	}
-
-	void await_suspend(std::experimental::coroutine_handle<>)
-	{
-	}
-
-	void await_resume()
-	{
-	}
-};
-
-std::future<void> EngineInterface::UpdateTorrent()
-{
-	return std::async(std::launch::async, [=]() 
-	{
-		using clk = std::chrono::steady_clock;
-		clk::time_point lastSaveResume = clk::now();
-
-		// this is the handle we'll set once we get the notification of it being
-		// added
-		while (bAbort == false)
-		{
-			std::vector<lt::alert*> alerts;
-			_pSession->pop_alerts(&alerts);
-
-			for (lt::alert const* alert : alerts)
-			{
-				if (auto at = lt::alert_cast<lt::add_torrent_alert>(alert))
-				{
-					_torrentHandle = at->handle;
-				}
-
-				// if we receive the finished alert or an error, we're done
-				if (lt::alert_cast<lt::torrent_finished_alert>(alert))
-				{
-					_torrentHandle.save_resume_data();
-					OnFinishedTorrent();
-					return ;
-				}
-
-				if (auto pErrorAlert = lt::alert_cast<lt::torrent_error_alert>(alert))
-				{
-					OnErrorTorrent(pErrorAlert);
-					return ;
-				}
-
-				// when resume data is ready, save it
-				if (auto rd = lt::alert_cast<lt::save_resume_data_alert>(alert))
-				{
-					std::ofstream of(".resume_file", std::ios_base::binary);
-					of.unsetf(std::ios_base::skipws);
-					lt::bencode(std::ostream_iterator<char>(of), *rd->resume_data);
-				}
-
-				if (auto st = lt::alert_cast<lt::state_update_alert>(alert))
-				{
-					if (st->status.empty()) continue;
-
-					// we only have a single torrent, so we know which one
-					// the status is for
-					lt::torrent_status const& s = st->status[0];
-
-					// 모든 단위는 kB
-					_currentStateInfo.State = s.state;
-					_currentStateInfo.DownloadPayloadRate = s.download_payload_rate / 1000;
-					_currentStateInfo.Total = s.total_done / 1000;
-					_currentStateInfo.Progress = s.progress_ppm / 10000;
-				}
-			}
-			
-			std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
-			// ask the session to post a state_update_alert, to update our
-			// state output for the torrent
-			_pSession->post_torrent_updates();
-
-			// save resume data once every 30 seconds
-			if (clk::now() - lastSaveResume > std::chrono::seconds(30))
-			{
-				_torrentHandle.save_resume_data();
-				lastSaveResume = clk::now();
-			}
-		}
-	});
-}
-
-bool EngineInterface::Stop(const msgpack::object& request)
+bool EngineInterface::Stop(boost::int64_t id, const msgpack::object& input)
 {
 	return true;
 }
 
-bool EngineInterface::Resume(const msgpack::object& request)
+bool EngineInterface::Resume(boost::int64_t id, const msgpack::object& input)
 {
 	return true;
 }
 
-bool EngineInterface::QueryState(const msgpack::object& request)
+bool EngineInterface::QueryState(boost::int64_t id, const msgpack::object& input)
 {
-	if (_torrentHandle.is_valid())
+	auto handle = GetHandle(id);
+	if (handle.is_valid())
 	{
+		auto status = handle.status();
+
+		// 모든 단위는 kB
+		StateInfo stateInfo = {};
+		stateInfo.State = status.state;
+		stateInfo.DownloadPayloadRate = status.download_payload_rate / 1000.f;
+		stateInfo.Total = status.total_done / 1000;
+		stateInfo.Progress = status.progress_ppm / 10000;
+
 		// 핸들 또는 세션에 유효성 체크 필요
-		PackOutputBuffer(_currentStateInfo);
+		PackOutputBuffer(stateInfo);
 	}
 	return true;
 }
 
-bool EngineInterface::QueryInfo(const msgpack::object& request)
+bool EngineInterface::QueryInfo(boost::int64_t id, const msgpack::object& input)
 {
-	if (_torrentHandle.is_valid())
+	auto handle = GetHandle(id);
+	if (handle.is_valid())
 	{
-		const lt::torrent_info* pSome = _torrentHandle.torrent_file().get();
+		//_torrentHandle.status
+		const lt::torrent_info* pTorrentInfo = handle.torrent_file().get();
+		if (pTorrentInfo != nullptr)
+		{
+			QueryResponseInfo info = {};
+			info.TotalSize = pTorrentInfo->total_size();
+
+			PackOutputBuffer(info);
+			return true;
+		}
 	}
-	return true;
+	return false;
 }
 
 void EngineInterface::OnFinishedTorrent()
@@ -228,4 +145,10 @@ void EngineInterface::OnFinishedTorrent()
 void EngineInterface::OnErrorTorrent(const lt::torrent_error_alert* pAlert)
 {
 
+}
+
+lt::torrent_handle EngineInterface::GetHandle(boost::int64_t id)
+{
+	assert(_torrents.find(id) != _torrents.end());
+	return _torrents[id]->GetHandle();
 }

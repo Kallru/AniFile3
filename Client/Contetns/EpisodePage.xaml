@@ -29,6 +29,7 @@
                 <GridView>
                     <GridViewColumn Header="에피소드" Width="70" DisplayMemberBinding="{Binding Episode}" />
                     <GridViewColumn Header="제목" Width="200" DisplayMemberBinding="{Binding Subject}" />
+                    <GridViewColumn Header="크기" Width="70" />
                     <GridViewColumn Header="상태" Width="150" >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -43,6 +44,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
+                    <GridViewColumn Header="다운 속도" Width="70" DisplayMemberBinding="{Binding DownloadPayloadRate, Mode=OneWay}" />
                     <GridViewColumn Header="해상도" Width="70" DisplayMemberBinding="{Binding Resolution}" />
                 </GridView>
             </ListView.View>

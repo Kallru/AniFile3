@@ -30,6 +30,9 @@
       <Filter>EngineInterface</Filter>
     </ClInclude>
     <ClInclude Include="BinaryWriter.h" />
+    <ClInclude Include="Torrent.h">
+      <Filter>EngineInterface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllexport.cpp">
@@ -39,6 +42,9 @@
       <Filter>PCH</Filter>
     </ClCompile>
     <ClCompile Include="EngineInterface.cpp">
+      <Filter>EngineInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="Torrent.cpp">
       <Filter>EngineInterface</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,11 +1,15 @@
 ﻿using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace AniFile3
 {
@@ -15,7 +19,7 @@ namespace AniFile3
         [Key(0)]
         public int State;
         [Key(1)]
-        public int DownloadPayloadRate;
+        public float DownloadPayloadRate;
         [Key(2)]
         public Int64 Total;
         [Key(3)]
@@ -35,7 +39,7 @@ namespace AniFile3
                     case state_t.seeding: return "시드";
                     case state_t.allocating: return "할당 중";
                     case state_t.checking_resume_data: return "체크 중단점";
-                    default: return "상태검사중";
+                    default: return "준비중";
                 }
             }
         }
@@ -56,42 +60,196 @@ namespace AniFile3
 
     public partial class NativeInterface
     {
-        public static void Initialize()
+        private static Win32HandleCallback _recvMessageFromWin32;
+        private static HashSet<Int64> _idIssued;
+        private static Dictionary<Int64, Instance> _instances;
+
+        private class Instance
         {
-            InitializeEngine();
+            private Int64 _id;
+            private CancellationTokenSource _cancelTokenSource;
+            private Task _main;
+
+            public Action<StateInfo> StateUpdated;
+
+            public Instance(Int64 id)
+            {
+                _id = id;
+                _cancelTokenSource = new CancellationTokenSource();
+            }
+
+            public void Destroy()
+            {
+                _cancelTokenSource.Cancel();                
+                _main.Wait();
+            }
+
+            private async void AddTorrentHandle(string hash)
+            {
+                _main = Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        if (_cancelTokenSource.IsCancellationRequested)
+                            break;
+
+                        StateInfo stateInfo;
+                        if (Request(_id, "QueryState", out stateInfo))
+                        {
+                            if (StateUpdated != null)
+                                StateUpdated(stateInfo);
+                        }
+
+                        Thread.Sleep(10);
+                    }
+                }, _cancelTokenSource.Token);
+
+                await _main;
+            }
         }
 
-        public async static void Download(string magnetLink, string savePath, Action<StateInfo> updateStateCallback)
+        private static Int64 CreateInstance()
         {
-            var bytes = MessagePackSerializer.Serialize(new Tuple<string, string>(magnetLink, savePath));
-
-            IntPtr pData = IntPtr.Zero;
-            uint outputSize = 0;
-            Request("StartDownload", bytes, (uint)bytes.Length, ref pData, ref outputSize);
-
-            await Task.Run(() =>
+            Int64 newId = 0;
+            foreach (var usedId in _idIssued)
             {
-                while (true)
+                if (newId != usedId)
                 {
-                    Request("QueryState", null, 0, ref pData, ref outputSize);
+                    break;
+                }
+                ++newId;
+            }
 
-                    if (outputSize > 0)
-                    {
-                        byte[] data = new byte[outputSize];
-                        Marshal.Copy(pData, data, 0, (int)outputSize);
+            _idIssued.Add(newId);
+            _instances.Add(newId, new Instance(newId));
+            return newId;
+        }
 
-                        var stateInfo = MessagePackSerializer.Deserialize<StateInfo>(data);
-                        if (updateStateCallback != null)
-                            updateStateCallback(stateInfo);
-                    }
-                    Thread.Sleep(10);
+        private static void DestroyInstance(Int64 id)
+        {
+            _idIssued.Remove(id);
+            _instances.Remove(id);
+        }
+
+        public static void Initialize()
+        {
+            _idIssued = new HashSet<Int64>();
+            _instances = new Dictionary<Int64, Instance>();
+            _recvMessageFromWin32 = RecvMessage;
+            InitializeEngine(_recvMessageFromWin32);
+        }
+
+        public static void Uninitialize()
+        {
+            foreach(var instance in _instances)
+            {
+                instance.Value.Destroy();
+            }
+
+            UninitializeEngine();
+        }
+
+        public static void RecvMessage(Int64 id, string message, IntPtr inputData, uint size)
+        {
+            Debug.Assert(_instances.ContainsKey(id));
+
+            var instance = _instances[id];
+
+            var output = new byte[size];
+            Marshal.Copy(inputData, output, 0, (int)size);
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var medthods = typeof(Instance).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
+                var medthod = medthods.FirstOrDefault(element => element.Name == message);
+                var parameters = medthod.GetParameters();
+                if (parameters.Length > 1)
+                {
+                    var parametersObj = MessagePackSerializer.Deserialize<object[]>(output);
+                    medthod.Invoke(instance, parametersObj);
+                }
+                else
+                {
+                    var parametersObj = MessagePackSerializer.Deserialize<object>(output);
+                    medthod.Invoke(instance, new[] { parametersObj });
                 }
             });
         }
 
-        public static void Request()
+        public static Int64 Download(string magnetLink, string savePath, Action<StateInfo> stateUpdatedCallback)
         {
-            
+            var id = CreateInstance();
+            if(id != -1)
+            {
+                if (Request(id, "StartDownload", new Tuple<string, string>(magnetLink, savePath)))
+                {
+                    _instances[id].StateUpdated = stateUpdatedCallback;
+                    return id;
+                }
+            }
+
+            DestroyInstance(id);
+            return -1;
+        }
+
+        public static bool RequestInfo(Int64 id)
+        {
+            Tuple<Int64> data;
+            bool b = Request(id, "QueryInfo", out data);
+
+            //Request("QueryInfo", bytes, (uint)bytes.Length, ref pData, ref outputSize);
+            return true;
+        }
+
+#region 데이터 통신 유틸 메소드들
+        public static bool Request(Int64 id, string message, byte[] bytes, out byte[] output)
+        {
+            output = null;
+
+            IntPtr pData = IntPtr.Zero;
+            uint outputSize = 0;
+            int inputSize = bytes?.Length ?? 0;
+
+            bool bResult = RequestInternal(id, message, bytes, (uint)inputSize, ref pData, ref outputSize);
+            if (bResult == true)
+            {
+                if (outputSize > 0)
+                {
+                    output = new byte[outputSize];
+                    Marshal.Copy(pData, output, 0, (int)outputSize);
+                    return true;
+                }
+            }
+            return bResult;
+        }
+
+        public static bool Request<OUT>(Int64 id, string message, out OUT output, byte[] input = null)
+        {
+            output = default(OUT);            
+
+            byte[] data;
+            bool bResult = Request(id, message, input, out data);
+            if (data != null &&
+                data.Length > 0)
+            {
+                output = MessagePackSerializer.Deserialize<OUT>(data);
+                return true;
+            }
+
+            return bResult;
+        }
+
+        public static bool Request<IN>(Int64 id, string message, IN input)
+        {
+            byte[] data = null;
+            return Request(id, message, MessagePackSerializer.Serialize(input), out data);
+        }
+
+        public static bool Request<IN, OUT>(Int64 id, string message, IN input, out OUT output)
+        {
+            byte[] bytes = MessagePackSerializer.Serialize(input);
+            return Request(id, message, out output, bytes);
         }
     }
+#endregion
 }

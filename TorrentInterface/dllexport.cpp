@@ -28,10 +28,10 @@ extern "C"
 
 	static std::shared_ptr<EngineInterface> g_pEngineInterface;	
 
-	void InitializeEngine()
+	void InitializeEngine(Win32HandleCallback callback)
 	{
 		g_pEngineInterface.reset(new EngineInterface());
-		g_pEngineInterface->Initialize();
+		g_pEngineInterface->Initialize(callback);
 	}
 
 	void UninitializeEngine()
@@ -39,7 +39,7 @@ extern "C"
 		g_pEngineInterface.reset();
 	}
 
-	bool Request(const char* message, const char* pRequest, unsigned int bufferSize, const void*& pResponse, unsigned int& outputDataSize)
+	bool Request(long long id, const char* message, const char* pRequest, unsigned int bufferSize, const void*& pResponse, unsigned int& outputDataSize)
 	{
 		if (g_pEngineInterface.get() != nullptr)
 		{
@@ -52,7 +52,7 @@ extern "C"
 				requestObject = handle.get();
 			}
 
-			bool bResult = g_pEngineInterface->ProcessRequest(std::string(message), requestObject);
+			bool bResult = g_pEngineInterface->ProcessRequest(id, std::string(message), requestObject);
 			if (bResult)
 			{
 				pResponse = g_pEngineInterface->GetOutputBuffer();
