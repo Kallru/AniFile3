@@ -82,10 +82,12 @@
     <Compile Include="Contetns\SearchResultPage.xaml.cs">
       <DependentUpon>SearchResultPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataStruct\EpisodeInfoClient.Properties.cs" />
     <Compile Include="DataStruct\EpisodeInfoClient.cs" />
     <Compile Include="DataStruct\Subscriptions.Episode.cs" />
     <Compile Include="NativeInterface\NativeInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.DllImport.cs" />
+    <Compile Include="UI\StateTextConverter.cs" />
     <Compile Include="UI\TorrentControl.xaml.cs">
       <DependentUpon>TorrentControl.xaml</DependentUpon>
     </Compile>

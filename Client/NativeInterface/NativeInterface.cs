@@ -21,26 +21,47 @@ namespace AniFile3
         [Key(3)]
         public int Progress;
 
-        public StateInfo(int state, int downloadPayloadRate, long total, int progress)
+        [IgnoreMember]
+        public string StateText
         {
-            State = state;
-            DownloadPayloadRate = downloadPayloadRate;
-            Total = total;
-            Progress = progress;
+            get
+            {
+                switch ((state_t)State)
+                {
+                    case state_t.checking_files: return "체크 중";
+                    case state_t.downloading_metadata: return "메타데이터";
+                    case state_t.downloading: return "다운로드";
+                    case state_t.finished: return "완료";
+                    case state_t.seeding: return "시드";
+                    case state_t.allocating: return "할당 중";
+                    case state_t.checking_resume_data: return "체크 중단점";
+                    default: return "상태검사중";
+                }
+            }
         }
     }
 
+    // cpp에 있는 state_t 타입과 어떻게 하면 동기화 할지 고민
+    enum state_t : int
+    {
+        queued_for_checking = 0,
+        checking_files,
+        downloading_metadata,
+        downloading,
+        finished,
+        seeding,
+        allocating,
+        checking_resume_data
+    };
+
     public partial class NativeInterface
     {
-        public delegate void UpdateStateEvent(StateInfo stateInfo);
-        public static event UpdateStateEvent UpdatedState;
-
         public static void Initialize()
         {
             InitializeEngine();
         }
 
-        public async static void Download(string magnetLink, string savePath)
+        public async static void Download(string magnetLink, string savePath, Action<StateInfo> updateStateCallback)
         {
             var bytes = MessagePackSerializer.Serialize(new Tuple<string, string>(magnetLink, savePath));
 
@@ -60,8 +81,8 @@ namespace AniFile3
                         Marshal.Copy(pData, data, 0, (int)outputSize);
 
                         var stateInfo = MessagePackSerializer.Deserialize<StateInfo>(data);
-                        if (UpdatedState != null)
-                            UpdatedState(stateInfo);
+                        if (updateStateCallback != null)
+                            updateStateCallback(stateInfo);
                     }
                     Thread.Sleep(10);
                 }

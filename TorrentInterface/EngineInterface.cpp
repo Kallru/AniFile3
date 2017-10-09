@@ -92,6 +92,8 @@ bool EngineInterface::StartDownload(const msgpack::object& input)
 
 	_updateRoutine = UpdateTorrent();
 
+	lt::torrent_status::checking_files
+
 	//_updateRoutine.
 	//bool result = _updateRoutine.get();
 	//bool result = await _updateRoutine;

@@ -15,6 +15,8 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <local:StateTextConverter x:Key="StateTextConverter" />
+
             <local:RectConverter x:Key="RectConverter" />
             <Style x:Key="ProgressBarInsideTextStyle" TargetType="{x:Type ProgressBar}">
                 <Setter Property="Template">

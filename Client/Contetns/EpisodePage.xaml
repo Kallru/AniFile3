@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:AniFile3.Contetns"
       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+      xmlns:MainWindow="clr-namespace:AniFile3"     
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="500"
       Title="EpisodePage">
@@ -31,7 +32,14 @@
                     <GridViewColumn Header="상태" Width="150" >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Controls:MetroProgressBar Tag="진행중(%60)" Value="50" Style="{DynamicResource ProgressBarInsideTextStyle}" />
+                                <Controls:MetroProgressBar Value="{Binding DownloadRate, Mode=OneWay}" Style="{DynamicResource ProgressBarInsideTextStyle}">
+                                    <Controls:MetroProgressBar.Tag>
+                                        <MultiBinding Converter="{StaticResource StateTextConverter}">
+                                            <Binding Path="DownloadState" Mode="OneWay"/>
+                                            <Binding Path="DownloadRate" Mode="OneWay"/>
+                                        </MultiBinding>
+                                    </Controls:MetroProgressBar.Tag>
+                                </Controls:MetroProgressBar>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

@@ -187,6 +187,8 @@ namespace AniFile3
                 node.Episodes.Add(new EpisodeInfoClient(new EpisodeInfo(subject, "1080p", 5, "마그넷주소")));
                 node.Episodes.Add(new EpisodeInfoClient(new EpisodeInfo(subject, "720p", 4, "마그넷주소")));
 
+                node.Episodes[0].Test();
+
                 SubscriptionNode.Children.Add(node);
             }
             else
