@@ -16,6 +16,7 @@ namespace CacheServerForms
 {
     public partial class ViewerForm : Form
     {
+        private HttpServer _server;
         private FirstSite _scriper;
         private DataStorage _storage;
 
@@ -39,6 +40,11 @@ namespace CacheServerForms
             };
 
             _scriper.Initialize();
+
+            _server = new HttpServer();
+
+            int a = 20;
+            a = 50;
         }
         
         //private void Web_BeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
