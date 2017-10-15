@@ -5,70 +5,91 @@
 
 #include "libtorrent/session.hpp"
 
-using namespace libtorrent;
 namespace lt = libtorrent;
 
 struct StateInfo
 {
 	int State;
-	int DownloadPayloadRate;
+	float DownloadPayloadRate;
 	long long Total;
 	int Progress;
 
 	MSGPACK_DEFINE(State, DownloadPayloadRate, Total, Progress);
 };
 
-struct ResponseInfo
+struct QueryResponseInfo
 {
-	std::string First;
-	std::string Second;
-	int Thrid;
-	float Forth;
-	unsigned int Five;
+	long long TotalSize;
 
-	MSGPACK_DEFINE(First, Second, Thrid, Forth, Five);
+	MSGPACK_DEFINE(TotalSize);
 };
 
 class EngineInterface
 {
+	friend class Torrent;
+
 private:
-	typedef std::function<bool(EngineInterface*, const msgpack::object& request)> CommandType;
+	typedef std::function<bool(EngineInterface*, boost::int64_t id, const msgpack::object& input)> CommandType;
 	typedef std::map<std::string, CommandType> CommandMap;
+	typedef std::function<void __stdcall(boost::int64_t id, const char* message, const char* pRequest, unsigned int bufferSize)> CShapCallback;
 
 public:
 	EngineInterface();
 	~EngineInterface();
 
-	void Initialize();
+	void Initialize(CShapCallback callback);
 	void Uninitialize();
 
 	void* GetOutputBuffer(){ return _outputBuffer; }
 	int GetOutputBufferSize() { return _outputBufferSize; }
 
-	bool ProcessRequest(const std::string& message, const msgpack::object& request);
+	bool ProcessRequest(boost::int64_t id, const std::string& message, const msgpack::object& input);
 
-	bool StartDownload(const msgpack::object& request);
-	bool Stop(const msgpack::object& request);
-	bool Resume(const msgpack::object& request);
-	bool QueryInfo(const msgpack::object& request);
-	bool QueryState(const msgpack::object& request);
+	bool StartDownload(boost::int64_t id, const msgpack::object& input);
+	bool Stop(boost::int64_t id, const msgpack::object& input);
+	bool Resume(boost::int64_t id, const msgpack::object& input);
+	bool QueryInfo(boost::int64_t id, const msgpack::object& input);
+	bool QueryState(boost::int64_t id, const msgpack::object& input);
 
 private:
-	template<typename T> void PackOutputBuffer(const T& some);
-	std::future<void> UpdateTorrent();
+	template<typename T>
+	void SendToCShap(boost::int64_t id, const std::string& message, const T& data)
+	{
+		std::stringstream buffer;
+		msgpack::pack(buffer, data);
+
+		int size = buffer.str().size();
+		char* outputBuffer = new char[size];
+		memcpy(outputBuffer, buffer.str().data(), size);
+
+		_cshapCallback(id, message.data(), outputBuffer, size);
+		delete outputBuffer;
+	}
+
+	template<typename T>
+	void PackOutputBuffer(const T& data)
+	{
+		std::stringstream buffer;
+		msgpack::pack(buffer, data);
+
+		_outputBufferSize = buffer.str().size();
+		_outputBuffer = new char[_outputBufferSize];
+		memcpy(_outputBuffer, buffer.str().data(), _outputBufferSize);
+	}
 
 	void OnFinishedTorrent();
 	void OnErrorTorrent(const lt::torrent_error_alert* pAlert);
+
+	lt::torrent_handle GetHandle(boost::int64_t id);
 
 private:
 	lt::session* _pSession;
 	CommandMap _commandMap;
 
-	lt::torrent_handle _torrentHandle;
-	StateInfo _currentStateInfo;
+	// C++ to C#
+	CShapCallback _cshapCallback;
 
-	std::future<void> _updateRoutine;
-	bool bAbort;
+	std::map<boost::int64_t, Torrent*> _torrents;
 
 	void* _outputBuffer;
 	int _outputBufferSize;

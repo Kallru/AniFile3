@@ -14,6 +14,7 @@ namespace AniFile3.DataStruct
     {
         private string _downloadState;
         private int _downloadRate;
+        private string _downloadPayloadRate;
 
         public string Subject { get => _header.Subject; }
         public int Episode { get => _header.Episode; }
@@ -32,7 +33,13 @@ namespace AniFile3.DataStruct
             get => _downloadRate;
             set { _downloadRate = value; NotifyPropertyChanged("DownloadRate"); }
         }
-        
+
+        public string DownloadPayloadRate
+        {
+            get => _downloadPayloadRate;
+            set { _downloadPayloadRate = value; NotifyPropertyChanged("DownloadPayloadRate"); }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string propertyName)
         {

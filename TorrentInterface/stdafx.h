@@ -30,3 +30,4 @@
 #include <fstream>
 
 #include "EngineInterface.h"
+#include "Torrent.h"

@@ -17,23 +17,6 @@ namespace AniFile3.DataStruct
         public EpisodeInfoClient(EpisodeInfo header)
         {
             _header = header;
-
-            DownloadState = "테스트중";
-            DownloadRate = 65;
-        }
-
-        public async void Test()
-        {
-            DownloadRate = 0;
-
-            await Task.Run(() =>
-            {
-                while(DownloadRate < 100)
-                {
-                    Thread.Sleep(1000);
-                    ++DownloadRate;
-                }
-            });
         }
 
         public void Start()
@@ -45,6 +28,11 @@ namespace AniFile3.DataStruct
         {
             DownloadState = stateInfo.StateText;
             DownloadRate = stateInfo.Progress;
+
+            if (stateInfo.DownloadPayloadRate > 1024)
+                DownloadPayloadRate = string.Format("{0:F1} MB/s", stateInfo.DownloadPayloadRate / 1024.0f);
+            else
+                DownloadPayloadRate = string.Format("{0:F1} kB/s", stateInfo.DownloadPayloadRate);
         }
     }
 }
