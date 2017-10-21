@@ -1,4 +1,5 @@
-﻿using RichGrassHopper.Core.IO;
+﻿using Nancy.Hosting.Self;
+using RichGrassHopper.Core.IO;
 using Scriping;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace CacheServerForms
     public partial class ViewerForm : Form
     {
         private HttpServer _server;
+        private NancyHost _host;
         private FirstSite _scriper;
         private DataStorage _storage;
 
@@ -43,32 +45,32 @@ namespace CacheServerForms
 
             _server = new HttpServer();
 
-            int a = 20;
-            a = 50;
+            var configuration = new HostConfiguration()
+            {
+                UrlReservations = new UrlReservations()
+                {
+                    CreateAutomatically = true,
+                }
+            };
+
+            _host = new NancyHost(configuration, new Uri("http://localhost:2323"));            
+            _host.Start();
         }
-        
-        //private void Web_BeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
-        //{
-        //    if(PostData == null)
-        //    {
-        //        string url = URL as string;
-        //        if (string.IsNullOrEmpty(url) == false && 
-        //            url.Contains("magnet:"))
-        //        {
-        //            // GET
-        //            int a = 20;
-        //            a = 50;
-        //            Cancel = true;
-        //            //testFlag = true;
-        //        }   
-        //    }
-        //}
 
         private void DebugSaveDocument()
         {
             using (var stream = new StreamWriter("test.txt", false))
             {
                 stream.Write(webBrowser1.Document.Body.OuterHtml);
+            }
+        }
+
+        private void ViewerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_host != null)
+            {
+                _host.Dispose();
+                _host = null;
             }
         }
     }
