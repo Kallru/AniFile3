@@ -1,4 +1,7 @@
-﻿using Nancy.Hosting.Self;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+using Nancy.Hosting.Self;
 using RichGrassHopper.Core.IO;
 using Scriping;
 using System;
@@ -19,26 +22,38 @@ namespace CacheServerForms
     {
         private HttpServer _server;
         private NancyHost _host;
-        private FirstSite _scriper;
-        private DataStorage _storage;
+        private FirstSite _scriper;        
 
         public ViewerForm()
         {
             InitializeComponent();
 
             Console.SetOut(new LogWriter(logTextBox));
-
-            _storage = new DataStorage();
-            _storage.CreateStandard();
-
-            _scriper = new FirstSite(webBrowser1, _storage);
+            
+            _scriper = new FirstSite(webBrowser1);
         }
 
         private void TestViewerForm_Load(object sender, EventArgs e)
         {
-            _scriper.InitializeCompleted += () =>
+            _scriper.InitializeCompleted += async () =>
             {
-                _scriper.SearchBox("비정상");
+                var result = await _scriper.SearchBox("비정상");
+
+                var collection = DataBase.Instance.Main.GetCollection<DataStorage.Contents>("content");
+
+                if (result.Count > 0)
+                {
+                    await collection.InsertManyAsync(result);
+                }
+
+                //var collection = _db.GetCollection<DataStorage.Contents>("content");
+                //collection.Indexes
+
+                //var result = await collection.Find((itme) => true).FirstOrDefaultAsync();
+                //var test = collection.AsQueryable<DataStorage.Contents>().Where(item => true).ToList();
+
+                int a = 20;
+                a = 50;
             };
 
             _scriper.Initialize();
@@ -53,7 +68,7 @@ namespace CacheServerForms
                 }
             };
 
-            _host = new NancyHost(configuration, new Uri("http://localhost:2323"));            
+            _host = new NancyHost(configuration, new Uri("http://localhost:2323"));
             _host.Start();
         }
 

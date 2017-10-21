@@ -37,8 +37,8 @@
     <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
-    <Reference Include="MessagePack, Version=1.6.2.0, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
-      <HintPath>..\packages\MessagePack.1.6.2\lib\net45\MessagePack.dll</HintPath>
+    <Reference Include="MessagePack, Version=1.7.2.0, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
+      <HintPath>..\packages\MessagePack.1.7.2\lib\net45\MessagePack.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -85,6 +85,7 @@
     <Compile Include="DataStruct\EpisodeInfoClient.Properties.cs" />
     <Compile Include="DataStruct\EpisodeInfoClient.cs" />
     <Compile Include="DataStruct\Subscriptions.Episode.cs" />
+    <Compile Include="HttpInterface\HttpInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.DllImport.cs" />
     <Compile Include="UI\StateTextConverter.cs" />

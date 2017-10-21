@@ -11,8 +11,6 @@ namespace CoreLib.MessagePackets
     public struct SearchResult
     {
         [Key(0)]
-        public string Subject;
-        [Key(1)]
-        public string Magnets;
+        public List<EpisodeInfo> Infos;
     }
 }

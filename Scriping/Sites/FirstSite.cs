@@ -10,17 +10,13 @@ using System.Windows.Forms;
 namespace Scriping
 {
     public class FirstSite : ScriperBase
-    {        
-        private DataStorage _storage;
-       
+    {               
         public delegate void InitializedEvent();
         public event InitializedEvent InitializeCompleted;
         
-        public FirstSite(WebBrowser web, DataStorage storage)
+        public FirstSite(WebBrowser web)
             : base(web)
         {
-            _storage = storage;
-
             _browser.ScriptErrorsSuppressed = true;
             _browser.ObjectForScripting = true;
         }
@@ -59,7 +55,7 @@ namespace Scriping
             //thread.Start();
         }
 
-        public async void SearchBox(string keyword)
+        public async Task<List<DataStorage.Contents>> SearchBox(string keyword)
         {
             var result = await GetPageAsync(document =>
             {
@@ -77,6 +73,7 @@ namespace Scriping
             },
             (document) => FindElement("table", "board_list") != null);
 
+            var datas = new List<DataStorage.Contents>();
             if (result == PageAsyncResult.None)
             {
                 // 파싱 도큐먼트
@@ -85,26 +82,28 @@ namespace Scriping
                 var dataTable = tbody[0].GetElementsByTagName("tr");
                 foreach (HtmlElement element in dataTable)
                 {
-                    await ParsingLineInTable(element);
+                    var data = await ParsingLineInTable(element);
+                    if (data != null)
+                    {
+                        datas.Add(data);
+                    }
+                    else
+                    {
+                        Console.WriteLine("[Error] 'ParsingLineInTable' returning value is null");
+                    }
                 }
 
-                // TestCode
-                Console.WriteLine("------Stores------");
-                //foreach (var item in _storage)
-                //{
-                //    Console.WriteLine("Subject - " + item.subject);
-                //    Console.WriteLine("Magnet - " + item.magnet);
-                //    Console.WriteLine();
-                //}
-                Console.WriteLine("------End------");
-                MessageBox.Show("Done");
-                //--------
+                Console.WriteLine("[Done] Total adding data's count is {0}", datas.Count);
             }
             else
-                MessageBox.Show("error");
+            {
+                Console.WriteLine("[Error]");
+            }
+
+            return datas;
         }
 
-        private async Task ParsingLineInTable(HtmlElement element)
+        private async Task<DataStorage.Contents> ParsingLineInTable(HtmlElement element)
         {
             var subjectElement = FindElement("td", "subject", parents: element);
             if (subjectElement != null)
@@ -119,8 +118,7 @@ namespace Scriping
                     var magneticLinkElement = FindElement("td", "num", parents: element);
                     if (magneticLinkElement != null)
                     {
-                        var newContents = new DataStorage.Contents();
-                        newContents.Subject = subject;
+                        string magnet = string.Empty;
 
                         var result = await GetPageAsync((document) =>
                         {
@@ -131,7 +129,7 @@ namespace Scriping
                                 if (e.Url.OriginalString.Contains("magnet:"))
                                 {
                                     // 마그넷 정보를 담고, 클린 처리
-                                    newContents.Magnet = e.Url.OriginalString;
+                                    magnet = e.Url.OriginalString;
                                     _browser.Navigating -= Navigating;
                                     e.Cancel = true;
                                 }
@@ -143,11 +141,11 @@ namespace Scriping
                             linkElement[0].InvokeMember("click");
 
                         },
-                        (document) => string.IsNullOrEmpty(newContents.Magnet) == false);
+                        (document) => string.IsNullOrEmpty(magnet) == false);
 
                         if (result == PageAsyncResult.None)
                         {
-                            _storage.Add(newContents);
+                            return DataStorage.Contents.Create(subject, magnet);
                         }
                         else
                         {
@@ -156,6 +154,7 @@ namespace Scriping
                     }
                 }
             }
+            return null;
         }
     }
 }

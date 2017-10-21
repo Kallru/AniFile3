@@ -3,10 +3,14 @@ using AniFile3.DataStruct;
 using CoreLib.MessagePackets;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using MessagePack;
 using RichGrassHopper.Core.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -27,6 +31,7 @@ namespace AniFile3
         private Subscriptions _subscriptionStorage;
         private Dictionary<Category, Subscriptions.Node> _categories;
         private EpisodePage _episodePage;
+        private HttpInterface _http;
 
         // 자주 쓰는 것
         private Subscriptions.Node SubscriptionNode
@@ -40,6 +45,8 @@ namespace AniFile3
             InitializeComponent();
 
             Console.SetOut(new LogWriter(_testLog));
+
+            _http = new HttpInterface("http://localhost:2323");
 
             // If Local data file exists, it has to load
             _subscriptionStorage = new Subscriptions();
@@ -84,9 +91,11 @@ namespace AniFile3
             NativeInterface.Initialize();
         }
 
-        private void Search_Click(object sender, RoutedEventArgs e)
+        // All these are test code
+        private async void Search_Click(object sender, RoutedEventArgs e)
         {
-
+            var testRequest = Tuple.Create(_SerachText.Text, "720p");
+            var sss = await _http.Request<Tuple<string, string>, string>("/search", testRequest);
         }
 
         //private async void Search_Click(object sender, RoutedEventArgs e)
@@ -113,7 +122,7 @@ namespace AniFile3
 
         //    if (!Directory.Exists(torrentSavePath))
         //        Directory.CreateDirectory(torrentSavePath);
-            
+
         //    var magnet = new MagnetLink(magnetLink);
         //    var hash = InfoHash.FromMagnetLink(magnetLink);
         //    var hashHex = InfoHash.FromHex("B4D3A91D9CE527AA7C5B6EDACB969E5486B76EF2");
@@ -131,7 +140,7 @@ namespace AniFile3
 
         //    DH.Start();
         //    DL.Start();
-            
+
         //    manager.Start();
 
         //    await Task.Run(()=>
@@ -143,7 +152,7 @@ namespace AniFile3
         //            {
         //                //Console.WriteLine(manager.Progress);
         //            });
-                    
+
         //            Thread.Sleep(1000);
 
         //            if(manager.Progress >= 100)
