@@ -12,7 +12,7 @@
                       ShowIconOnTitleBar="True"
                       ShowMaxRestoreButton="False"
                       ResizeMode="CanResizeWithGrip"
-                      WindowStartupLocation="CenterScreen"                      
+                      WindowStartupLocation="CenterScreen"
                       GlowBrush="{DynamicResource AccentColorBrush}" Closing="MetroWindow_Closing">
 
     <Window.Resources>
@@ -25,7 +25,7 @@
 
     <!-- 이거 어따씀? 작동안하는거 같은데 -->
     <i:Interaction.Behaviors>
-        <Behaviours:BorderlessWindowBehavior/>
+        <Behaviours:BorderlessWindowBehavior />
     </i:Interaction.Behaviors>
 
     <Grid>
@@ -129,8 +129,21 @@
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" DockPanel.Dock="Top">
                     <TextBox Name="_SerachText" 
                              Width="200" 
-                             KeyUp="_SerachText_KeyUp" />
-                    <Button Click="Search_Click" >검색</Button>
+                             KeyUp="_SerachText_KeyUp"
+                             Controls:TextBoxHelper.ClearTextButton="True"
+                             Controls:TextBoxHelper.UseFloatingWatermark="True"
+                             Controls:TextBoxHelper.Watermark="검색...">
+                        <TextBox.Style>
+                            <Style BasedOn="{StaticResource SearchMetroTextBox}" TargetType="{x:Type TextBox}">
+                                <Style.Triggers>
+                                    <Trigger Property="Controls:TextBoxHelper.HasText" Value="True">
+                                        <Setter Property="Controls:TextBoxHelper.ButtonContent" Value="r" />
+                                        <Setter Property="Controls:TextBoxHelper.ButtonContentTemplate" Value="{x:Null}" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
                 </StackPanel>
                 <Frame Name="_MainFrame" JournalOwnership="UsesParentJournal" />
             </DockPanel>

@@ -94,7 +94,16 @@ namespace AniFile3
 
         private async void Search()
         {
-            var testRequest = Tuple.Create(_SerachText.Text, "720p");
+            var settings = new MetroDialogSettings()
+            {
+                NegativeButtonText = "Close now",
+                AnimateHide = false,
+                AnimateShow = false,
+            };
+
+            var controller = await this.ShowProgressAsync("진행중...", "응답을 기다리는 중", settings: settings);
+            controller.SetIndeterminate();
+            
             var response = await _http.Request<string, List<EpisodeInfo>>("/search", _SerachText.Text);
             if (response != null)
             {
@@ -104,11 +113,8 @@ namespace AniFile3
                     Console.WriteLine("{0}, {1}, {2}", info.Fullname, info.Resolution, info.Episode);
                 }
             }
-        }
-        
-        private void Search_Click(object sender, RoutedEventArgs e)
-        {
-            Search();
+
+            await controller.CloseAsync();
         }
 
         //private async void Search_Click(object sender, RoutedEventArgs e)
@@ -241,7 +247,7 @@ namespace AniFile3
         {
             if (e.Key == Key.Return)
             {
-                MessageBox.Show(_SerachText.Text);
+                Search();
             }
         }
     }

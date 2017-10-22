@@ -19,6 +19,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scriping", "Scriping\Scripi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TorrentInterface", "TorrentInterface\TorrentInterface.vcxproj", "{17089713-2E2D-4123-A1F6-913913F79ED1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DE15D379-02C8-485F-B955-5E52C68F97C4}"
+	ProjectSection(SolutionItems) = preProject
+		각종메모.txt = 각종메모.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -27,23 +27,18 @@ namespace AniFile3
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = byteArray.Length;
 
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-
             TOut result = default(TOut);
+            Stream dataStream = null;
             WebResponse response = null;
             try
             {
+                // Request
+                dataStream = await request.GetRequestStreamAsync();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
+                
+                // Response
                 response = await request.GetResponseAsync();
-            }
-            catch(System.Net.WebException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            if (response != null)
-            {
                 var httpResponse = response as HttpWebResponse;
                 Console.WriteLine(httpResponse.StatusDescription);
 
@@ -51,10 +46,22 @@ namespace AniFile3
                 {
                     dataStream = response.GetResponseStream();
                     result = MessagePackSerializer.Deserialize<TOut>(dataStream);
-                    dataStream.Close();
+                }
+            }
+            catch(System.Net.WebException e)
+            {
+                string hint = string.Empty;
+                if (e.Status == WebExceptionStatus.ConnectFailure)
+                {
+                    hint = _host + rest;
                 }
 
-                response.Close();
+                Console.WriteLine("{0} '{1}'", e.Message, hint);
+            }
+            finally
+            {
+                dataStream?.Close();
+                response?.Close();
             }
 
             return result;
