@@ -82,8 +82,8 @@
     <Compile Include="Contetns\SearchResultPage.xaml.cs">
       <DependentUpon>SearchResultPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DataStruct\EpisodeInfoClient.Properties.cs" />
-    <Compile Include="DataStruct\EpisodeInfoClient.cs" />
+    <Compile Include="DataStruct\ClientEpisodeInfo.Properties.cs" />
+    <Compile Include="DataStruct\ClientEpisodeInfo.cs" />
     <Compile Include="DataStruct\Subscriptions.Episode.cs" />
     <Compile Include="HttpInterface\HttpInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.cs" />

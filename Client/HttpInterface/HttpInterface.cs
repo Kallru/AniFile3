@@ -24,27 +24,40 @@ namespace AniFile3
 
             var request = WebRequest.Create(_host + rest);
             request.Method = "POST";
-
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = byteArray.Length;
 
             Stream dataStream = request.GetRequestStream();
             dataStream.Write(byteArray, 0, byteArray.Length);
             dataStream.Close();
-            
-            return await Task<TOut>.Run(() =>
+
+            TOut result = default(TOut);
+            WebResponse response = null;
+            try
             {
-                WebResponse response = request.GetResponse();
+                response = await request.GetResponseAsync();
+            }
+            catch(System.Net.WebException e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
-                //Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+            if (response != null)
+            {
+                var httpResponse = response as HttpWebResponse;
+                Console.WriteLine(httpResponse.StatusDescription);
 
-                dataStream = response.GetResponseStream();
-                var result = MessagePackSerializer.Deserialize<TOut>(dataStream);
+                if (httpResponse.StatusCode == HttpStatusCode.OK)
+                {
+                    dataStream = response.GetResponseStream();
+                    result = MessagePackSerializer.Deserialize<TOut>(dataStream);
+                    dataStream.Close();
+                }
+
                 response.Close();
-                dataStream.Close();
+            }
 
-                return result;
-            });
+            return result;
         }
     }
 }

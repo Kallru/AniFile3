@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using CoreLib.DataStruct;
+using MongoDB.Driver;
 using Scriping;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace CacheServerForms
         }
 
         public IMongoDatabase Main { get => _db; }
-        public IMongoCollection<DataStorage.Contents> Collection { get => _db.GetCollection<DataStorage.Contents>("content"); }
+        public IMongoCollection<ServerEpisodeInfo> Collection { get => _db.GetCollection<ServerEpisodeInfo>("content"); }
 
         private DataBase()
         {

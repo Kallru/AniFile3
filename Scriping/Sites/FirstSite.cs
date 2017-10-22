@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreLib.DataStruct;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -55,7 +56,7 @@ namespace Scriping
             //thread.Start();
         }
 
-        public async Task<List<DataStorage.Contents>> SearchBox(string keyword)
+        public async Task<List<EpisodeInfo>> SearchBox(string keyword)
         {
             var result = await GetPageAsync(document =>
             {
@@ -73,7 +74,7 @@ namespace Scriping
             },
             (document) => FindElement("table", "board_list") != null);
 
-            var datas = new List<DataStorage.Contents>();
+            var datas = new List<EpisodeInfo>();
             if (result == PageAsyncResult.None)
             {
                 // 파싱 도큐먼트
@@ -103,7 +104,7 @@ namespace Scriping
             return datas;
         }
 
-        private async Task<DataStorage.Contents> ParsingLineInTable(HtmlElement element)
+        private async Task<EpisodeInfo> ParsingLineInTable(HtmlElement element)
         {
             var subjectElement = FindElement("td", "subject", parents: element);
             if (subjectElement != null)
@@ -145,7 +146,7 @@ namespace Scriping
 
                         if (result == PageAsyncResult.None)
                         {
-                            return DataStorage.Contents.Create(subject, magnet);
+                            return EpisodeInfo.Create(subject, magnet);
                         }
                         else
                         {

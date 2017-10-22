@@ -1,4 +1,5 @@
-﻿using MessagePack;
+﻿using CoreLib.DataStruct;
+using MessagePack;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Nancy;
@@ -31,38 +32,54 @@ namespace CacheServerForms
 
             Post["/search", true] = async (paramter, ct) =>
             {
-                var body = this.Request.Body;
-                var data = new byte[body.Length];
-                body.Read(data, 0, (int)body.Length);
-
-                var text = Encoding.UTF8.GetString(data);
+                string text = GetRequestData<string>();
 
                 var collection = DataBase.Instance.Collection;
 
                 var task = collection.AsQueryable()
-                                            .Where(item => SearchCondition(item, text))
+                                            .Where(item => item.Info.Name.Contains(text))
                                             .ToListAsync();
 
                 var result = await Task.WhenAny(task, Task.Delay(5000));
-                if (result == task)
-                {
 
+                var response = new Response();
+
+                int code = 0;
+                code = (result == task) ? 0x01 : 0x00;
+                code |= (task.Result != null && task.Result.Count > 0) ? 0x10 : 0x00;
+
+                switch (code)
+                {
+                    case 0x11:
+                        // 성공
+                        Stream dataStream = new MemoryStream();
+                        var sendingDatas = task.Result.Select(item => item.Info).ToList();
+
+                        MessagePackSerializer.Serialize(dataStream, sendingDatas);
+                        dataStream.Seek(0, SeekOrigin.Begin);
+
+                        response = Response.FromStream(dataStream, "application/octet-stream");
+                        response.StatusCode = HttpStatusCode.OK;
+                        break;
+                    case 0x01:
+                        response.StatusCode = HttpStatusCode.NoContent;
+                        break;
+                    default:
+                        response.StatusCode = HttpStatusCode.NotFound;
+                        break;
                 }
 
-                var found = await task;
-
-                Stream dataStream = new MemoryStream();
-                MessagePackSerializer.Serialize(dataStream, found);
-                dataStream.Seek(0, SeekOrigin.Begin);
-
-                return Response.FromStream(dataStream, "application/octet-stream");
+                // Error
+                return response;
             };
         }
 
-        // 나중에 더 복잡해질 수 있으니 미리 빼두자
-        public bool SearchCondition(DataStorage.Contents item, string text)
+        private T GetRequestData<T>()
         {
-            return item.Name.Contains(text);
+            var body = this.Request.Body;
+            var data = new byte[body.Length];
+            body.Read(data, 0, (int)body.Length);
+            return MessagePackSerializer.Deserialize<T>(data);
         }
     }
 }

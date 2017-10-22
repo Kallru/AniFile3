@@ -10,13 +10,13 @@ using System.Windows;
 
 namespace AniFile3.DataStruct
 {
-    public partial class EpisodeInfoClient : INotifyPropertyChanged
+    public partial class ClientEpisodeInfo : INotifyPropertyChanged
     {
         private string _downloadState;
         private int _downloadRate;
         private string _downloadPayloadRate;
 
-        public string Subject { get => _header.Subject; }
+        public string Subject { get => _header.Name; }
         public int Episode { get => _header.Episode; }
         public string Resolution { get => _header.Resolution; }
         public string Location { get; private set; }

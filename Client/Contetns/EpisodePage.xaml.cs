@@ -38,7 +38,7 @@ namespace AniFile3.Contetns
             _EpsiodeListView.ItemsSource = null;
         }
 
-        public void LoadEpisode(ObservableCollection<EpisodeInfoClient> episodes)
+        public void LoadEpisode(ObservableCollection<ClientEpisodeInfo> episodes)
         {
             CleanUp();
             _EpsiodeListView.ItemsSource = episodes;

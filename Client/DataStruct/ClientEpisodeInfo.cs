@@ -1,4 +1,4 @@
-﻿using CoreLib.MessagePackets;
+﻿using CoreLib.DataStruct;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,11 +10,11 @@ using System.Windows;
 
 namespace AniFile3.DataStruct
 {
-    public partial class EpisodeInfoClient : INotifyPropertyChanged
+    public partial class ClientEpisodeInfo : INotifyPropertyChanged
     {
         private EpisodeInfo _header;
         
-        public EpisodeInfoClient(EpisodeInfo header)
+        public ClientEpisodeInfo(EpisodeInfo header)
         {
             _header = header;
         }

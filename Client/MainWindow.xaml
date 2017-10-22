@@ -127,7 +127,9 @@
 
             <DockPanel LastChildFill="True" DockPanel.Dock="Top">
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" DockPanel.Dock="Top">
-                    <TextBox Name="_SerachText" Width="200" />
+                    <TextBox Name="_SerachText" 
+                             Width="200" 
+                             KeyUp="_SerachText_KeyUp" />
                     <Button Click="Search_Click" >검색</Button>
                 </StackPanel>
                 <Frame Name="_MainFrame" JournalOwnership="UsesParentJournal" />

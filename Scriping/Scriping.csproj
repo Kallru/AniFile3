@@ -44,14 +44,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataStorage\DataStorage.Contetns.cs" />
-    <Compile Include="DataStorage\DataStorage.cs" />
     <Compile Include="Sites\FirstSite.cs" />
     <Compile Include="Sites\ScriperBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoreLib\RichGrassHopper.CoreLib.csproj">
+      <Project>{0D3C052E-AD95-4AE9-97B4-1A58CBD113E9}</Project>
+      <Name>RichGrassHopper.CoreLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

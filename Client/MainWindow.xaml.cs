@@ -1,6 +1,6 @@
 ﻿using AniFile3.Contetns;
 using AniFile3.DataStruct;
-using CoreLib.MessagePackets;
+using CoreLib.DataStruct;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using MessagePack;
@@ -13,6 +13,7 @@ using System.Net;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace AniFile3
 {
@@ -91,11 +92,23 @@ namespace AniFile3
             NativeInterface.Initialize();
         }
 
-        // All these are test code
-        private async void Search_Click(object sender, RoutedEventArgs e)
+        private async void Search()
         {
             var testRequest = Tuple.Create(_SerachText.Text, "720p");
-            var sss = await _http.Request<Tuple<string, string>, string>("/search", testRequest);
+            var response = await _http.Request<string, List<EpisodeInfo>>("/search", _SerachText.Text);
+            if (response != null)
+            {
+                _testLog.Clear();
+                foreach (var info in response)
+                {
+                    Console.WriteLine("{0}, {1}, {2}", info.Fullname, info.Resolution, info.Episode);
+                }
+            }
+        }
+        
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            Search();
         }
 
         //private async void Search_Click(object sender, RoutedEventArgs e)
@@ -179,8 +192,14 @@ namespace AniFile3
                 };
 
                 string magnet = "magnet:?xt=urn:btih:95F6D0F207888DDB67F89EDC0F47D39B945D2E95&dn=%5btvN%5d%20%ec%95%8c%eb%b0%94%ed%8a%b8%eb%a1%9c%ec%8a%a4.E04.171004.720p-NEXT.mp4&tr=udp%3a%2f%2fzer0day.to%3a1337%2fannounce&tr=udp%3a%2f%2ftracker1.wasabii.com.tw%3a6969%2fannounce&tr=http%3a%2f%2fmgtracker.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.grepler.com%3a6969%2fannounce&tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&tr=udp%3a%2f%2f182.176.139.129%3a6969%2fannounce&tr=http%3a%2f%2ftracker.mg64.net%3a6881%2fannounce&tr=udp%3a%2f%2f185.50.198.188%3a1337%2fannounce&tr=udp%3a%2f%2f168.235.67.63%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969&tr=udp%3a%2f%2fbt.xxx-tracker.com%3a2710%2fannounce&tr=http%3a%2f%2fexplodie.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a80%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969&tr=http%3a%2f%2fbt.ttk.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2fbt.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2ftracker2.wasabii.com.tw%3a6969%2fannounce&tr=udp%3a%2f%2fthetracker.org.%2fannounce&tr=udp%3a%2f%2feddie4.nl%3a6969%2fannounce&tr=udp%3a%2f%2f62.212.85.66%3a2710%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.zer0day.to%3a1337%2fannounce";
-                node.Episodes.Add(new EpisodeInfoClient(new EpisodeInfo(subject, "1080p", 5, magnet)));
-                node.Episodes.Add(new EpisodeInfoClient(new EpisodeInfo(subject, "720p", 4, "마그넷주소")));
+                node.Episodes.Add(new ClientEpisodeInfo(new EpisodeInfo()
+                {
+                    Name = subject,
+                    //Resolution = "1080p",
+                    //Episode = 5,
+                    Magnet = magnet
+                }));
+                //node.Episodes.Add(new EpisodeInfoClient(new EpisodeInfo(subject, "720p", 4, "마그넷주소")));
 
                 node.Episodes[0].Start();
 
@@ -216,6 +235,14 @@ namespace AniFile3
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             NativeInterface.Uninitialize();
+        }
+
+        private void _SerachText_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                MessageBox.Show(_SerachText.Text);
+            }
         }
     }
 }
