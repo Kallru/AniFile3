@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichGrassHopper.CoreLib", "CoreLib\RichGrassHopper.CoreLib.csproj", "{0D3C052E-AD95-4AE9-97B4-1A58CBD113E9}"
 EndProject
@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		각종메모.txt = 각종메모.txt
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheServer_Test", "CacheServer_Test\CacheServer_Test.csproj", "{C3A42338-636B-4882-B769-DCF4F41CF13D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +127,24 @@ Global
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Stats|x64.Build.0 = Release|x64
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Stats|x86.ActiveCfg = Release|Win32
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Stats|x86.Build.0 = Release|Win32
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Debug|x64.Build.0 = Debug|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Debug|x86.Build.0 = Debug|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Release|x64.ActiveCfg = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Release|x64.Build.0 = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Release|x86.ActiveCfg = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Release|x86.Build.0 = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Stats|Any CPU.ActiveCfg = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Stats|Any CPU.Build.0 = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Stats|x64.ActiveCfg = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Stats|x64.Build.0 = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Stats|x86.ActiveCfg = Release|Any CPU
+		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Stats|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

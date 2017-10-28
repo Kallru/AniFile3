@@ -6,7 +6,11 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.ServiceModel.Syndication;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace CacheServerForms
 {
@@ -14,20 +18,37 @@ namespace CacheServerForms
     {
         private HttpServer _server;
         private NancyHost _host;
-        private FirstSite _scriper;        
+        private FirstSite _scriper;
 
         public ViewerForm()
         {
             InitializeComponent();
 
             Console.SetOut(new LogWriter(logTextBox));
-            
+
             _scriper = new FirstSite(webBrowser1);
         }
 
-        private void TestViewerForm_Load(object sender, EventArgs e)
+        static string Request(string uri)
         {
-            _scriper.InitializeCompleted += async () =>
+            WebRequest request = WebRequest.Create(uri);
+            request.Credentials = CredentialCache.DefaultCredentials;
+
+            WebResponse response = request.GetResponse();
+            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+
+            Stream dataStream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(dataStream);
+            string responseFromServer = reader.ReadToEnd();
+            reader.Close();
+            response.Close();
+
+            return responseFromServer;
+        }
+
+        private async void TestViewerForm_Load(object sender, EventArgs e)
+        {
+           _scriper.InitializeCompleted += async () =>
             {
                 // Test
                 //var result = await _scriper.SearchBox("비정상");
