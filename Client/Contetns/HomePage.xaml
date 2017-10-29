@@ -8,8 +8,21 @@
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       Title="HomePage">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>    
 
     <Grid>
-        <Controls:Tile Title="Hello" Count="3"></Controls:Tile>
+        <Controls:Tile Title="새로 구독하기" Click="NewSubscription_Click">
+            <Rectangle Fill="White" Width="32">
+                <Rectangle.OpacityMask>
+                    <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
+                </Rectangle.OpacityMask>
+            </Rectangle>
+        </Controls:Tile>
     </Grid>
 </Page>

@@ -24,5 +24,12 @@ namespace AniFile3.Contetns
         {
             InitializeComponent();
         }
+
+        private void NewSubscription_Click(object sender, RoutedEventArgs e)
+        {
+            // 표시 이름\
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            mainWindow.NewSubscriptionFlyout.IsOpen = true;
+        }
     }
 }

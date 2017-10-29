@@ -41,6 +41,11 @@ namespace AniFile3
             set => _categories[Category.Subscription] = value;
         }
 
+        public Flyout NewSubscriptionFlyout
+        {
+            get { return this.Flyouts.Items[0] as Flyout; }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -112,6 +117,10 @@ namespace AniFile3
                 {
                     Console.WriteLine("{0}, {1}, {2}", info.Fullname, info.Resolution, info.Episode);
                 }
+            }
+            else
+            {
+                _SerachText.Clear();
             }
 
             await controller.CloseAsync();
