@@ -11,13 +11,13 @@ namespace AniFile3.DataStruct
 {
     public partial class Subscriptions
     {
-        public class EpisodeNode : Node
+        public class ContentNode : Node
         {
             private ObservableCollection<ClientEpisodeInfo> _episodes;
 
             public ObservableCollection<ClientEpisodeInfo> Episodes { get => _episodes; }
 
-            public EpisodeNode(Page page)
+            public ContentNode(Page page)
                 :base(page)
             {
                 _episodes = new ObservableCollection<ClientEpisodeInfo>();

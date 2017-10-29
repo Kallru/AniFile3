@@ -1,4 +1,6 @@
 ﻿using CoreLib.DataStruct;
+using CoreLib.Extentions;
+using CoreLib.MessagePackets;
 using MessagePack;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -25,41 +27,41 @@ namespace CacheServerForms
                 return 1212;
             };
 
-            Get["/test"] = (parameter) =>
+            Get["/update_subscription"] = (parameter) =>
             {
-                return "hi";
+                var request = UnpackRequest<UpdateSubscriptionRequest>();
+
+                var response = new UpdateSubscriptionResponse();
+
+                // 데이터 채워서
+
+                // 넘김
+                return PackResponse(response);
             };
 
-            Post["/search", true] = async (paramter, ct) =>
+            Post["/search_episode", true] = async (paramter, ct) =>
             {
-                string text = GetRequestData<string>();
+                string text = UnpackRequest<string>();
 
                 var collection = DataBase.Instance.Collection;
 
-                var task = collection.AsQueryable()
-                                            .Where(item => item.Info.Name.Contains(text))
-                                            .ToListAsync();
-
-                var result = await Task.WhenAny(task, Task.Delay(5000));
+                var result = await collection.AsQueryable()
+                                             .Where(item => item.Info.Name.Contains(text))
+                                             .ToListAsync()
+                                             .WithTimeout(5000);
 
                 var response = new Response();
 
                 int code = 0;
-                code = (result == task) ? 0x01 : 0x00;
-                code |= (task.Result != null && task.Result.Count > 0) ? 0x10 : 0x00;
+                code = (result == null) ? 0x01 : 0x00;
+                code |= (result == null && result.Count > 0) ? 0x10 : 0x00;
 
                 switch (code)
                 {
                     case 0x11:
                         // 성공
-                        Stream dataStream = new MemoryStream();
-                        var sendingDatas = task.Result.Select(item => item.Info).ToList();
-
-                        MessagePackSerializer.Serialize(dataStream, sendingDatas);
-                        dataStream.Seek(0, SeekOrigin.Begin);
-
-                        response = Response.FromStream(dataStream, "application/octet-stream");
-                        response.StatusCode = HttpStatusCode.OK;
+                        var sendingDatas = result.Select(item => item.Info).ToList();
+                        response = PackResponse(sendingDatas);
                         break;
                     case 0x01:
                         response.StatusCode = HttpStatusCode.NoContent;
@@ -74,7 +76,21 @@ namespace CacheServerForms
             };
         }
 
-        private T GetRequestData<T>()
+        private Response PackResponse<T>(T data)
+        {
+            Stream dataStream = new MemoryStream();
+
+            MessagePackSerializer.Serialize(dataStream, data);
+            dataStream.Seek(0, SeekOrigin.Begin);
+
+            var response = Response.FromStream(dataStream, "application/octet-stream");
+            response.StatusCode = HttpStatusCode.OK;
+
+            dataStream.Close();
+            return response;
+        }
+
+        private T UnpackRequest<T>()
         {
             var body = this.Request.Body;
             var data = new byte[body.Length];

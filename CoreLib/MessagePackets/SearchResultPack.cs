@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace CoreLib.MessagePackets
 {
     [MessagePackObject]
-    public struct SearchResult
+    public struct SearchResultPack
     {
         [Key(0)]
         public int a;

@@ -27,6 +27,7 @@ namespace CacheServerForms
 
         public IMongoDatabase Main { get => _db; }
         public IMongoCollection<ServerEpisodeInfo> Collection { get => _db.GetCollection<ServerEpisodeInfo>("content"); }
+        public IMongoCollection<ServerEpisodeInfo> Programs { get => _db.GetCollection<ServerEpisodeInfo>("programs"); }
 
         private DataBase()
         {

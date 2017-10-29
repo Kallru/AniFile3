@@ -16,6 +16,7 @@ namespace AniFile3.DataStruct
             private ObservableCollection<Node> _children;
             private string _subject;
             private int _count;
+            private int _newCount;
 
             public string Subject
             {
@@ -27,6 +28,12 @@ namespace AniFile3.DataStruct
             {
                 get => _count;
                 set { _count = value; NotifyPropertyChanged("Count"); }
+            }
+
+            public int NewCount
+            {
+                get => _newCount;
+                set { _newCount = value; NotifyPropertyChanged("NewCount"); }
             }
 
             public ObservableCollection<Node> Children
@@ -46,6 +53,9 @@ namespace AniFile3.DataStruct
                 {
                     Count = _children.Count;
                 };
+
+                // TestCode
+                NewCount = 12;
             }
 
             public event PropertyChangedEventHandler PropertyChanged;

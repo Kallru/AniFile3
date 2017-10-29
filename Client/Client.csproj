@@ -79,12 +79,15 @@
     <Compile Include="Contetns\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Contetns\NewSubscriptionFlyout.xaml.cs">
+      <DependentUpon>NewSubscriptionFlyout.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Contetns\SearchResultPage.xaml.cs">
       <DependentUpon>SearchResultPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataStruct\ClientEpisodeInfo.Properties.cs" />
     <Compile Include="DataStruct\ClientEpisodeInfo.cs" />
-    <Compile Include="DataStruct\Subscriptions.Episode.cs" />
+    <Compile Include="DataStruct\Subscriptions.Content.cs" />
     <Compile Include="HttpInterface\HttpInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.DllImport.cs" />
@@ -98,6 +101,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Contetns\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Contetns\NewSubscriptionFlyout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
