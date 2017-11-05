@@ -43,8 +43,9 @@ namespace AniFile3.DataStruct
 
     public partial class ClientEpisodeInfo : INotifyPropertyChanged
     {
-        private EpisodeInfo _header;   
-
+        private EpisodeInfo _header;
+        private long _id;
+        
         public class Comparer : IEqualityComparer<ClientEpisodeInfo>
         {
             public bool Equals(ClientEpisodeInfo left, ClientEpisodeInfo right)
@@ -74,7 +75,7 @@ namespace AniFile3.DataStruct
 
         public void Start()
         {
-            NativeInterface.Download(_header.Magnet, ".", UpdateState);
+            _id = NativeInterface.Download(_header.Magnet, ".", UpdateState);
         }
 
         public bool Compare(ClientEpisodeInfo left)

@@ -15,7 +15,7 @@
                       ResizeMode="CanResizeWithGrip"
                       WindowStartupLocation="CenterScreen"
                       GlowBrush="{DynamicResource AccentColorBrush}" 
-                      Closing="MetroWindow_Closing">
+                      Closing="MetroWindow_Closing" >
 
     <Window.Resources>
         <ResourceDictionary>
@@ -132,7 +132,7 @@
                      DockPanel.Dock="Bottom" BorderThickness="0,1,0,0"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Top">
-                <Button>dfdsfds</Button>
+                <Button Click="TestUpdate_Click">테스트_구독업데이트</Button>
             </StackPanel>
 
             <DockPanel LastChildFill="True" DockPanel.Dock="Top">
