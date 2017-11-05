@@ -91,6 +91,8 @@
     <Compile Include="HttpInterface\HttpInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.DllImport.cs" />
+    <Compile Include="Preference.cs" />
+    <Compile Include="ScheduleTask.cs" />
     <Compile Include="UI\StateTextConverter.cs" />
     <Compile Include="UI\TorrentControl.xaml.cs">
       <DependentUpon>TorrentControl.xaml</DependentUpon>

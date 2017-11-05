@@ -16,6 +16,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Timers;
 
 namespace AniFile3
 {
@@ -30,13 +31,12 @@ namespace AniFile3
             Subscription,
         }
 
-        private const int TIME_OUT = 5000;
-
         // This is Main datas for client, All of client's data is in this
         private Subscriptions _subscriptionStorage;
         private Dictionary<Category, Subscriptions.Node> _categories;
         private EpisodePage _episodePage;
         private HttpInterface _http;
+        private ScheduleTask _scheduler;
 
         // 자주 쓰는 것
         private Subscriptions.Node SubscriptionNode
@@ -53,10 +53,16 @@ namespace AniFile3
         public MainWindow()
         {
             InitializeComponent();
+            Initialize();
+        }
 
+        private void Initialize()
+        {
             Console.SetOut(new LogWriter(_testLog));
 
-            _http = new HttpInterface("http://localhost:2323");
+            Preference.Load();
+
+            _http = new HttpInterface(Preference.Instance.CacheServerUri);
 
             // If Local data file exists, it has to load
             _subscriptionStorage = new Subscriptions();
@@ -67,7 +73,7 @@ namespace AniFile3
             //    _dataStorage = MessagePack.Deserialize<Subscriptions>(_subscriptionStorage);
             //}
 
-            _categories = new Dictionary<Category, Subscriptions.Node>();            
+            _categories = new Dictionary<Category, Subscriptions.Node>();
 
             _MainTreeView.ItemsSource = _subscriptionStorage;
 
@@ -80,7 +86,7 @@ namespace AniFile3
             });
 
             _categories[Category.Home] = _subscriptionStorage[0];
-            
+
             // 최초 페이지 뷰잉
             _MainFrame.Navigate(_subscriptionStorage[0].CurrentPage);
 
@@ -99,6 +105,10 @@ namespace AniFile3
             _subscriptionStorage.Add(node);
 
             NativeInterface.Initialize();
+
+            // Setup Auto-update timer
+            _scheduler = new ScheduleTask();
+            _scheduler.Start(Preference.Instance.UpdateSubscriptionInterval, UpdateSubscription);
         }
 
         private async void Search()
@@ -113,7 +123,7 @@ namespace AniFile3
             var controller = await this.ShowProgressAsync("진행중...", "응답을 기다리는 중", settings: settings);
             controller.SetIndeterminate();
             
-            var response = await _http.Request<string, List<EpisodeInfo>>("/search_episode", _SerachText.Text).WithTimeout(TIME_OUT);
+            var response = await _http.Request<string, List<EpisodeInfo>>("/search_episode", _SerachText.Text).WithTimeout(Preference.Instance.DefaultTimeOut);
             if (response != null)
             {
                 _testLog.Clear();
@@ -200,8 +210,12 @@ namespace AniFile3
         // 구독중인 것들 업뎃, 한번에 갖고 있는 모든 '구독'을 업뎃함
         public async void UpdateSubscription()
         {
+            // minimum '1'
+            if (SubscriptionNode.Children.Count == 0)
+                return;
+
             var episodeNodes = SubscriptionNode.Children.OfType<Subscriptions.ContentNode>();
-            
+
             var request = new UpdateSubscriptionRequest();
             request.Subscriptions = episodeNodes.Select(node =>
             {
@@ -213,7 +227,7 @@ namespace AniFile3
             }).ToList();
 
             var response = await _http.Request<UpdateSubscriptionRequest, UpdateSubscriptionResponse>("/update_subscription", request)
-                                      .WithTimeout(TIME_OUT);
+                                      .WithTimeout(Preference.Instance.DefaultTimeOut);
             if (response != null)
             {
                 foreach(var item in response.Items)
@@ -238,7 +252,7 @@ namespace AniFile3
                     Subject = subject
                 };
 
-                string magnet = "magnet:?xt=urn:btih:95F6D0F207888DDB67F89EDC0F47D39B945D2E95&dn=%5btvN%5d%20%ec%95%8c%eb%b0%94%ed%8a%b8%eb%a1%9c%ec%8a%a4.E04.171004.720p-NEXT.mp4&tr=udp%3a%2f%2fzer0day.to%3a1337%2fannounce&tr=udp%3a%2f%2ftracker1.wasabii.com.tw%3a6969%2fannounce&tr=http%3a%2f%2fmgtracker.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.grepler.com%3a6969%2fannounce&tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&tr=udp%3a%2f%2f182.176.139.129%3a6969%2fannounce&tr=http%3a%2f%2ftracker.mg64.net%3a6881%2fannounce&tr=udp%3a%2f%2f185.50.198.188%3a1337%2fannounce&tr=udp%3a%2f%2f168.235.67.63%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969&tr=udp%3a%2f%2fbt.xxx-tracker.com%3a2710%2fannounce&tr=http%3a%2f%2fexplodie.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a80%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969&tr=http%3a%2f%2fbt.ttk.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2fbt.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2ftracker2.wasabii.com.tw%3a6969%2fannounce&tr=udp%3a%2f%2fthetracker.org.%2fannounce&tr=udp%3a%2f%2feddie4.nl%3a6969%2fannounce&tr=udp%3a%2f%2f62.212.85.66%3a2710%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.zer0day.to%3a1337%2fannounce";
+                //string magnet = "magnet:?xt=urn:btih:95F6D0F207888DDB67F89EDC0F47D39B945D2E95&dn=%5btvN%5d%20%ec%95%8c%eb%b0%94%ed%8a%b8%eb%a1%9c%ec%8a%a4.E04.171004.720p-NEXT.mp4&tr=udp%3a%2f%2fzer0day.to%3a1337%2fannounce&tr=udp%3a%2f%2ftracker1.wasabii.com.tw%3a6969%2fannounce&tr=http%3a%2f%2fmgtracker.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.grepler.com%3a6969%2fannounce&tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&tr=udp%3a%2f%2f182.176.139.129%3a6969%2fannounce&tr=http%3a%2f%2ftracker.mg64.net%3a6881%2fannounce&tr=udp%3a%2f%2f185.50.198.188%3a1337%2fannounce&tr=udp%3a%2f%2f168.235.67.63%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969&tr=udp%3a%2f%2fbt.xxx-tracker.com%3a2710%2fannounce&tr=http%3a%2f%2fexplodie.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a80%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969&tr=http%3a%2f%2fbt.ttk.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2fbt.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2ftracker2.wasabii.com.tw%3a6969%2fannounce&tr=udp%3a%2f%2fthetracker.org.%2fannounce&tr=udp%3a%2f%2feddie4.nl%3a6969%2fannounce&tr=udp%3a%2f%2f62.212.85.66%3a2710%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.zer0day.to%3a1337%2fannounce";
                 //node.Episodes.Add(new ClientEpisodeInfo(new EpisodeInfo()
                 //{
                 //    Name = subject,
@@ -298,6 +312,11 @@ namespace AniFile3
             {
                 Search();
             }
+        }
+
+        private void TestUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateSubscription();
         }
     }
 }
