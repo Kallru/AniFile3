@@ -27,13 +27,24 @@ namespace CacheServerForms
                 return 1212;
             };
 
-            Get["/update_subscription"] = (parameter) =>
+            Get["/update_subscription"] = async (parameter) =>
             {
                 var request = UnpackRequest<UpdateSubscriptionRequest>();
 
+                //request.Subscriptions
+
                 var response = new UpdateSubscriptionResponse();
 
-                // 데이터 채워서
+                //Func<ServerEpisodeInfo, bool> predicate = (item) =>
+                //{
+                //    return true;
+                //};
+
+                //// 데이터 채워서
+                //var collection = DataBase.Instance.Collection;
+                //var result = await collection.AsQueryable()
+                //                             .Where(Expression<Func<ServerEpisodeInfo, bool>>(predicate)).ToListAsync()
+                //                             .WithTimeout(5000);
 
                 // 넘김
                 return PackResponse(response);
