@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,12 @@ namespace AniFile3.Contetns
         public void LoadEpisode(ObservableCollection<ClientEpisodeInfo> episodes)
         {
             CleanUp();
+
             _EpsiodeListView.ItemsSource = episodes;
+
+            // Make Sorting
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(_EpsiodeListView.ItemsSource);
+            view.SortDescriptions.Add(new SortDescription("Episode", ListSortDirection.Descending));
         }
     }
 }

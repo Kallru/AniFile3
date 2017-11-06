@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -42,20 +43,22 @@ namespace AniFile3.DataStruct
                 set { _children = value; NotifyPropertyChanged("Children"); }
             }
 
+            [IgnoreMember]
             public Page CurrentPage { get; private set; }
 
-            public Node(Page page)
+            public Node()
+            {
+                _children = new ObservableCollection<Node>();
+            }
+
+            public virtual void InitializePage(Page page)
             {
                 CurrentPage = page;
-
-                _children = new ObservableCollection<Node>();
+                
                 _children.CollectionChanged += (sender, e) =>
                 {
                     Count = _children.Count;
                 };
-
-                // TestCode
-                NewCount = 12;
             }
 
             public event PropertyChangedEventHandler PropertyChanged;
@@ -74,9 +77,11 @@ namespace AniFile3.DataStruct
         // '홈'을 위한 노드
         public class HomeNode : Node
         {
-            public HomeNode(Page page)
-                :base(page)
-            { }
+            public HomeNode()
+            {
+                Subject = "홈";
+                InitializePage(new Contetns.HomePage());
+            }
         }
     }
 }

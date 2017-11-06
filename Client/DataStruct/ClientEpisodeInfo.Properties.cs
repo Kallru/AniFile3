@@ -1,25 +1,24 @@
-﻿using CoreLib.MessagePackets;
-using System;
-using System.Collections.Generic;
+﻿using CoreLib.DataStruct;
+using MessagePack;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace AniFile3.DataStruct
 {
     public partial class ClientEpisodeInfo : INotifyPropertyChanged
     {
-        private string _downloadState;
+        private EpisodeInfo _header;
         private int _downloadRate;
         private string _downloadPayloadRate;
+        [IgnoreMember]
+        private string _downloadState;
 
         public string Subject { get => _header.Name; }
         public int Episode { get => _header.Episode; }
         public string Resolution { get => _header.Resolution; }
         public string Location { get; private set; }
+        public bool IsCompleted { get; private set; }
+        // 처음 값이 '0' 일때는 아무것도 안보여주기 위해서 string으로 처리
+        public string TotalSize { get; private set; }
         
         public string DownloadState
         {

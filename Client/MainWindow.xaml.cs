@@ -17,6 +17,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Timers;
+using CoreLib;
+using MessagePack.Resolvers;
 
 namespace AniFile3
 {
@@ -25,25 +27,15 @@ namespace AniFile3
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private enum Category
-        {
-            Home,
-            Subscription,
-        }
-
         // This is Main datas for client, All of client's data is in this
         private Subscriptions _subscriptionStorage;
-        private Dictionary<Category, Subscriptions.Node> _categories;
         private EpisodePage _episodePage;
         private HttpInterface _http;
         private ScheduleTask _scheduler;
 
         // 자주 쓰는 것
-        private Subscriptions.Node SubscriptionNode
-        {
-            get => _categories[Category.Subscription];
-            set => _categories[Category.Subscription] = value;
-        }
+        private Subscriptions.Node HomeNode { get; set; }
+        private Subscriptions.Node SubscriptionNode { get; set; }
 
         public Flyout NewSubscriptionFlyout
         {
@@ -55,6 +47,39 @@ namespace AniFile3
             InitializeComponent();
             Initialize();
         }
+        
+        private void TestSomething()
+        {
+            var node = new Subscriptions.ContentNode();
+
+            var instance = new ClientEpisodeInfo(new EpisodeInfo()
+            {
+                Episode = 111,
+                Fullname = "Episode Fullname",
+                Magnet = "Magnet",
+                Name = "Name",
+                Resolution = "1080p"
+            });
+
+            node.InitializePage(null);
+
+            for (int i = 0; i < 10; ++i)
+                node.Episodes.Add(instance);
+
+            using (Stream file = new FileStream("datastorage.bin", FileMode.Create))
+            {
+                var bytes = MessagePackSerializer.Serialize<Subscriptions>(_subscriptionStorage, ContractlessStandardResolverAllowPrivate.Instance);
+                file.Write(bytes, 0, bytes.Length);
+            }
+
+            using (Stream file = new FileStream("datastorage.bin", FileMode.Open))
+            {
+                var newInstance = MessagePackSerializer.Deserialize<Subscriptions>(file, ContractlessStandardResolverAllowPrivate.Instance);
+                
+                int a = 20;
+                a = 50;
+            }
+        }
 
         private void Initialize()
         {
@@ -64,51 +89,67 @@ namespace AniFile3
 
             _http = new HttpInterface(Preference.Instance.CacheServerUri);
 
-            // If Local data file exists, it has to load
-            _subscriptionStorage = new Subscriptions();
-
-            // In file existing case
-            //using (Stream file = new FileStream("datastorage.bin", FileMode.Open))
-            //{
-            //    _dataStorage = MessagePack.Deserialize<Subscriptions>(_subscriptionStorage);
-            //}
-
-            _categories = new Dictionary<Category, Subscriptions.Node>();
-
-            _MainTreeView.ItemsSource = _subscriptionStorage;
-
             _episodePage = new EpisodePage();
 
-            // Home 셋팅
-            _subscriptionStorage.Add(new Subscriptions.HomeNode(new HomePage())
+            string filename = "datastorage.bin";
+            //if (File.Exists(filename))
+            //{
+            //    // In file existing case
+            //    using (Stream file = new FileStream(filename, FileMode.Open))
+            //    {
+            //        _subscriptionStorage = MessagePackSerializer.Deserialize<Subscriptions>(file, ContractlessStandardResolverAllowPrivate.Instance);
+            //    }
+            //}
+            //else
             {
-                Subject = "홈",
-            });
+                CreateSubscriptions();
+            }
+            _MainTreeView.ItemsSource = _subscriptionStorage;
+            
+            // 기본 '홈' 노드 셋팅
+            HomeNode = _subscriptionStorage[0];
+            // '구독' 셋팅
+            SubscriptionNode = _subscriptionStorage[1];
 
-            _categories[Category.Home] = _subscriptionStorage[0];
+            // Test Code - 아무 페이지나
+            {
+                var searchPage = new SearchResultPage();
+                searchPage.SubsriptionClicked += Subscription_Click;
+
+                SubscriptionNode.InitializePage(searchPage);
+            }
 
             // 최초 페이지 뷰잉
-            _MainFrame.Navigate(_subscriptionStorage[0].CurrentPage);
+            _MainFrame.Navigate(HomeNode.CurrentPage);
 
-            var searchPage = new SearchResultPage();
-            searchPage.SubsriptionClicked += Subscription_Click;
-
-            var node = new Subscriptions.Node(searchPage)
-            {
-                Subject = "구독중",
-            };
-
-            // '구독' 셋팅
-            SubscriptionNode = node;
-
-            node.Count = node.Children.Count;
-            _subscriptionStorage.Add(node);
-
-            NativeInterface.Initialize();
+            NativeInterface.Initialize();            
 
             // Setup Auto-update timer
             _scheduler = new ScheduleTask();
-            _scheduler.Start(Preference.Instance.UpdateSubscriptionInterval, UpdateSubscription);
+            //_scheduler.Start(Preference.Instance.UpdateSubscriptionInterval, UpdateSubscription);
+        }
+
+        private void CreateSubscriptions()
+        {
+            _subscriptionStorage = new Subscriptions();
+
+            // Home 셋팅
+            _subscriptionStorage.Add(new Subscriptions.HomeNode());
+            
+            var node = new Subscriptions.Node()
+            { Subject = "구독중" };
+
+            node.Count = node.Children.Count;
+            _subscriptionStorage.Add(node);
+        }
+
+        private void SaveSubscriptions()
+        {
+            using(Stream file = new FileStream("datastorage.bin", FileMode.Create))
+            {
+                var bytes = MessagePackSerializer.Serialize<Subscriptions>(_subscriptionStorage, ContractlessStandardResolverAllowPrivate.Instance);
+                file.Write(bytes, 0, bytes.Length);
+            }
         }
 
         private async void Search()
@@ -213,7 +254,7 @@ namespace AniFile3
             // minimum '1'
             if (SubscriptionNode.Children.Count == 0)
                 return;
-
+            
             var episodeNodes = SubscriptionNode.Children.OfType<Subscriptions.ContentNode>();
 
             var request = new UpdateSubscriptionRequest();
@@ -222,7 +263,7 @@ namespace AniFile3
                 return new UpdateSubscriptionRequest.Request()
                 {
                     SubscriptionName = node.Subject,
-                    LatestEpisode = node.Episodes.Max(info => info.Episode)
+                    LatestEpisode = (node.Episodes.Count > 0) ? node.Episodes.Max(info => info.Episode) : 0
                 };
             }).ToList();
 
@@ -230,14 +271,16 @@ namespace AniFile3
                                       .WithTimeout(Preference.Instance.DefaultTimeOut);
             if (response != null)
             {
-                foreach(var item in response.Items)
+                // 적절하게 구독이름으로 분류하기
+                var group = response.EpisodeInfos.GroupBy(item =>
                 {
-                    var foundItem = episodeNodes.FirstOrDefault(node => node.Subject == item.Name);
-                    if (foundItem != null)
-                    {
-                        // 중복 체크해서 클라에 데이터 넣기.
-                        foundItem.Episodes.AddRange(item.EpisodeInfos);
-                    }
+                    return episodeNodes.FirstOrDefault(node => CompareName.Match(item.Fullname, node.Subject));
+                });
+
+                foreach (var item in group)
+                {
+                    // 중복 체크해서 클라에 데이터 넣기.
+                    item.Key.Episodes.AddRange(item);
                 }
             }
         }
@@ -247,10 +290,11 @@ namespace AniFile3
             var result = SubscriptionNode.Children.FirstOrDefault((element) => element.Subject == subject);
             if (result == null)
             {
-                var node = new Subscriptions.ContentNode(_episodePage)
+                var node = new Subscriptions.ContentNode()
                 {
                     Subject = subject
                 };
+                node.InitializePage(_episodePage);
 
                 //string magnet = "magnet:?xt=urn:btih:95F6D0F207888DDB67F89EDC0F47D39B945D2E95&dn=%5btvN%5d%20%ec%95%8c%eb%b0%94%ed%8a%b8%eb%a1%9c%ec%8a%a4.E04.171004.720p-NEXT.mp4&tr=udp%3a%2f%2fzer0day.to%3a1337%2fannounce&tr=udp%3a%2f%2ftracker1.wasabii.com.tw%3a6969%2fannounce&tr=http%3a%2f%2fmgtracker.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.grepler.com%3a6969%2fannounce&tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&tr=udp%3a%2f%2f182.176.139.129%3a6969%2fannounce&tr=http%3a%2f%2ftracker.mg64.net%3a6881%2fannounce&tr=udp%3a%2f%2f185.50.198.188%3a1337%2fannounce&tr=udp%3a%2f%2f168.235.67.63%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969&tr=udp%3a%2f%2fbt.xxx-tracker.com%3a2710%2fannounce&tr=http%3a%2f%2fexplodie.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a80%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969&tr=http%3a%2f%2fbt.ttk.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2fbt.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2ftracker2.wasabii.com.tw%3a6969%2fannounce&tr=udp%3a%2f%2fthetracker.org.%2fannounce&tr=udp%3a%2f%2feddie4.nl%3a6969%2fannounce&tr=udp%3a%2f%2f62.212.85.66%3a2710%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.zer0day.to%3a1337%2fannounce";
                 //node.Episodes.Add(new ClientEpisodeInfo(new EpisodeInfo()

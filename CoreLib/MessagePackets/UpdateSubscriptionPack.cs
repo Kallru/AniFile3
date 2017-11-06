@@ -27,17 +27,7 @@ namespace CoreLib.MessagePackets
     [MessagePackObject]
     public class UpdateSubscriptionResponse
     {
-        [MessagePackObject]
-        public struct Response
-        {
-            [Key(0)]
-            public string Name { get; set; }
-
-            [Key(1)]
-            public List<EpisodeInfo> EpisodeInfos;
-        }
-
         [Key(0)]
-        public List<Response> Items { get; set; }
+        public List<EpisodeInfo> EpisodeInfos;
     }
 }

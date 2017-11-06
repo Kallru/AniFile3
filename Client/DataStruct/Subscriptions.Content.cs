@@ -17,13 +17,19 @@ namespace AniFile3.DataStruct
 
             public ObservableCollection<ClientEpisodeInfo> Episodes { get => _episodes; }
 
-            public ContentNode(Page page)
-                :base(page)
+            public ContentNode()
             {
                 _episodes = new ObservableCollection<ClientEpisodeInfo>();
+            }
+
+            public override void InitializePage(Page page)
+            {
+                base.InitializePage(page);
+                
                 _episodes.CollectionChanged += (sender, e) =>
                 {
                     Count = _episodes.Count;
+                    NewCount = _episodes.Count;
                 };
             }
 

@@ -9,13 +9,15 @@
                       xmlns:localContetns="clr-namespace:AniFile3.Contetns"
                       Title="아직 이름이 없다" 
                       Height="600"
-                      Width="800"
+                      Width="800"                      
+                      MinWidth="600"
+                      MinHeight="450"                      
                       ShowIconOnTitleBar="True"
                       ShowMaxRestoreButton="False"
                       ResizeMode="CanResizeWithGrip"
                       WindowStartupLocation="CenterScreen"
                       GlowBrush="{DynamicResource AccentColorBrush}" 
-                      Closing="MetroWindow_Closing" >
+                      Closing="MetroWindow_Closing">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -43,82 +45,89 @@
             <ColumnDefinition Width="150*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- 왼쪽 컨텐츠 영역 -->
-        <StackPanel Grid.Column="0"
-                    xmlns:DataStruct="clr-namespace:AniFile3.DataStruct">
-            <TreeView Name="_MainTreeView" SelectedItemChanged="_MainTreeView_SelectedItemChanged">
-                <TreeView.Resources >
-                    <!-- Single Node -->
-                    <DataTemplate DataType="{x:Type DataStruct:Subscriptions+HomeNode}">
-                        <StackPanel Orientation="Horizontal">
-                            <Rectangle Width="16">
-                                <Rectangle.Fill>
-                                    <VisualBrush Visual="{StaticResource appbar_home}" Stretch="Uniform" />
-                                </Rectangle.Fill>
-                            </Rectangle>
-                            <TextBlock Margin="7,0,0,0" Text="{Binding Subject}" />
-                        </StackPanel>
-                    </DataTemplate>
-                    <!-- Node -->
-                    <HierarchicalDataTemplate
-                        DataType="{x:Type DataStruct:Subscriptions+Node}"
-                        ItemsSource="{Binding Children}">
-                        <StackPanel Orientation="Horizontal">
-                            <Rectangle Width="16">
-                                <Rectangle.Fill>
-                                    <VisualBrush Visual="{StaticResource appbar_youtube_play}" Stretch="Uniform" />
-                                </Rectangle.Fill>
-                            </Rectangle>
-                            <TextBlock Margin="7,0,0,0" Text="{Binding Subject}" />
-                        </StackPanel>
-                    </HierarchicalDataTemplate>
-
-                    <!-- Epsiode Node -->
-                    <DataTemplate x:Name="EpisodeTemplate" DataType="{x:Type DataStruct:Subscriptions+ContentNode}">
-                        <StackPanel Orientation="Horizontal">
-                            <Controls:Badged Badge="{Binding NewCount}">
-                                <TextBlock>
-                                    <TextBlock.Text>
-                                        <MultiBinding StringFormat="{}{0}({1})">
-                                            <Binding Path="Subject"/>
-                                            <Binding Path="Count"/>
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                            </Controls:Badged>
-                            <Button Width="16" Margin="5,0,0,0" Background="{x:Null}" BorderThickness="0" Click="Delete_Click">
-                                <Button.Content>
-                                    <Rectangle Width="8" Height="8" Fill="Black">
-                                        <Rectangle.OpacityMask>
-                                            <VisualBrush Visual="{StaticResource appbar_close}" Stretch="Uniform" />
-                                        </Rectangle.OpacityMask>
-                                    </Rectangle>
-                                </Button.Content>
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                        <Style.Triggers>
-                                            <DataTrigger 
-                                                Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource AncestorType=TreeViewItem}}" 
-                                                Value="True">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                        </StackPanel>
-                    </DataTemplate>
-                </TreeView.Resources>
-            </TreeView>
-        </StackPanel>
-
         <!-- 열 나누기 -->
         <GridSplitter Grid.Column="1" 
-                      VerticalAlignment="Stretch" 
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Center"
                       Background="{DynamicResource AccentColorBrush}" 
                       ShowsPreview="True" 
-                      Width="5" Opacity="0.7" />
+                      ResizeDirection="Columns"
+                      Width="5" 
+                      Opacity="0.7" />
+
+        <!-- 왼쪽 컨텐츠 영역 -->
+        <TreeView Name="_MainTreeView" 
+                      Grid.Column="0"
+                      SelectedItemChanged="_MainTreeView_SelectedItemChanged"
+                      xmlns:DataStruct="clr-namespace:AniFile3.DataStruct"
+                      VerticalAlignment="Stretch" 
+                      HorizontalAlignment="Stretch">
+            <TreeView.Resources>
+                <!-- Single Node -->
+                <DataTemplate DataType="{x:Type DataStruct:Subscriptions+HomeNode}">
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Width="16">
+                            <Rectangle.Fill>
+                                <VisualBrush Visual="{StaticResource appbar_home}" Stretch="Uniform" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <TextBlock Margin="7,0,0,0" Text="{Binding Subject}" />
+                    </StackPanel>
+                </DataTemplate>
+                <!-- Node -->
+                <HierarchicalDataTemplate
+                        DataType="{x:Type DataStruct:Subscriptions+Node}"
+                        ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Width="16">
+                            <Rectangle.Fill>
+                                <VisualBrush Visual="{StaticResource appbar_youtube_play}" Stretch="Uniform" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <TextBlock Margin="7,0,0,0" Text="{Binding Subject}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+
+                <!-- Epsiode Node -->
+                <DataTemplate x:Name="EpisodeTemplate" DataType="{x:Type DataStruct:Subscriptions+ContentNode}">
+                    <StackPanel Orientation="Horizontal">
+                        <Controls:Badged Badge="{Binding NewCount}" BadgePlacementMode="Right">
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}({1})">
+                                        <Binding Path="Subject"/>
+                                        <Binding Path="Count"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Controls:Badged>
+                        <Button Width="16" Margin="5,0,0,0" Background="{x:Null}" BorderThickness="0" Click="Delete_Click">
+                            <Button.Content>
+                                <Rectangle Width="8" Height="8" Fill="Black">
+                                    <Rectangle.OpacityMask>
+                                        <VisualBrush Visual="{StaticResource appbar_close}" Stretch="Uniform" />
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                            </Button.Content>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                    <Style.Triggers>
+                                        <DataTrigger 
+                                                Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource AncestorType=TreeViewItem}}" 
+                                                Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </DataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+
+        
 
         <!-- 우측 컨텐츠 영역 -->
         <DockPanel Grid.Column="2" LastChildFill="True" DockPanel.Dock="Right">

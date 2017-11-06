@@ -33,14 +33,15 @@ namespace AniFile3
             try
             {
                 // Request
+                Console.WriteLine("Request...'{0}'", rest);
                 dataStream = await request.GetRequestStreamAsync();
                 dataStream.Write(byteArray, 0, byteArray.Length);
                 dataStream.Close();
-                
+
                 // Response
                 response = await request.GetResponseAsync();
                 var httpResponse = response as HttpWebResponse;
-                Console.WriteLine(httpResponse.StatusDescription);
+                Console.WriteLine("Response..." + httpResponse.StatusDescription);
 
                 if (httpResponse.StatusCode == HttpStatusCode.OK)
                 {
@@ -48,7 +49,7 @@ namespace AniFile3
                     result = MessagePackSerializer.Deserialize<TOut>(dataStream);
                 }
             }
-            catch(System.Net.WebException e)
+            catch (System.Net.WebException e)
             {
                 string hint = string.Empty;
                 if (e.Status == WebExceptionStatus.ConnectFailure)
@@ -57,6 +58,10 @@ namespace AniFile3
                 }
 
                 Console.WriteLine("{0} '{1}'", e.Message, hint);
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine("{0}", e.Message);
             }
             finally
             {

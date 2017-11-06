@@ -1,13 +1,7 @@
 ﻿using CoreLib.DataStruct;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace AniFile3.DataStruct
 {
@@ -43,8 +37,8 @@ namespace AniFile3.DataStruct
 
     public partial class ClientEpisodeInfo : INotifyPropertyChanged
     {
-        private EpisodeInfo _header;
-        private long _id;
+        [MessagePack.IgnoreMember]
+        private long _torrentId;
         
         public class Comparer : IEqualityComparer<ClientEpisodeInfo>
         {
@@ -73,9 +67,16 @@ namespace AniFile3.DataStruct
             _header = header;
         }
 
+        // for serialize
+        public ClientEpisodeInfo()
+        { }
+
         public void Start()
         {
-            _id = NativeInterface.Download(_header.Magnet, ".", UpdateState);
+            if (IsCompleted == false)
+            {
+                _torrentId = NativeInterface.Download(_header.Magnet, Preference.Instance.RootDownloadPath, UpdateState);
+            }
         }
 
         public bool Compare(ClientEpisodeInfo left)
@@ -89,6 +90,7 @@ namespace AniFile3.DataStruct
         {
             DownloadState = stateInfo.StateText;
             DownloadRate = stateInfo.Progress;
+            IsCompleted = stateInfo.State == (int)state_t.finished;
 
             if (stateInfo.DownloadPayloadRate > 1024)
                 DownloadPayloadRate = string.Format("{0:F1} MB/s", stateInfo.DownloadPayloadRate / 1024.0f);
