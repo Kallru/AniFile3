@@ -66,19 +66,29 @@ namespace AniFile3
             for (int i = 0; i < 10; ++i)
                 node.Episodes.Add(instance);
 
-            using (Stream file = new FileStream("datastorage.bin", FileMode.Create))
-            {
-                var bytes = MessagePackSerializer.Serialize<Subscriptions>(_subscriptionStorage, ContractlessStandardResolverAllowPrivate.Instance);
-                file.Write(bytes, 0, bytes.Length);
-            }
+            //_subscriptionStorage.Add(node);
 
-            using (Stream file = new FileStream("datastorage.bin", FileMode.Open))
-            {
-                var newInstance = MessagePackSerializer.Deserialize<Subscriptions>(file, ContractlessStandardResolverAllowPrivate.Instance);
-                
-                int a = 20;
-                a = 50;
-            }
+            _subscriptionStorage.SaveFrom();
+            _subscriptionStorage.LoadFrom();
+
+            //using (Stream file = new FileStream("datastorage.bin", FileMode.Create))
+            //{
+            //    var test = new System.Collections.ObjectModel.ObservableCollection<int>();
+            //    test.Add(1);
+
+            //    var bytes2 = MessagePackSerializer.Serialize<System.Collections.ObjectModel.ObservableCollection<int>>(test, ContractlessStandardResolver.Instance);
+
+            //    var bytes = MessagePackSerializer.Serialize<Subscriptions>(_subscriptionStorage, ContractlessStandardResolver.Instance);
+            //    file.Write(bytes, 0, bytes.Length);
+            //}
+
+            //using (Stream file = new FileStream("datastorage.bin", FileMode.Open))
+            //{
+            //    var newInstance = MessagePackSerializer.Deserialize<Subscriptions>(file, ContractlessStandardResolver.Instance);
+
+            //    int a = 20;
+            //    a = 50;
+            //}
         }
 
         private void Initialize()
@@ -127,6 +137,8 @@ namespace AniFile3
             // Setup Auto-update timer
             _scheduler = new ScheduleTask();
             //_scheduler.Start(Preference.Instance.UpdateSubscriptionInterval, UpdateSubscription);
+
+            TestSomething();
         }
 
         private void CreateSubscriptions()

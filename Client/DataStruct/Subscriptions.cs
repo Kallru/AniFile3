@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,32 @@ namespace AniFile3.DataStruct
 {
     public partial class Subscriptions : ObservableCollection<Subscriptions.Node>
     {
-        public class Node : INotifyPropertyChanged
+        private interface IInput
+        {
+            void Load(BinaryReader reader, Node node);
+            void Save(BinaryWriter writer, Node node);
+        }
+
+        public void LoadFrom(string fileName = "datastorage.bin")
+        {
+            using (var reader = new BinaryReader(new FileStream(fileName, FileMode.Open)))
+            {
+                foreach (IInput item in Items)
+                {
+                    item.Load(reader, item as Node);
+                }
+            }
+        }
+
+        public void SaveFrom(string fileName = "datastorage.bin")
+        {
+            using (var writer = new BinaryWriter(new FileStream(fileName, FileMode.Create)))
+            {
+                InternalSave(writer, this);
+            }
+        }
+
+        public class Node : INotifyPropertyChanged, IInput
         {
             private ObservableCollection<Node> _children;
             private string _subject;
@@ -42,8 +68,7 @@ namespace AniFile3.DataStruct
                 get => _children;
                 set { _children = value; NotifyPropertyChanged("Children"); }
             }
-
-            [IgnoreMember]
+            
             public Page CurrentPage { get; private set; }
 
             public Node()
@@ -61,6 +86,57 @@ namespace AniFile3.DataStruct
                 };
             }
 
+            protected virtual void Load2(BinaryReader reader)
+            {
+                _subject = reader.ReadString();
+                _count = reader.ReadInt32();
+                _newCount = reader.ReadInt32();
+            }
+
+            protected virtual void Save(BinaryWriter writer)
+            {
+                // Mine
+                writer.Write(_subject);
+                writer.Write(_count);
+                writer.Write(_newCount);
+            }
+
+            // Interface design
+            // ref. https://stackoverflow.com/questions/203616/why-does-c-sharp-not-provide-the-c-style-friend-keyword
+            void IInput.Load(BinaryReader reader, Node node)
+            {
+                // This is mine
+                Load2(reader);
+
+                // for children
+                int childCount = reader.ReadInt32();
+                for (int i = 0; i < childCount; ++i)
+                {
+                    string childTypeName = reader.ReadString();
+                    Type childType = Type.GetType(childTypeName);
+                    var instance = Activator.CreateInstance(childType) as Node;
+
+                    this.l
+
+                    InternalLoad(reader, instance);
+                    _children.Add(instance);
+                }
+            }
+
+            void IInput.Save(BinaryWriter writer, Node node)
+            {
+                Save(writer);
+
+                // children
+                writer.Write(node.Children.Count);
+                foreach (var child in node.Children)
+                {
+                    writer.Write(child.GetType().Name);
+
+                    InternalSave(writer, child);
+                }
+            }
+            
             public event PropertyChangedEventHandler PropertyChanged;
             public void NotifyPropertyChanged(string propertyName)
             {
