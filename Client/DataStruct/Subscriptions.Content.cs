@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.IO;
+using MessagePack.Resolvers;
 
 namespace AniFile3.DataStruct
 {
@@ -19,21 +20,27 @@ namespace AniFile3.DataStruct
 
             public ObservableCollection<ClientEpisodeInfo> Episodes { get => _episodes; }
 
-            public ContentNode()
+            private ContentNode()
             {
                 _episodes = new ObservableCollection<ClientEpisodeInfo>();
+                _episodes.CollectionChanged += (sender, e) =>
+                {
+                    Count = _episodes.Count;
+                    NewCount = _episodes.Count;
+                };
             }
 
             protected override void Load(BinaryReader reader)
             {
                 base.Load(reader);
 
+                _episodes.Clear();
                 int count = reader.ReadInt32();
                 for (int i = 0; i < count; ++i)
                 {
                     int size = reader.ReadInt32();
                     var bytes = reader.ReadBytes(size);
-                    var episode = MessagePackSerializer.Deserialize<ClientEpisodeInfo>(bytes);
+                    var episode = MessagePackSerializer.Deserialize<ClientEpisodeInfo>(bytes, ContractlessStandardResolverAllowPrivate.Instance);
                     _episodes.Add(episode);
                 }
             }
@@ -45,21 +52,10 @@ namespace AniFile3.DataStruct
                 writer.Write(_episodes.Count);
                 foreach (var episode in _episodes)
                 {
-                    var bytes = MessagePackSerializer.Serialize(episode);
+                    var bytes = MessagePackSerializer.Serialize(episode, ContractlessStandardResolverAllowPrivate.Instance);
                     writer.Write(bytes.Length);
                     writer.Write(bytes);
                 }
-            }
-
-            public override void InitializePage(Page page)
-            {
-                base.InitializePage(page);
-                
-                _episodes.CollectionChanged += (sender, e) =>
-                {
-                    Count = _episodes.Count;
-                    NewCount = _episodes.Count;
-                };
             }
 
             public override void Navigate(Frame frameUI)

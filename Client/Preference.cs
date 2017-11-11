@@ -15,6 +15,7 @@ namespace AniFile3
         public static Preference Instance { get; private set; } = new Preference();
 
         public const string FileName = "preference.bin";
+        public const string SubscriptionsFileName = "datastorage.bin";
 
         [Key(0)]
         public int DefaultTimeOut { get; set; } = 5000 * 10;
