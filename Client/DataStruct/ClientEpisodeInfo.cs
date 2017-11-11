@@ -1,40 +1,9 @@
 ﻿using CoreLib.DataStruct;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace AniFile3.DataStruct
 {
-    public static class ClientEpisodeInfoExtentions
-    {
-        public static bool Contains(this ObservableCollection<ClientEpisodeInfo> _this, EpisodeInfo info)
-        {
-            foreach (var item in _this)
-            {
-                if (item.Subject == info.Name
-                    && item.Episode == info.Episode
-                    && item.Resolution == info.Resolution)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public static void AddRange(this ObservableCollection<ClientEpisodeInfo> _this, IEnumerable<EpisodeInfo> infos)
-        {
-            foreach (var episode in infos)
-            {
-                // 중복 체크해서 클라에 데이터 넣기.
-                if (_this.Contains(episode) == false)
-                {
-                    _this.Add(new ClientEpisodeInfo(episode));
-                }
-            }
-        }
-    }
-
     public partial class ClientEpisodeInfo : INotifyPropertyChanged
     {
         [MessagePack.IgnoreMember]

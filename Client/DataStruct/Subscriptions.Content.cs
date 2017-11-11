@@ -1,14 +1,8 @@
 ﻿using AniFile3.Contetns;
 using MessagePack;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.IO;
 using MessagePack.Resolvers;
+using System.IO;
+using System.Windows.Controls;
 
 namespace AniFile3.DataStruct
 {
@@ -16,13 +10,13 @@ namespace AniFile3.DataStruct
     {
         public class ContentNode : Node
         {
-            private ObservableCollection<ClientEpisodeInfo> _episodes;
+            private EpisodeCollection _episodes;
 
-            public ObservableCollection<ClientEpisodeInfo> Episodes { get => _episodes; }
+            public EpisodeCollection Episodes { get => _episodes; }
 
             private ContentNode()
             {
-                _episodes = new ObservableCollection<ClientEpisodeInfo>();
+                _episodes = new EpisodeCollection();
                 _episodes.CollectionChanged += (sender, e) =>
                 {
                     Count = _episodes.Count;
@@ -64,6 +58,12 @@ namespace AniFile3.DataStruct
                 page.LoadEpisode(_episodes);
 
                 base.Navigate(frameUI);
+            }
+
+            public void Start()
+            {
+                // 여기서 어떤걸 시작 시킬지 처리?
+                // 
             }
         }
     }

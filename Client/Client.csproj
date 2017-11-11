@@ -87,6 +87,7 @@
     </Compile>
     <Compile Include="DataStruct\ClientEpisodeInfo.Properties.cs" />
     <Compile Include="DataStruct\ClientEpisodeInfo.cs" />
+    <Compile Include="DataStruct\EpisodeCollection.cs" />
     <Compile Include="DataStruct\Subscriptions.Content.cs" />
     <Compile Include="DataStruct\Subscriptions.Factory.cs" />
     <Compile Include="DataStruct\Subscriptions.Node.cs" />

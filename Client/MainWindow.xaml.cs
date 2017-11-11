@@ -85,19 +85,21 @@ namespace AniFile3
 
             _subscriptionStorage = new Subscriptions();
 
+            // 데이터 불러오기
             if (_subscriptionStorage.LoadFromBin())
             {
-                var list = _subscriptionStorage.Flatten<Subscriptions.ContentNode>();
+                var flattenedList = _subscriptionStorage.Flatten<Subscriptions.ContentNode>();
 
                 // 페이지 셋팅 처리
-                foreach (var node in list)
+                foreach (var node in flattenedList)
                 {
                     node.CurrentPage = _episodePage;
                 }
             }
             else
             {
-                CreateSubscriptions();
+                // 불러오기를 실패하면, 새로 기본 템플릿을 생성한다.
+                CreateSubscriptionsTemplete();
             }
             _MainTreeView.ItemsSource = _subscriptionStorage;
             
@@ -127,7 +129,7 @@ namespace AniFile3
             //TestSomething();
         }
 
-        private void CreateSubscriptions()
+        private void CreateSubscriptionsTemplete()
         {
             // Home 셋팅
             _subscriptionStorage.Add(Subscriptions.CreateHomeNode());
