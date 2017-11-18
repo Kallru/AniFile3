@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheServer_Test", "CacheServer_Test\CacheServer_Test.csproj", "{C3A42338-636B-4882-B769-DCF4F41CF13D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheServerSystem", "CacheServerSystem\CacheServerSystem.csproj", "{3D61A006-2F4A-4D64-B826-02453AAD9144}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -142,6 +144,24 @@ Global
 		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Stats|x64.Build.0 = Release|Any CPU
 		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Stats|x86.ActiveCfg = Release|Any CPU
 		{C3A42338-636B-4882-B769-DCF4F41CF13D}.Stats|x86.Build.0 = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Debug|x64.Build.0 = Debug|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Debug|x86.Build.0 = Debug|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Release|x64.ActiveCfg = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Release|x64.Build.0 = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Release|x86.ActiveCfg = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Release|x86.Build.0 = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Stats|Any CPU.ActiveCfg = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Stats|Any CPU.Build.0 = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Stats|x64.ActiveCfg = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Stats|x64.Build.0 = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Stats|x86.ActiveCfg = Release|Any CPU
+		{3D61A006-2F4A-4D64-B826-02453AAD9144}.Stats|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
