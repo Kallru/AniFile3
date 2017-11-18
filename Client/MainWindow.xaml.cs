@@ -48,30 +48,30 @@ namespace AniFile3
             Initialize();
         }
         
-        private void TestSomething()
-        {
-            var node = Subscriptions.CreateNode<Subscriptions.ContentNode>("Test Name", _episodePage);
+        //private void TestSomething()
+        //{
+        //    var node = Subscriptions.CreateNode<Subscriptions.ContentNode>("Test Name", _episodePage);
 
-            var instance = new ClientEpisodeInfo(new EpisodeInfo()
-            {
-                Episode = 111,
-                Fullname = "Episode Fullname",
-                Magnet = "Magnet",
-                Name = "Name",
-                Resolution = "1080p"
-            });
+        //    var instance = new ClientEpisodeInfo(new EpisodeInfo()
+        //    {
+        //        Episode = 111,
+        //        Fullname = "Episode Fullname",
+        //        Magnet = "Magnet",
+        //        Name = "Name",
+        //        Resolution = "1080p"
+        //    });
 
-            for (int i = 0; i < 10; ++i)
-                node.Episodes.Add(instance);
+        //    for (int i = 0; i < 10; ++i)
+        //        node.Episodes.Add(instance);
 
-            SubscriptionNode.Children.Add(node);
-            //_subscriptionStorage.Add(node);
+        //    SubscriptionNode.Children.Add(node);
+        //    //_subscriptionStorage.Add(node);
 
-            //_MainTreeView.ItemsSource = null;
-            _subscriptionStorage.SaveToBin();
-            _subscriptionStorage.LoadFromBin();            
-            //_MainTreeView.ItemsSource = _subscriptionStorage;
-        }
+        //    //_MainTreeView.ItemsSource = null;
+        //    _subscriptionStorage.SaveToBin();
+        //    _subscriptionStorage.LoadFromBin();            
+        //    //_MainTreeView.ItemsSource = _subscriptionStorage;
+        //}
 
         private void Initialize()
         {
@@ -113,14 +113,13 @@ namespace AniFile3
                 var searchPage = new SearchResultPage();
                 searchPage.SubsriptionClicked += Subscription_Click;
 
-                SubscriptionNode.CurrentPage = searchPage;
-                //SubscriptionNode.InitializePage(searchPage);
+                //SubscriptionNode.CurrentPage = searchPage;
             }
 
             // 최초 페이지 뷰잉
             _MainFrame.Navigate(HomeNode.CurrentPage);
 
-            NativeInterface.Initialize();            
+            NativeInterface.Initialize();
 
             // Setup Auto-update timer
             _scheduler = new ScheduleTask();
