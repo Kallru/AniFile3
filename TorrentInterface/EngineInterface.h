@@ -11,10 +11,11 @@ struct StateInfo
 {
 	int State;
 	float DownloadPayloadRate;
-	long long Total;
+	long long TotalDone;
+	long long TotalWanted;
 	int Progress;
 
-	MSGPACK_DEFINE(State, DownloadPayloadRate, Total, Progress);
+	MSGPACK_DEFINE(State, DownloadPayloadRate, TotalDone, TotalWanted, Progress);
 };
 
 struct QueryResponseInfo

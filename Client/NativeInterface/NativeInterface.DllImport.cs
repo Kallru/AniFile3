@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AniFile3
+namespace AniFile3.Native
 {
     public partial class NativeInterface
     {

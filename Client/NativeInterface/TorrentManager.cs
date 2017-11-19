@@ -1,9 +1,9 @@
-﻿using CoreLib.DataStruct;
+﻿using AniFile3.Native;
+using CoreLib.DataStruct;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AniFile3
 {
@@ -11,58 +11,97 @@ namespace AniFile3
     {
         public static TorrentManager Instance { get; private set; } = new TorrentManager();
 
-        private struct TaskInfo
+        private struct DownloadRequest
         {
             public EpisodeInfo _header;
             public Action<StateInfo> _updateEvent;
             public Action<long> _startEvent;
-            public Action<long> _finishEvent;            
+            public Action<long, StateInfo> _finishEvent;
         }
-        
-        private SortedSet<TaskInfo> _queue;
+
+        private SortedSet<DownloadRequest> _queue;
         private HashSet<long> _useds;
         private ScheduleTask _schedule;
 
         private TorrentManager()
         {
-            _queue = new SortedSet<TaskInfo>(Comparer<TaskInfo>.Create((x, y) => x._header.Episode - y._header.Episode));
+            _useds = new HashSet<long>();
+            _queue = new SortedSet<DownloadRequest>(Comparer<DownloadRequest>.Create((x, y) => EpisodeInfo.Compare(x._header, y._header)));
+
             _schedule = new ScheduleTask();
             _schedule.Start(1000, Update);
+            
+            var path = Preference.GetAbsoluteDownloadPath();
+            if (Directory.Exists(path) == false)
+            {
+                var check = Directory.CreateDirectory(path);
+            }
         }
 
-        public void Download(EpisodeInfo header, Action<StateInfo> stateUpdatedCallback)
+        public static void Download(EpisodeInfo header,
+                                    Action<StateInfo> stateUpdatedCallback,
+                                    Action<long> startCallback = null,
+                                    Action<long, StateInfo> finishCallback = null)
         {
-            _queue.Add(new TaskInfo()
+            Instance._queue.Add(new DownloadRequest()
             {
                 _header = header,
-                _updateEvent = stateUpdatedCallback
+                _updateEvent = stateUpdatedCallback,
+                _startEvent = startCallback,
+                _finishEvent = finishCallback
             });
+        }
+
+        public static void Initialize()
+        {
+            NativeInterface.Initialize();
+        }
+
+        public static void Dispose()
+        {
+            Instance.Clear();
+            NativeInterface.Uninitialize();
+        }
+
+        private void Clear()
+        {
+            _schedule.Dispose();
+            _queue.Clear();
+            foreach (var id in _useds)
+            {
+                NativeInterface.DestroyTorrent(id);
+            }
+            _useds.Clear();
         }
 
         private void Update()
         {
-            if (_useds.Count < 3
-                && _queue.Count > 0)
+            if (_queue.Count > 0
+                && _useds.Count < Preference.Instance.CurrentlyTorrentCount)
             {
                 var info = _queue.First();
                 _queue.Remove(info);
 
                 var id = NativeInterface.CreateTorrent();
 
-                var result = NativeInterface.StartDownload(id, info._header.Magnet, Preference.Instance.RootDownloadPath, (stateInfo) =>
+                var result = NativeInterface.StartDownload(id, info._header.Magnet, Preference.GetAbsoluteDownloadPath(), (stateInfo) =>
                  {
                      info._updateEvent(stateInfo);
 
-                     if (stateInfo.State == (int)state_t.finished)
+                     state_t state = (state_t)stateInfo.State;
+
+                     if (state == state_t.finished
+                        || state == state_t.seeding)
                      {
-                         info._finishEvent(id);
+                         info._finishEvent?.Invoke(id, stateInfo);
                          _useds.Remove(id);
+                         NativeInterface.DestroyTorrent(id);
                      }
                  });
 
                 if (result)
                 {
-                    info._startEvent(id);
+                    info._startEvent?.Invoke(id);
                     _useds.Add(id);
                 }
                 else
@@ -70,6 +109,7 @@ namespace AniFile3
                     // 뭔진 모르겠지만 다운로드를 시작하지 못했다.
                     // 토렌트 id는 자동 파괴됨
                     // ERROR
+                    Console.WriteLine("[Error] Torrent download is failed\nFile:{0}, Episode:{1}", info._header.Name, info._header.Episode);
                 }
             }
         }

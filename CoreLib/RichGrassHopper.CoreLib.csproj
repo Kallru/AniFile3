@@ -49,7 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\Comparer.cs" />
     <Compile Include="CompareName.cs" />
     <Compile Include="IO\LogWriter.cs" />
     <Compile Include="DataStruct\EpisodeInfo.cs" />

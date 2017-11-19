@@ -112,12 +112,12 @@ namespace AniFile3
             // 최초 페이지 뷰잉
             _MainFrame.Navigate(HomeNode.CurrentPage);
 
-            NativeInterface.Initialize();            
+            TorrentManager.Initialize();            
 
             // Setup Auto-update timer
             _scheduler = new ScheduleTask();
-            //_scheduler.Start(Preference.Instance.UpdateSubscriptionInterval, UpdateSubscription);
-
+            _scheduler.Start(Preference.Instance.UpdateSubscriptionInterval, UpdateSubscription);
+            
             //TestSomething();
         }
 
@@ -256,7 +256,7 @@ namespace AniFile3
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            NativeInterface.Uninitialize();
+            TorrentManager.Dispose();
             _subscriptionStorage.SaveToBin();
         }
 

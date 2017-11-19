@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
+using System.Windows.Threading;
 
 namespace AniFile3
 {
-    public class ScheduleTask
+    public class ScheduleTask : IDisposable
     {
-        private List<Timer> _timers;
+        private List<DispatcherTimer> _timers;
 
         public ScheduleTask()
         {
-            _timers = new List<Timer>();
+            _timers = new List<DispatcherTimer>();
+        }
+
+        public void Dispose()
+        {
+            foreach (var timer in _timers)
+                timer.Stop();
+            _timers.Clear();
         }
 
         public void Start(int ms, Action action, Func<bool> canceler = null)
         {
-            var timer = new Timer(ms);
-            timer.Elapsed += (sender, e) =>
+            var timer = new DispatcherTimer();
+            timer.Tick += (sender, e) =>
             {
-                if(canceler != null && canceler())
+                if (canceler != null && canceler())
                 {
                     timer.Stop();
                     _timers.Remove(timer);
@@ -29,6 +33,8 @@ namespace AniFile3
 
                 action();
             };
+            
+            timer.Interval = TimeSpan.FromMilliseconds(ms);
             timer.Start();
 
             _timers.Add(timer);

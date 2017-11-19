@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace AniFile3
+namespace AniFile3.Native
 {
     [MessagePackObject]
     public struct StateInfo
@@ -21,8 +21,10 @@ namespace AniFile3
         [Key(1)]
         public float DownloadPayloadRate;
         [Key(2)]
-        public Int64 Total;
+        public Int64 TotalDone;
         [Key(3)]
+        public Int64 TotalWanted;
+        [Key(4)]
         public int Progress;
 
         [IgnoreMember]
@@ -80,7 +82,7 @@ namespace AniFile3
 
             public void Destroy()
             {
-                _cancelTokenSource.Cancel();                
+                _cancelTokenSource.Cancel();
                 _main.Wait();
             }
 
@@ -128,7 +130,12 @@ namespace AniFile3
         private static void DestroyInstance(Int64 id)
         {
             _idIssued.Remove(id);
-            _instances.Remove(id);
+
+            if(_instances.ContainsKey(id))
+            {
+                _instances[id].Destroy();
+                _instances.Remove(id);
+            }
         }
 
         public static void Initialize()
@@ -141,7 +148,7 @@ namespace AniFile3
 
         public static void Uninitialize()
         {
-            foreach(var instance in _instances)
+            foreach (var instance in _instances)
             {
                 instance.Value.Destroy();
             }
@@ -188,9 +195,14 @@ namespace AniFile3
             return -1;
         }
 
+        public static void DestroyTorrent(Int64 id)
+        {
+            DestroyInstance(id);
+        }
+
         public static bool StartDownload(Int64 id, string magnetLink, string savePath, Action<StateInfo> stateUpdatedCallback)
         {
-            if(_instances.ContainsKey(id))
+            if (_instances.ContainsKey(id))
             {
                 if (Request(id, "StartDownload", new Tuple<string, string>(magnetLink, savePath)))
                 {
@@ -228,31 +240,35 @@ namespace AniFile3
             return true;
         }
 
-#region 데이터 통신 유틸 메소드들
+        #region 데이터 통신 유틸 메소드들
+        private static object _lock = "lockObject";
         public static bool Request(Int64 id, string message, byte[] bytes, out byte[] output)
         {
-            output = null;
-
-            IntPtr pData = IntPtr.Zero;
-            uint outputSize = 0;
-            int inputSize = bytes?.Length ?? 0;
-
-            bool bResult = RequestInternal(id, message, bytes, (uint)inputSize, ref pData, ref outputSize);
-            if (bResult == true)
+            lock (_lock)
             {
-                if (outputSize > 0)
+                output = null;
+
+                IntPtr pData = IntPtr.Zero;
+                uint outputSize = 0;
+                int inputSize = bytes?.Length ?? 0;
+
+                bool bResult = RequestInternal(id, message, bytes, (uint)inputSize, ref pData, ref outputSize);
+                if (bResult == true)
                 {
-                    output = new byte[outputSize];
-                    Marshal.Copy(pData, output, 0, (int)outputSize);
-                    return true;
+                    if (outputSize > 0)
+                    {
+                        output = new byte[outputSize];
+                        Marshal.Copy(pData, output, 0, (int)outputSize);
+                        return true;
+                    }
                 }
+                return bResult;
             }
-            return bResult;
         }
 
         public static bool Request<OUT>(Int64 id, string message, out OUT output, byte[] input = null)
         {
-            output = default(OUT);            
+            output = default(OUT);
 
             byte[] data;
             bool bResult = Request(id, message, input, out data);
@@ -278,5 +294,5 @@ namespace AniFile3
             return Request(id, message, out output, bytes);
         }
     }
-#endregion
+    #endregion
 }

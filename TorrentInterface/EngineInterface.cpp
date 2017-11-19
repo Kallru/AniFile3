@@ -109,7 +109,8 @@ bool EngineInterface::QueryState(boost::int64_t id, const msgpack::object& input
 		StateInfo stateInfo = {};
 		stateInfo.State = status.state;
 		stateInfo.DownloadPayloadRate = status.download_payload_rate / 1000.f;
-		stateInfo.Total = status.total_done / 1000;
+		stateInfo.TotalDone = status.total_done / 1000;
+		stateInfo.TotalWanted = status.total_wanted / 1000;
 		stateInfo.Progress = status.progress_ppm / 10000;
 
 		// 핸들 또는 세션에 유효성 체크 필요

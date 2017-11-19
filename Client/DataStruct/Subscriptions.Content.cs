@@ -21,6 +21,12 @@ namespace AniFile3.DataStruct
                 {
                     Count = _episodes.Count;
                     NewCount = _episodes.Count;
+
+                    if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+                    {
+                        var myCollection = sender as EpisodeCollection;
+                        myCollection[e.NewStartingIndex].Start();
+                    }
                 };
             }
 
@@ -63,7 +69,10 @@ namespace AniFile3.DataStruct
             public void Start()
             {
                 // 여기서 어떤걸 시작 시킬지 처리?
-                // 
+                foreach (var item in _episodes)
+                {
+                    item.Start();
+                }
             }
         }
     }

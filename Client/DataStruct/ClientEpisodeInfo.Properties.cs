@@ -8,9 +8,12 @@ namespace AniFile3.DataStruct
     {
         private EpisodeInfo _header;
         private int _downloadRate;
+        [IgnoreMember]
         private string _downloadPayloadRate;
         [IgnoreMember]
         private string _downloadState;
+        [IgnoreMember]
+        private string _totalSize;
 
         public string Subject { get => _header.Name; }
         public int Episode { get => _header.Episode; }
@@ -18,8 +21,13 @@ namespace AniFile3.DataStruct
         public string Location { get; private set; }
         public bool IsCompleted { get; private set; }
         // 처음 값이 '0' 일때는 아무것도 안보여주기 위해서 string으로 처리
-        public string TotalSize { get; private set; }
-        
+        public string TotalSize
+        {
+            get => _totalSize;
+            set { _totalSize = value; NotifyPropertyChanged("TotalSize"); }
+        }
+
+        [IgnoreMember]
         public string DownloadState
         {
             get => _downloadState;
@@ -33,6 +41,7 @@ namespace AniFile3.DataStruct
             set { _downloadRate = value; NotifyPropertyChanged("DownloadRate"); }
         }
 
+        [IgnoreMember]
         public string DownloadPayloadRate
         {
             get => _downloadPayloadRate;

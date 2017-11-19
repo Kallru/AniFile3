@@ -22,8 +22,25 @@ namespace CoreLib.DataStruct
         [Key(4)]
         public string Magnet { get; set; }
 
+        public static int Compare(EpisodeInfo left, EpisodeInfo right)
+        {
+            var result = left.Episode - right.Episode;
+            if (result == 0)
+            {
+                Func<string, int> getResolution = (str) =>
+                {
+                    int value = -1;
+                    int.TryParse(str.Replace('p', ' '), out value);
+                    return value;
+                };
+
+                return getResolution(left.Resolution) - getResolution(right.Resolution);
+            }
+            return result;
+        }
+
         // 각종 정보를 subject에서 가져와서 생성한다.
-        static public EpisodeInfo Create(string subject, string magnet)
+        public static EpisodeInfo Create(string subject, string magnet)
         {
             var instance = new EpisodeInfo()
             {

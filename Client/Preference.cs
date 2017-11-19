@@ -25,13 +25,20 @@ namespace AniFile3
         [Key(2)]
         public string CacheServerUri { get; set; } = "http://localhost:2323";
         [Key(3)]
-        public string RootDownloadPath { get; set; }
+        public string RootDownloadPath { get; set; } = "data";
+        [Key(4)]
+        public int CurrentlyTorrentCount { get; set; } = 1;
 
         // MessagePack 버그인지 모르겠지만, 'StandardResolverAllowPrivate' 이 옵션이 제대로 동작하지 않는것 같다.
         // 일단 임시로 생성자를 public 으로 사용함
         public Preference()
         {
 
+        }
+
+        public static string GetAbsoluteDownloadPath()
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Instance.RootDownloadPath);
         }
 
         public static void Load()

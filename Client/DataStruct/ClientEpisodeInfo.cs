@@ -1,4 +1,5 @@
-﻿using CoreLib.DataStruct;
+﻿using AniFile3.Native;
+using CoreLib.DataStruct;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -8,7 +9,7 @@ namespace AniFile3.DataStruct
     {
         [MessagePack.IgnoreMember]
         private long _torrentId;
-        
+
         public class Comparer : IEqualityComparer<ClientEpisodeInfo>
         {
             public bool Equals(ClientEpisodeInfo left, ClientEpisodeInfo right)
@@ -44,7 +45,12 @@ namespace AniFile3.DataStruct
         {
             if (IsCompleted == false)
             {
-                TorrentManager.Instance.Download(_header, UpdateState);
+                TorrentManager.Download(_header, UpdateState, (id) => _torrentId = id, (id, stateInfo) =>
+                {
+                    IsCompleted = true;
+                    TotalSize = GetTotalSizeFormat(stateInfo);
+                    DownloadPayloadRate = string.Empty;
+                });
             }
         }
 
@@ -55,11 +61,39 @@ namespace AniFile3.DataStruct
                 && Resolution == left.Resolution;
         }
 
+        private string GetTotalSizeFormat(StateInfo stateInfo)
+        {
+            string[] unit = { "KB", "MB", "GB" };
+            int unitIndex = 0;
+            float wanted = stateInfo.TotalWanted;
+            float done = stateInfo.TotalDone;
+            while (wanted > 1024)
+            {
+                wanted /= 1024.0f;
+                done /= 1024.0f;
+                ++unitIndex;
+            }
+
+            unitIndex = System.Math.Min(unitIndex, unit.Length);
+
+            state_t state = (state_t)stateInfo.State;
+
+            if (state == state_t.finished
+               || state == state_t.seeding)
+            {
+                return string.Format("{0:F2} {1}", wanted, unit[unitIndex]);
+            }
+            else
+            {
+                return string.Format("{0:F2}/{1:F2} {2}", done, wanted, unit[unitIndex]);
+            }
+        }
+
         private void UpdateState(StateInfo stateInfo)
         {
             DownloadState = stateInfo.StateText;
             DownloadRate = stateInfo.Progress;
-            IsCompleted = stateInfo.State == (int)state_t.finished;
+            TotalSize = GetTotalSizeFormat(stateInfo);
 
             if (stateInfo.DownloadPayloadRate > 1024)
                 DownloadPayloadRate = string.Format("{0:F1} MB/s", stateInfo.DownloadPayloadRate / 1024.0f);
