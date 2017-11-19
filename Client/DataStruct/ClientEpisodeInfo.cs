@@ -44,7 +44,7 @@ namespace AniFile3.DataStruct
         {
             if (IsCompleted == false)
             {
-                _torrentId = NativeInterface.Download(_header.Magnet, Preference.Instance.RootDownloadPath, UpdateState);
+                TorrentManager.Instance.Download(_header, UpdateState);
             }
         }
 

@@ -24,6 +24,7 @@ namespace AniFile3
         public int UpdateSubscriptionInterval { get; set; } = 30 * 1000; // 기본값을 몇시간 정도로 해야될듯
         [Key(2)]
         public string CacheServerUri { get; set; } = "http://localhost:2323";
+        [Key(3)]
         public string RootDownloadPath { get; set; }
 
         // MessagePack 버그인지 모르겠지만, 'StandardResolverAllowPrivate' 이 옵션이 제대로 동작하지 않는것 같다.

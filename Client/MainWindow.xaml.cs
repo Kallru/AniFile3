@@ -1,24 +1,18 @@
 ﻿using AniFile3.Contetns;
 using AniFile3.DataStruct;
-using CoreLib.Extentions;
+using CoreLib;
 using CoreLib.DataStruct;
+using CoreLib.Extentions;
 using CoreLib.MessagePackets;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
-using MessagePack;
 using RichGrassHopper.Core.IO;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Timers;
-using CoreLib;
-using MessagePack.Resolvers;
 
 namespace AniFile3
 {

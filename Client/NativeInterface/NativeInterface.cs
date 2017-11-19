@@ -176,21 +176,48 @@ namespace AniFile3
             });
         }
 
-        public static Int64 Download(string magnetLink, string savePath, Action<StateInfo> stateUpdatedCallback)
+        public static Int64 CreateTorrent()
         {
             var id = CreateInstance();
-            if(id != -1)
+            if (id != -1)
             {
-                if (Request(id, "StartDownload", new Tuple<string, string>(magnetLink, savePath)))
-                {
-                    _instances[id].StateUpdated = stateUpdatedCallback;
-                    return id;
-                }
+                return id;
             }
 
             DestroyInstance(id);
             return -1;
         }
+
+        public static bool StartDownload(Int64 id, string magnetLink, string savePath, Action<StateInfo> stateUpdatedCallback)
+        {
+            if(_instances.ContainsKey(id))
+            {
+                if (Request(id, "StartDownload", new Tuple<string, string>(magnetLink, savePath)))
+                {
+                    _instances[id].StateUpdated = stateUpdatedCallback;
+                    return true;
+                }
+
+                DestroyInstance(id);
+            }
+            return false;
+        }
+
+        //public static Int64 Download(string magnetLink, string savePath, Action<StateInfo> stateUpdatedCallback)
+        //{
+        //    var id = CreateInstance();
+        //    if(id != -1)
+        //    {
+        //        if (Request(id, "StartDownload", new Tuple<string, string>(magnetLink, savePath)))
+        //        {
+        //            _instances[id].StateUpdated = stateUpdatedCallback;
+        //            return id;
+        //        }
+        //    }
+
+        //    DestroyInstance(id);
+        //    return -1;
+        //}
 
         public static bool RequestInfo(Int64 id)
         {
