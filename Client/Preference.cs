@@ -27,7 +27,7 @@ namespace AniFile3
         [Key(3)]
         public string RootDownloadPath { get; set; } = "data";
         [Key(4)]
-        public int CurrentlyTorrentCount { get; set; } = 1;
+        public int CurrentlyTorrentCount { get; set; } = 5;
 
         // MessagePack 버그인지 모르겠지만, 'StandardResolverAllowPrivate' 이 옵션이 제대로 동작하지 않는것 같다.
         // 일단 임시로 생성자를 public 으로 사용함

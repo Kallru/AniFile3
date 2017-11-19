@@ -51,6 +51,7 @@ public:
 	bool Resume(boost::int64_t id, const msgpack::object& input);
 	bool QueryInfo(boost::int64_t id, const msgpack::object& input);
 	bool QueryState(boost::int64_t id, const msgpack::object& input);
+	bool DestroyId(boost::int64_t id, const msgpack::object& input);
 
 private:
 	template<typename T>
@@ -80,6 +81,7 @@ private:
 
 	void OnFinishedTorrent();
 	void OnErrorTorrent(const lt::torrent_error_alert* pAlert);
+	std::future<void> UpdateTorrent();
 
 	lt::torrent_handle GetHandle(boost::int64_t id);
 
@@ -94,4 +96,8 @@ private:
 
 	void* _outputBuffer;
 	int _outputBufferSize;
+
+	// for update Routine
+	std::atomic<bool> _bRunRoutine;
+	std::future<void> _updateRoutine;
 };

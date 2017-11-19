@@ -20,7 +20,8 @@ EngineInterface::EngineInterface()
 		{ toLower("Stop"), CommandType(&EngineInterface::Stop) },
 		{ toLower("Resume"), CommandType(&EngineInterface::Resume) },
 		{ toLower("QueryInfo"), CommandType(&EngineInterface::QueryInfo) },
-		{ toLower("QueryState"), CommandType(&EngineInterface::QueryState) }
+		{ toLower("QueryState"), CommandType(&EngineInterface::QueryState) },
+		{ toLower("DestroyId"), CommandType(&EngineInterface::DestroyId) }
 	};
 }
 
@@ -41,10 +42,14 @@ void EngineInterface::Initialize(CShapCallback callback)
 	_pSession = new lt::session(settings);
 
 	_cshapCallback = callback;
+	_updateRoutine = UpdateTorrent();
 }
 
 void EngineInterface::Uninitialize()
 {
+	_bRunRoutine = false;
+	_updateRoutine.wait();
+
 	for (auto element : _torrents)
 	{
 		SAFT_DELETE(element.second);
@@ -79,12 +84,11 @@ bool EngineInterface::StartDownload(boost::int64_t id, const msgpack::object& in
 	torrentParams.resume_data.assign(std::istream_iterator<char>(ifs), std::istream_iterator<char>());
 
 	std::tie(torrentParams.url, torrentParams.save_path) = requestInfo;
-		
-	_pSession->async_add_torrent(torrentParams);
+	
+	auto handle = _pSession->add_torrent(torrentParams);
 
-	auto pTorrent = new Torrent(this, id);
-	_torrents.insert({ id, pTorrent });
-	pTorrent->Start();
+	_torrents.insert({ id, new Torrent(handle, id) });
+	
 	return true;
 }
 
@@ -116,6 +120,12 @@ bool EngineInterface::QueryState(boost::int64_t id, const msgpack::object& input
 		// 핸들 또는 세션에 유효성 체크 필요
 		PackOutputBuffer(stateInfo);
 	}
+	return true;
+}
+
+bool EngineInterface::DestroyId(boost::int64_t id, const msgpack::object& input)
+{
+	_torrents.erase(id);
 	return true;
 }
 
@@ -152,4 +162,79 @@ lt::torrent_handle EngineInterface::GetHandle(boost::int64_t id)
 {
 	assert(_torrents.find(id) != _torrents.end());
 	return _torrents[id]->GetHandle();
+}
+
+std::future<void> EngineInterface::UpdateTorrent()
+{
+	return std::async(std::launch::async, [=]()
+	{
+		using clk = std::chrono::steady_clock;
+		clk::time_point lastSaveResume = clk::now();
+
+		// this is the handle we'll set once we get the notification of it being
+		// added
+		while (_bRunRoutine)
+		{
+			std::vector<lt::alert*> alerts;
+			_pSession->pop_alerts(&alerts);
+
+			for (lt::alert const* alert : alerts)
+			{
+				if (auto at = lt::alert_cast<lt::add_torrent_alert>(alert))
+				{
+					auto handle = at->handle;
+
+					for (const auto& pair : _torrents)
+					{
+						if (pair.second->GetHandle() == handle)
+						{
+							auto hash = handle.info_hash();
+							SendToCShap(pair.first, "AddTorrentHandle", hash.to_string());
+							break;
+						}
+					}
+				}
+
+				// if we receive the finished alert or an error, we're done
+				if (auto at = lt::alert_cast<lt::torrent_finished_alert>(alert))
+				{
+					at->handle.save_resume_data();
+					OnFinishedTorrent();
+					return;
+				}
+
+				if (auto pErrorAlert = lt::alert_cast<lt::torrent_error_alert>(alert))
+				{
+					OnErrorTorrent(pErrorAlert);
+					return;
+				}
+
+				// when resume data is ready, save it
+				if (auto rd = lt::alert_cast<lt::save_resume_data_alert>(alert))
+				{
+					std::ofstream of(".resume_file", std::ios_base::binary);
+					of.unsetf(std::ios_base::skipws);
+					lt::bencode(std::ostream_iterator<char>(of), *rd->resume_data);
+				}
+			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+			// ask the session to post a state_update_alert, to update our
+			// state output for the torrent
+			_pSession->post_torrent_updates();
+
+			// save resume data once every 30 seconds
+			if (clk::now() - lastSaveResume > std::chrono::seconds(30))
+			{
+				auto torrents = _pSession->get_torrents();
+
+				for (const auto& handle : torrents)
+				{
+					handle.save_resume_data();
+				}
+				lastSaveResume = clk::now();
+			}
+		}
+	});
 }

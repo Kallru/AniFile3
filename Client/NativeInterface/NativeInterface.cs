@@ -82,8 +82,22 @@ namespace AniFile3.Native
 
             public void Destroy()
             {
+                // 메인 루프 종료
                 _cancelTokenSource.Cancel();
-                _main.Wait();
+                _main?.Wait();
+
+                // 현재 id 삭제 요청, 위에 메인루프를 종료하고 Id를 삭제해야한다.
+                Request(_id, "DestroyId", 0);
+            }
+
+            public bool StartDownload(Tuple<string, string> parameters, Action<StateInfo> stateUpdatedCallback)
+            {
+                if (Request(_id, "StartDownload", parameters))
+                {
+                    StateUpdated = stateUpdatedCallback;
+                    return true;
+                }
+                return false;
             }
 
             private async void AddTorrentHandle(string hash)
@@ -204,9 +218,8 @@ namespace AniFile3.Native
         {
             if (_instances.ContainsKey(id))
             {
-                if (Request(id, "StartDownload", new Tuple<string, string>(magnetLink, savePath)))
+                if (_instances[id].StartDownload(Tuple.Create(magnetLink, savePath), stateUpdatedCallback))
                 {
-                    _instances[id].StateUpdated = stateUpdatedCallback;
                     return true;
                 }
 
