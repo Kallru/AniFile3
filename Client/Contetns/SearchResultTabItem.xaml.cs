@@ -1,31 +1,20 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AniFile3.Contetns
 {
     /// <summary>
     /// Interaction logic for SearchResultPage.xaml
     /// </summary>
-    public partial class SearchResultPage : Page
+    public partial class SearchResultTabItem : MetroTabItem
     {
         private List<string> _tempResponse;
 
         public delegate void SubscriptionClickEvent(object sender);
         public event SubscriptionClickEvent SubsriptionClicked;
 
-        public SearchResultPage()
+        public SearchResultTabItem()
         {
             InitializeComponent();
 

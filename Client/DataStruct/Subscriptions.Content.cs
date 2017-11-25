@@ -58,12 +58,12 @@ namespace AniFile3.DataStruct
                 }
             }
 
-            public override void Navigate(Frame frameUI)
+            public override void Navigate(TabControl control)
             {
-                var page = CurrentPage as EpisodePage;
+                var page = control.Items.GetItemAt(CurrentTabItem) as EpisodeTabItem;
                 page.LoadEpisode(_episodes);
 
-                base.Navigate(frameUI);
+                base.Navigate(control);
             }
 
             public void Start()

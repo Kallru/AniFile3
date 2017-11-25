@@ -1,4 +1,5 @@
 ﻿using AniFile3.DataStruct;
+using MahApps.Metro.Controls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Controls;
@@ -7,9 +8,9 @@ using System.Windows.Data;
 namespace AniFile3.Contetns
 {
     /// <summary>
-    /// Interaction logic for EpisodePage.xaml
+    /// Interaction logic for EpisodeTabItem.xaml
     /// </summary>
-    public partial class EpisodePage : Page
+    public partial class EpisodeTabItem : MetroTabItem
     {
         // note
         // EpisodeInfo 말고 자체 데이터 포맷이 있어야 할것 같다
@@ -17,7 +18,7 @@ namespace AniFile3.Contetns
         // 현재 다운로드 상태 정보
         // 
 
-        public EpisodePage()
+        public EpisodeTabItem()
         {
             InitializeComponent();
         }

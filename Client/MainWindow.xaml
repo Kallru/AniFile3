@@ -55,7 +55,9 @@
                       Width="5" 
                       Opacity="0.7" />
 
+        <!-- ========================================================================= -->
         <!-- 왼쪽 컨텐츠 영역 -->
+        <!-- ========================================================================= -->
         <TreeView Name="_MainTreeView" 
                       Grid.Column="0"
                       SelectedItemChanged="_MainTreeView_SelectedItemChanged"
@@ -127,9 +129,10 @@
             </TreeView.Resources>
         </TreeView>
 
-        
 
+        <!-- ========================================================================= -->
         <!-- 우측 컨텐츠 영역 -->
+        <!-- ========================================================================= -->
         <DockPanel Grid.Column="2" LastChildFill="True" DockPanel.Dock="Right">
             <TextBox Name="_testLog" 
                      Height="200" 
@@ -164,7 +167,10 @@
                         </TextBox.Style>
                     </TextBox>
                 </StackPanel>
-                <Frame Name="_MainFrame" JournalOwnership="UsesParentJournal" />
+
+                <Controls:MetroAnimatedTabControl Name="_MainTab"
+                                                  TabStripPlacement="Left">
+                </Controls:MetroAnimatedTabControl>
             </DockPanel>
 
         </DockPanel>

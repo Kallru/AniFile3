@@ -23,7 +23,8 @@ namespace AniFile3
     {
         // This is Main datas for client, All of client's data is in this
         private Subscriptions _subscriptionStorage;
-        private EpisodePage _episodePage;
+        private int _episodeTabIndex;
+        private int _searchTabIndex;
         private HttpInterface _http;
         private ScheduleTask _scheduler;
 
@@ -44,7 +45,7 @@ namespace AniFile3
         
         private void TestSomething()
         {
-            var node = Subscriptions.CreateNode<Subscriptions.ContentNode>("Test Name", _episodePage);
+            var node = Subscriptions.CreateNode<Subscriptions.ContentNode>("Test Name", _episodeTabIndex);
 
             var instance = new ClientEpisodeInfo(new EpisodeInfo()
             {
@@ -74,7 +75,9 @@ namespace AniFile3
             Preference.Load();
 
             _http = new HttpInterface(Preference.Instance.CacheServerUri);
-            _episodePage = new EpisodePage();
+
+            BuildUpTabItems();
+
             _subscriptionStorage = new Subscriptions();
 
             // 데이터 불러오기
@@ -85,7 +88,7 @@ namespace AniFile3
                 // 페이지 셋팅 처리
                 foreach (var node in flattenedList)
                 {
-                    node.CurrentPage = _episodePage;
+                    node.CurrentTabItem = _episodeTabIndex;
                 }
             }
             else
@@ -102,23 +105,30 @@ namespace AniFile3
 
             // Test Code - 아무 페이지나
             {
-                var searchPage = new SearchResultPage();
-                searchPage.SubsriptionClicked += Subscription_Click;
-
-                SubscriptionNode.CurrentPage = searchPage;
+                SubscriptionNode.CurrentTabItem = _searchTabIndex;
                 //SubscriptionNode.InitializePage(searchPage);
             }
 
             // 최초 페이지 뷰잉
-            _MainFrame.Navigate(HomeNode.CurrentPage);
+            _MainTab.SelectedItem = HomeNode.CurrentTabItem;
 
             TorrentManager.Initialize();            
 
             // Setup Auto-update timer
             _scheduler = new ScheduleTask();
             _scheduler.Start(Preference.Instance.UpdateSubscriptionInterval, UpdateSubscription);
-            
+
             //TestSomething();
+        }
+
+        // Every tabitems are built up at here
+        private void BuildUpTabItems()
+        {
+            _MainTab.Items.Add(new HomeTabItem());
+            _episodeTabIndex = _MainTab.Items.Add(new EpisodeTabItem());
+            var searchTabItem = new SearchResultTabItem();
+            searchTabItem.SubsriptionClicked += Subscription_Click;
+            _searchTabIndex = _MainTab.Items.Add(searchTabItem);
         }
 
         private void CreateSubscriptionsTemplete()
@@ -126,7 +136,7 @@ namespace AniFile3
             // Home 셋팅
             _subscriptionStorage.Add(Subscriptions.CreateHomeNode());
 
-            var node = Subscriptions.CreateNode<Subscriptions.Node>("구독중", null);
+            var node = Subscriptions.CreateNode<Subscriptions.Node>("구독중", -1);
 
             node.Count = node.Children.Count;
             _subscriptionStorage.Add(node);
@@ -203,7 +213,7 @@ namespace AniFile3
             var result = SubscriptionNode.Children.FirstOrDefault((element) => element.Subject == subject);
             if (result == null)
             {
-                var node = Subscriptions.CreateNode<Subscriptions.ContentNode>(subject, _episodePage);
+                var node = Subscriptions.CreateNode<Subscriptions.ContentNode>(subject, _episodeTabIndex);
 
                 //string magnet = "magnet:?xt=urn:btih:95F6D0F207888DDB67F89EDC0F47D39B945D2E95&dn=%5btvN%5d%20%ec%95%8c%eb%b0%94%ed%8a%b8%eb%a1%9c%ec%8a%a4.E04.171004.720p-NEXT.mp4&tr=udp%3a%2f%2fzer0day.to%3a1337%2fannounce&tr=udp%3a%2f%2ftracker1.wasabii.com.tw%3a6969%2fannounce&tr=http%3a%2f%2fmgtracker.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.grepler.com%3a6969%2fannounce&tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&tr=udp%3a%2f%2f182.176.139.129%3a6969%2fannounce&tr=http%3a%2f%2ftracker.mg64.net%3a6881%2fannounce&tr=udp%3a%2f%2f185.50.198.188%3a1337%2fannounce&tr=udp%3a%2f%2f168.235.67.63%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969&tr=udp%3a%2f%2fbt.xxx-tracker.com%3a2710%2fannounce&tr=http%3a%2f%2fexplodie.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a80%2fannounce&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969&tr=http%3a%2f%2fbt.ttk.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2fbt.artvid.ru%3a6969%2fannounce&tr=http%3a%2f%2ftracker2.wasabii.com.tw%3a6969%2fannounce&tr=udp%3a%2f%2fthetracker.org.%2fannounce&tr=udp%3a%2f%2feddie4.nl%3a6969%2fannounce&tr=udp%3a%2f%2f62.212.85.66%3a2710%2fannounce&tr=udp%3a%2f%2ftracker.ilibr.org%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.zer0day.to%3a1337%2fannounce";
                 //node.Episodes.Add(new ClientEpisodeInfo(new EpisodeInfo()
@@ -236,7 +246,7 @@ namespace AniFile3
         private void _MainTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             var node = e.NewValue as Subscriptions.Node;
-            node.Navigate(_MainFrame);
+            node.Navigate(_MainTab);
         }
 
         private async void Delete_Click(object sender, RoutedEventArgs e)

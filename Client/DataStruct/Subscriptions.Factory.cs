@@ -11,11 +11,11 @@ namespace AniFile3.DataStruct
             return Activator.CreateInstance(Type.GetType(typeName), true) as Node;
         }
 
-        public static T CreateNode<T>(string subject, Page page) where T : Node
+        public static T CreateNode<T>(string subject, int tabIndex) where T : Node
         {
             var instance = CreateNodeFromTypeName(typeof(T).FullName);
             instance.Subject = subject;
-            instance.CurrentPage = page;
+            instance.CurrentTabItem = tabIndex;
             return instance as T;
         }
 

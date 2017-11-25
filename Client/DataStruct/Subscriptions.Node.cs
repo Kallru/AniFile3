@@ -38,7 +38,7 @@ namespace AniFile3.DataStruct
                 set { _children = value; NotifyPropertyChanged("Children"); }
             }
 
-            public Page CurrentPage { get; set; }
+            public int CurrentTabItem { get; set; }
 
             protected Node()
             {
@@ -101,10 +101,9 @@ namespace AniFile3.DataStruct
                     this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
 
-            public virtual void Navigate(Frame frameUI)
+            public virtual void Navigate(TabControl control)
             {
-                if (CurrentPage != null)
-                    frameUI.Navigate(CurrentPage);
+                control.SelectedIndex = CurrentTabItem;
             }
         }
 
@@ -114,7 +113,7 @@ namespace AniFile3.DataStruct
             private HomeNode()
             {
                 Subject = "홈";
-                CurrentPage = new Contetns.HomePage();
+                CurrentTabItem = 0;
             }
         }
     }
