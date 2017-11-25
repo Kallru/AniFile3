@@ -11,9 +11,9 @@ using System.Linq;
 
 namespace CacheServerSystem
 {
-    public class HttpServer : Nancy.NancyModule
+    public class MainModule : Nancy.NancyModule
     {
-        public HttpServer()
+        public MainModule()
         {
             // 1. 클라가 필요한 구독들을 요청해옴
             //Post["/subscription"] = parameter =>

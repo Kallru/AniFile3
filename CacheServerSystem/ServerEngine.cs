@@ -7,7 +7,7 @@ namespace CacheServerSystem
 {
     public class ServerEngine : IDisposable
     {
-        private HttpServer _server;
+        private MainModule _serverModule;
         private NancyHost _host;
         private FirstSite _scriper;
 
@@ -17,7 +17,7 @@ namespace CacheServerSystem
             {
                 _host.Dispose();
                 _host = null;
-                _server = null;
+                _serverModule = null;
             }
 
             _scriper = null;            
@@ -48,7 +48,7 @@ namespace CacheServerSystem
 
             _scriper.Initialize();
 
-            _server = new HttpServer();
+            _serverModule = new MainModule();
 
             var configuration = new HostConfiguration()
             {
