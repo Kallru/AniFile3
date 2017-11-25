@@ -92,6 +92,7 @@
     <Compile Include="DataStruct\Subscriptions.Factory.cs" />
     <Compile Include="DataStruct\Subscriptions.Node.cs" />
     <Compile Include="HttpInterface\HttpInterface.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="NativeInterface\NativeInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.DllImport.cs" />
     <Compile Include="NativeInterface\TorrentManager.cs" />

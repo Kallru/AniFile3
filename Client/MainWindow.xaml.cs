@@ -70,7 +70,7 @@ namespace AniFile3
 
         private void Initialize()
         {
-            Console.SetOut(new LogWriter(_testLog));
+            Console.SetOut(new Logger(_testLog));
 
             Preference.Load();
 

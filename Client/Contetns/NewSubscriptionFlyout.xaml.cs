@@ -35,8 +35,8 @@ namespace AniFile3.Contetns
             this.IsOpen = false;
             Clear();
         }
-
-        private void Confirm_Click(object sender, RoutedEventArgs e)
+        
+        private void Confirm()
         {
             // 구독 리스트에 등록
             var mainWindow = Window.GetWindow(this) as MainWindow;
@@ -44,9 +44,24 @@ namespace AniFile3.Contetns
             Close();
         }
 
+#region 각종 이벤트 메소드들
+        private void Confirm_Click(object sender, RoutedEventArgs e)
+        {
+            Confirm();
+        }
+
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
+
+        private void _name_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                Confirm();
+            }
+        }
+#endregion
     }
 }

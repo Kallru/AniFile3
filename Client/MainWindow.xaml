@@ -135,12 +135,12 @@
         <!-- ========================================================================= -->
         <DockPanel Grid.Column="2" LastChildFill="True" DockPanel.Dock="Right">
             <TextBox Name="_testLog" 
-                     Height="200" 
+                     Height="150" 
                      HorizontalAlignment="Stretch" 
                      TextWrapping="Wrap" 
                      AcceptsReturn="True" 
                      VerticalAlignment="Top" 
-                     ScrollViewer.CanContentScroll="True" 
+                     VerticalScrollBarVisibility="Auto"
                      DockPanel.Dock="Bottom" BorderThickness="0,1,0,0"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Top">
