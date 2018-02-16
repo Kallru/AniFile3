@@ -13,6 +13,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <ProjectTypeGuids>{848997bb-38d5-4641-b52b-2a56baff457c};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -59,4 +60,18 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{848997bb-38d5-4641-b52b-2a56baff457c}" Configuration="Debug|Any CPU">
+        <MDebug>
+          <ConfigureProjectHideMonoConsole>False</ConfigureProjectHideMonoConsole>
+          <DebugMode>Local</DebugMode>
+          <LocalAdditionalMonoArguments>--debug</LocalAdditionalMonoArguments>
+        </MDebug>
+      </FlavorProperties>
+      <FlavorProperties GUID="{848997bb-38d5-4641-b52b-2a56baff457c}" Configuration="Release|Any CPU">
+        <MDebug />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

@@ -130,7 +130,6 @@ namespace CacheServer_Test
 
     class MyXmlReader : XmlTextReader
     {
-        private bool readingDate = false;
         const string CustomUtcDateTimeFormat = "ddd MMM dd HH:mm:ss Z yyyy"; // Wed Oct 07 08:00:07 GMT 2009
 
         public MyXmlReader(Stream s) : base(s) { }
@@ -174,7 +173,9 @@ namespace CacheServer_Test
             //Console.WriteLine("-----------------------------------");
             //return value;
 
-            return base.MoveToContent();
+            var value = base.MoveToContent();
+
+            return value;
         }
 
         public override void ReadStartElement()
@@ -188,8 +189,6 @@ namespace CacheServer_Test
                 (string.Equals(base.LocalName, "lastBuildDate", StringComparison.InvariantCultureIgnoreCase) ||
                 string.Equals(base.LocalName, "pubDate", StringComparison.InvariantCultureIgnoreCase)))
             {
-                readingDate = true;
-
                 Console.WriteLine("[Debug] Turn flag on");
             }
             base.ReadStartElement();
@@ -197,43 +196,16 @@ namespace CacheServer_Test
 
         public override void ReadEndElement()
         {
-            if (readingDate)
-            {
-                readingDate = false;
-            }
             base.ReadEndElement();
+
+            Console.WriteLine("------ ReadEndElement ------");
+            Console.WriteLine(Environment.StackTrace);
+            Console.WriteLine("------ -------------- ------");
         }
 
         public override string ReadString()
         {
-            Console.WriteLine("[Debug] Start ReadString Method");
-            if (readingDate)
-            {
-                Console.WriteLine("[Debug] Start ReadString Method");
-
-                string dateString = base.ReadString();
-
-                DateTime dt;
-
-                if (!DateTime.TryParse(dateString, out dt))
-                {
-                    if(!DateTime.TryParseExact(dateString, CustomUtcDateTimeFormat, CultureInfo.InvariantCulture,DateTimeStyles.None, out dt))
-                    {
-                        // date 값이 없을때 기본값을 준다.
-                        dt = new DateTime(DateTime.Today.Year - 2, 1, 1);
-                    }
-                }
-                //return dt.ToUniversalTime().ToString("R", System.Globalization.CultureInfo.InvariantCulture);
-                string value = dt.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture);
-                
-                Console.WriteLine("[Debug] " + value);
-                //return value;
-                return "Wed, 24 Feb 2010 18:56:04 GMT";
-            }
-            else
-            {
-                return base.ReadString();
-            }
+            return base.ReadString();
         }
     }
 }
