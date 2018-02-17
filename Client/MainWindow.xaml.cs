@@ -125,6 +125,7 @@ namespace AniFile3
 
             // 스크랩퍼 초기화
             _magnetLister = new MagnetLising.MagnetListUp();
+            _magnetLister.UpdateRSS();
         }
 
         // Every tabitems are built up at here

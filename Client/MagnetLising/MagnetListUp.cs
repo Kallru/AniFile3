@@ -1,9 +1,11 @@
 ﻿using Scriping;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Net;
+using System.ServiceModel.Syndication;
+using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace AniFile3.MagnetLising
 {
@@ -11,7 +13,7 @@ namespace AniFile3.MagnetLising
     public class MagnetListUp
     {
         private FirstSite _scriper;
-        // 여기에 RSS 기능도 추가
+        private List<SyndicationItem> _feeds;
 
         public MagnetListUp()
         {
@@ -31,6 +33,67 @@ namespace AniFile3.MagnetLising
             };
 
             _scriper.Initialize();
+        }
+
+        // 이거 서버에서 받는걸로 교체해야함
+        private List<string> ReadXMLList()
+        {
+            var rssUris = new List<string>();
+
+            string filename = "RSSlist.xml";
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(filename);
+
+            var root = xmlDocument.DocumentElement.GetElementsByTagName("rss");
+            foreach (XmlElement node in root)
+            {
+                rssUris.Add(node.InnerText);
+            }
+            return rssUris;
+        }
+
+        private string RequestXMLString(string uri)
+        {
+            WebRequest request = WebRequest.Create(uri);
+            request.Credentials = CredentialCache.DefaultCredentials;
+
+            WebResponse response = request.GetResponse();
+            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+
+            Stream dataStream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(dataStream);
+            string responseFromServer = reader.ReadToEnd();
+            reader.Close();
+            response.Close();
+
+            return responseFromServer;
+        }
+
+        // feeds에 모든 RSS 피드를 채워 넣음
+        public void UpdateRSS()
+        {
+            List<string> rssUris = ReadXMLList();
+
+            _feeds = new List<SyndicationItem>();
+
+            foreach (var uri in rssUris)
+            {
+                var xmlstring = RequestXMLString(uri);
+
+                Regex regex = new Regex(@"&(?![a-z]{2,5};)");
+                xmlstring = regex.Replace(xmlstring, "&amp;");
+
+                using (XmlReader reader = XmlReader.Create(new StringReader(xmlstring)))
+                {
+                    SyndicationFeed feed = SyndicationFeed.Load(reader);
+                    reader.Close();
+                    foreach (SyndicationItem item in feed.Items)
+                    {
+                        _feeds.Add(item);
+                        Console.WriteLine("{0}, {1}", item.Title.Text, item.Links[0].Uri);
+                    }
+                }
+            }
         }
     }
 }
