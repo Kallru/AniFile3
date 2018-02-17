@@ -1,6 +1,5 @@
 ﻿using MongoDB.Driver;
 using Nancy.Hosting.Self;
-using Scriping;
 using System;
 
 namespace CacheServerSystem
@@ -9,7 +8,8 @@ namespace CacheServerSystem
     {
         private MainModule _serverModule;
         private NancyHost _host;
-        private FirstSite _scriper;
+
+        public readonly string URL = "http://localhost:2323";
 
         public void Dispose()
         {
@@ -18,36 +18,11 @@ namespace CacheServerSystem
                 _host.Dispose();
                 _host = null;
                 _serverModule = null;
-            }
-
-            _scriper = null;            
+            }       
         }
-
-        public void Start(System.Windows.Forms.WebBrowser web)
-        { 
-            _scriper = new FirstSite(web);
-
-            _scriper.InitializeCompleted += async () =>
-            {
-                // Test
-                //var result = await _scriper.SearchBox("아는 형님");
-
-                //var collection = DataBase.Instance.Main.GetCollection<ServerEpisodeInfo>("content");
-
-                //if (result.Count > 0)
-                //{
-                //    await collection.InsertManyAsync(result.Select(item => new ServerEpisodeInfo() { Info = item }));
-                //}
-
-                ////var collection = _db.GetCollection<DataStorage.Contents>("content");
-                ////collection.Indexes
-
-                ////var result = await collection.Find((itme) => true).FirstOrDefaultAsync();
-                ////var test = collection.AsQueryable<DataStorage.Contents>().Where(item => true).ToList();
-            };
-
-            _scriper.Initialize();
-
+        
+        public void Start()
+        {
             _serverModule = new MainModule();
 
             var configuration = new HostConfiguration()
@@ -58,7 +33,7 @@ namespace CacheServerSystem
                 }
             };
 
-            _host = new NancyHost(configuration, new Uri("http://localhost:2323"));
+            _host = new NancyHost(configuration, new Uri(URL));
             _host.Start();
 
             {

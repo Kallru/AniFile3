@@ -28,6 +28,9 @@ namespace AniFile3
         private HttpInterface _http;
         private ScheduleTask _scheduler;
 
+        // 서버에서 하던 것들을 옮기자
+        private MagnetLising.MagnetListUp _magnetLister;
+
         // 자주 쓰는 것
         private Subscriptions.Node HomeNode { get; set; }
         private Subscriptions.Node SubscriptionNode { get; set; }
@@ -119,6 +122,9 @@ namespace AniFile3
             _scheduler.Start(Preference.Instance.UpdateSubscriptionInterval, UpdateSubscription);
 
             //TestSomething();
+
+            // 스크랩퍼 초기화
+            _magnetLister = new MagnetLising.MagnetListUp();
         }
 
         // Every tabitems are built up at here

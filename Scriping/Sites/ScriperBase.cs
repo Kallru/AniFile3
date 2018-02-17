@@ -16,7 +16,7 @@ namespace Scriping
         }
 
         // 기본 5초
-        protected int _defaultTimeout = 10000;
+        protected int _defaultTimeout = 100000;
         protected WebBrowser _browser;
 
         protected ScriperBase(WebBrowser browser)

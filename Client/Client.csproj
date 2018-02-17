@@ -93,6 +93,7 @@
     <Compile Include="DataStruct\Subscriptions.Node.cs" />
     <Compile Include="HttpInterface\HttpInterface.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MagnetLising\MagnetListUp.cs" />
     <Compile Include="NativeInterface\NativeInterface.cs" />
     <Compile Include="NativeInterface\NativeInterface.DllImport.cs" />
     <Compile Include="NativeInterface\TorrentManager.cs" />
@@ -188,6 +189,10 @@
     <ProjectReference Include="..\CoreLib\RichGrassHopper.CoreLib.csproj">
       <Project>{0d3c052e-ad95-4ae9-97b4-1a58cbd113e9}</Project>
       <Name>RichGrassHopper.CoreLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Scriping\Scriping.csproj">
+      <Project>{74dcf45f-0d9e-4cfc-86c9-cfa8e47d2bce}</Project>
+      <Name>Scriping</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
