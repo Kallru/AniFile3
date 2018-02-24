@@ -123,6 +123,9 @@ namespace AniFile3
 
             //TestSomething();
 
+            // Test Code - RSS
+            var aa = _http.RequestWithTimeout();
+
             // 스크랩퍼 초기화
             _magnetLister = new MagnetLising.MagnetListUp();
             _magnetLister.UpdateRSS();

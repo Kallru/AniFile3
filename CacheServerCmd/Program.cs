@@ -14,15 +14,23 @@ namespace CacheServerCmd
 
         static void Main(string[] args)
         {
-            _framework = new ServerEngine(ConfigurationManager.AppSettings["host"], int.Parse(ConfigurationManager.AppSettings["timeout"]));
+            string hostUrl = ConfigurationManager.AppSettings["host"];
+            _framework = new ServerEngine(hostUrl, int.Parse(ConfigurationManager.AppSettings["timeout"]));
             _framework.Start();
+            Console.WriteLine("Start '{0}'", hostUrl);
 
-            Console.WriteLine("Press <E> to exit..");
-            if( Console.ReadKey().Key == ConsoleKey.E)
+            while (true)
             {
-                _framework.Dispose();
-                _framework = null;
+                Console.WriteLine("Press <E> to exit..");
+                if (Console.ReadKey().Key == ConsoleKey.E)
+                {
+                    _framework.Dispose();
+                    _framework = null;
+                    break;
+                }
             }
+
+            Console.WriteLine("exit.");
         }
     }
 }

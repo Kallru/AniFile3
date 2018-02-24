@@ -5,6 +5,7 @@ using MessagePack;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Nancy;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,13 +28,14 @@ namespace CacheServerSystem
 
             Post["/update_subscription", true] = async (parameter, cancellation) =>
             {
+                WirteStartingLog();
                 var request = UnpackRequest<UpdateSubscriptionRequest>();
                 var response = new UpdateSubscriptionResponse()
                 {
                     EpisodeInfos = new List<EpisodeInfo>()
                 };
 
-                var collection = DataBase.Instance.Collection;
+                var collection = DataBase.Instance.Contents;
                 var query = MakeFilterForGettingNameAndEpisode(request.Subscriptions);
 
                 var result = await collection.Find(query).ToListAsync().WithTimeout(TIME_OUT);
@@ -42,15 +44,17 @@ namespace CacheServerSystem
                     response.EpisodeInfos = result.Select(item => item.Info).ToList();
                 }
 
+                WriteEndingLog();
                 // 넘김
                 return PackResponse(response);
             };
 
             Post["/search_episode", true] = async (paramter, ct) =>
             {
+                WirteStartingLog();
                 string text = UnpackRequest<string>();
 
-                var collection = DataBase.Instance.Collection;
+                var collection = DataBase.Instance.Contents;
 
                 var result = await collection.AsQueryable()
                                              .Where(item => item.Info.Name.Contains(text))
@@ -78,9 +82,38 @@ namespace CacheServerSystem
                         break;
                 }
 
+                WriteEndingLog();
                 // Error
                 return response;
             };
+
+            // 서버에 있는 RSS 리스트 전달
+            Post["/update_rsslist", true] = async (parameter, cancellation) =>
+            {
+                WirteStartingLog();
+
+                var collection = DataBase.Instance.RssList;
+
+                Console.Write("Query to DB...");
+                var rsslist = await collection.Find(Builders<RssListInfo>.Filter.Empty)
+                                              .ToListAsync();
+                Console.WriteLine("Found '{0}'", rsslist.Count);
+
+                var response = new Response();
+
+                WriteEndingLog();
+                return response;
+            };
+        }
+
+        private void WirteStartingLog()
+        {
+            Console.WriteLine("Post '{0}'", Request.Path);
+        }
+
+        private void WriteEndingLog()
+        {
+            Console.WriteLine("Finished '{0}'", Request.Path);
         }
 
         private Response PackResponse<T>(T data)

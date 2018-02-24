@@ -34,24 +34,7 @@ namespace AniFile3.MagnetLising
 
             _scriper.Initialize();
         }
-
-        // 이거 서버에서 받는걸로 교체해야함
-        private List<string> ReadXMLList()
-        {
-            var rssUris = new List<string>();
-
-            string filename = "RSSlist.xml";
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(filename);
-
-            var root = xmlDocument.DocumentElement.GetElementsByTagName("rss");
-            foreach (XmlElement node in root)
-            {
-                rssUris.Add(node.InnerText);
-            }
-            return rssUris;
-        }
-
+        
         private string RequestXMLString(string uri)
         {
             WebRequest request = WebRequest.Create(uri);
@@ -72,11 +55,9 @@ namespace AniFile3.MagnetLising
         // feeds에 모든 RSS 피드를 채워 넣음
         public void UpdateRSS()
         {
-            List<string> rssUris = ReadXMLList();
-
             _feeds = new List<SyndicationItem>();
 
-            foreach (var uri in rssUris)
+            foreach (var uri in Preference.Instance.RSSList)
             {
                 var xmlstring = RequestXMLString(uri);
 

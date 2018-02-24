@@ -1,4 +1,5 @@
-﻿using MessagePack;
+﻿using CoreLib.Extentions;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,6 +17,11 @@ namespace AniFile3
         public HttpInterface(string host)
         {
             _host = host;
+        }
+
+        public async Task<TOut> RequestWithTimeout<TIn, TOut>(string rest, TIn input)
+        {
+            return await Request<TIn, TOut>(rest, input).WithTimeout(Preference.Instance.DefaultTimeOut);
         }
 
         public async Task<TOut> Request<TIn, TOut>(string rest, TIn input)

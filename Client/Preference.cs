@@ -28,12 +28,15 @@ namespace AniFile3
         public string RootDownloadPath { get; set; } = "data";
         [Key(4)]
         public int CurrentlyTorrentCount { get; set; } = 5;
+        [Key(5)]
+        public List<string> RSSList { get; set; } = new List<string>();
 
         // MessagePack 버그인지 모르겠지만, 'StandardResolverAllowPrivate' 이 옵션이 제대로 동작하지 않는것 같다.
         // 일단 임시로 생성자를 public 으로 사용함
         public Preference()
         {
-
+            // Test Code- 테스트용으로 RSS 리스트를 넣어봄
+            RSSList.Add("https://torrentkim10.net/bbs/rss.php?k=720p&b=torrent_variety");
         }
 
         public static string GetAbsoluteDownloadPath()

@@ -19,7 +19,8 @@ namespace CacheServerSystem
         }
 
         public IMongoDatabase Main { get => _db; }
-        public IMongoCollection<ServerEpisodeInfo> Collection { get => _db.GetCollection<ServerEpisodeInfo>("content"); }
+        public IMongoCollection<ServerEpisodeInfo> Contents { get => _db.GetCollection<ServerEpisodeInfo>("content"); }
+        public IMongoCollection<RssListInfo> RssList { get => _db.GetCollection<RssListInfo>("rsslist"); }
         public IMongoCollection<ServerEpisodeInfo> Programs { get => _db.GetCollection<ServerEpisodeInfo>("programs"); }
 
         private DataBase()
