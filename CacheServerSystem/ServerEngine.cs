@@ -9,7 +9,13 @@ namespace CacheServerSystem
         private MainModule _serverModule;
         private NancyHost _host;
 
-        public readonly string URL = "http://localhost:2323";
+        public readonly string URL;
+
+        public ServerEngine(string url, int timeOutms)
+        {
+            URL = url;
+            MainModule.TIME_OUT = timeOutms;
+        }
 
         public void Dispose()
         {

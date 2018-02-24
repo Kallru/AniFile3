@@ -13,6 +13,8 @@ namespace CacheServerSystem
 {
     public class MainModule : Nancy.NancyModule
     {
+        public static int TIME_OUT = 5000;  // ms
+
         public MainModule()
         {
             // 1. 클라가 필요한 구독들을 요청해옴
@@ -34,7 +36,7 @@ namespace CacheServerSystem
                 var collection = DataBase.Instance.Collection;
                 var query = MakeFilterForGettingNameAndEpisode(request.Subscriptions);
 
-                var result = await collection.Find(query).ToListAsync().WithTimeout(5000);
+                var result = await collection.Find(query).ToListAsync().WithTimeout(TIME_OUT);
                 if (result != null)
                 {
                     response.EpisodeInfos = result.Select(item => item.Info).ToList();
@@ -53,7 +55,7 @@ namespace CacheServerSystem
                 var result = await collection.AsQueryable()
                                              .Where(item => item.Info.Name.Contains(text))
                                              .ToListAsync()
-                                             .WithTimeout(5000);
+                                             .WithTimeout(TIME_OUT);
 
                 var response = new Response();
 
