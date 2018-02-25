@@ -37,8 +37,8 @@ namespace CacheServerForms
 
         private void TestViewerForm_Load(object sender, EventArgs e)
         {
-            _server = new ServerEngine();
-            _server.Start();            
+            //_server = new ServerEngine();
+            //_server.Start();            
         }
 
         private void DebugSaveDocument()
