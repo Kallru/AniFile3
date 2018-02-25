@@ -121,13 +121,8 @@ namespace AniFile3
             _scheduler = new ScheduleTask();
             _scheduler.Start(Preference.Instance.UpdateSubscriptionInterval, UpdateSubscription);
 
-            //TestSomething();
-
-            // Test Code - RSS
-            var aa = _http.RequestWithTimeout();
-
             // 스크랩퍼 초기화
-            _magnetLister = new MagnetLising.MagnetListUp();
+            _magnetLister = new MagnetLising.MagnetListUp(_http);
             _magnetLister.UpdateRSS();
         }
 

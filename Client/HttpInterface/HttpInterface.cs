@@ -19,6 +19,11 @@ namespace AniFile3
             _host = host;
         }
 
+        public async Task<TOut> RequestWithTimeout<TOut>(string rest)
+        {
+            return await Request<bool, TOut>(rest, true).WithTimeout(Preference.Instance.DefaultTimeOut);
+        }
+
         public async Task<TOut> RequestWithTimeout<TIn, TOut>(string rest, TIn input)
         {
             return await Request<TIn, TOut>(rest, input).WithTimeout(Preference.Instance.DefaultTimeOut);

@@ -30,6 +30,15 @@ namespace AniFile3
         {
             _textbox.Dispatcher.Invoke(doing);
         }
+        
+        public override void WriteLine(string value)
+        {
+            Dispacther(() =>
+            {
+                _textbox.Text += value + Environment.NewLine;
+                ScrollDown();
+            });
+        }
 
         public override void Write(char value)
         {

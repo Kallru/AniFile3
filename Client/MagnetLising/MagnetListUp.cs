@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace AniFile3.MagnetLising
@@ -14,9 +15,12 @@ namespace AniFile3.MagnetLising
     {
         private FirstSite _scriper;
         private List<SyndicationItem> _feeds;
+        private WeakReference<HttpInterface> _http;
 
-        public MagnetListUp()
+        public MagnetListUp(HttpInterface httpInterface)
         {
+            _http = new WeakReference<HttpInterface>(httpInterface);
+
             // 스크랩퍼 초기화
             _scriper = new Scriping.FirstSite(new System.Windows.Forms.WebBrowser());
             _scriper.InitializeCompleted += async () =>
@@ -33,45 +37,83 @@ namespace AniFile3.MagnetLising
             };
 
             _scriper.Initialize();
+
+            UpdateRSSList();
+        }
+
+        // 서버로부터 RSS 리스트를 얻어와 업뎃한다.
+        private async void UpdateRSSList()
+        {
+            HttpInterface http = null;
+            if (_http.TryGetTarget(out http))
+            {
+                var rsslist = await http.RequestWithTimeout<List<string>>("/update_rsslist");
+
+                if(rsslist?.Count > 0)
+                {
+                    Preference.Instance.RSSList = rsslist;
+                }
+            }
         }
         
-        private string RequestXMLString(string uri)
+        private async Task<string> RequestXMLString(string uri)
         {
-            WebRequest request = WebRequest.Create(uri);
-            request.Credentials = CredentialCache.DefaultCredentials;
+            Console.WriteLine("[RSS:{0}] Reading XML...", uri);
 
-            WebResponse response = request.GetResponse();
-            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+            string content = null;
 
-            Stream dataStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(dataStream);
-            string responseFromServer = reader.ReadToEnd();
-            reader.Close();
-            response.Close();
+            try
+            {
+                WebRequest request = WebRequest.Create(uri);
+                request.Credentials = CredentialCache.DefaultCredentials;
 
-            return responseFromServer;
+                using (WebResponse response = await request.GetResponseAsync())
+                {
+                    Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+
+                    Stream dataStream = response.GetResponseStream();
+                    StreamReader reader = new StreamReader(dataStream);
+                    content = reader.ReadToEnd();
+
+                    reader.Close();
+                    dataStream.Close();
+
+                    Console.WriteLine("[RSS:{0}] Done, Contents Lenght({1})", uri, content.Length);
+                }
+            }
+            catch (WebException e)
+            {
+                Console.WriteLine("[RSS ERROR:{0}] {1}", uri, e.ToString());
+            }
+
+            return content;
         }
 
         // feeds에 모든 RSS 피드를 채워 넣음
-        public void UpdateRSS()
+        public async void UpdateRSS()
         {
             _feeds = new List<SyndicationItem>();
 
-            foreach (var uri in Preference.Instance.RSSList)
+            // 리스트를 클로닝 해서 처리한다, 다른 스레드에서 리스트를 업뎃 할수 있기에
+            var rssList = new List<string>(Preference.Instance.RSSList);
+            foreach (var uri in rssList)
             {
-                var xmlstring = RequestXMLString(uri);
+                var xmlstring = await RequestXMLString(uri);
 
-                Regex regex = new Regex(@"&(?![a-z]{2,5};)");
-                xmlstring = regex.Replace(xmlstring, "&amp;");
-
-                using (XmlReader reader = XmlReader.Create(new StringReader(xmlstring)))
+                if (string.IsNullOrEmpty(xmlstring) == false)
                 {
-                    SyndicationFeed feed = SyndicationFeed.Load(reader);
-                    reader.Close();
-                    foreach (SyndicationItem item in feed.Items)
+                    Regex regex = new Regex(@"&(?![a-z]{2,5};)");
+                    xmlstring = regex.Replace(xmlstring, "&amp;");
+
+                    using (XmlReader reader = XmlReader.Create(new StringReader(xmlstring)))
                     {
-                        _feeds.Add(item);
-                        Console.WriteLine("{0}, {1}", item.Title.Text, item.Links[0].Uri);
+                        SyndicationFeed feed = SyndicationFeed.Load(reader);
+                        reader.Close();
+                        foreach (SyndicationItem item in feed.Items)
+                        {
+                            _feeds.Add(item);
+                            //Console.WriteLine("{0}, {1}", item.Title.Text, item.Links[0].Uri);
+                        }
                     }
                 }
             }

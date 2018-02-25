@@ -99,10 +99,11 @@ namespace CacheServerSystem
                                               .ToListAsync();
                 Console.WriteLine("Found '{0}'", rsslist.Count);
 
-                var response = new Response();
+                // 클라에 넘겨줄 포맷으로 바꾼다.
+                List<string> response = rsslist.Select(info => info.RssAddress).ToList();
 
                 WriteEndingLog();
-                return response;
+                return PackResponse(response);
             };
         }
 
