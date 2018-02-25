@@ -1,4 +1,5 @@
-﻿using Scriping;
+﻿using CoreLib.DataStruct;
+using Scriping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -83,7 +84,7 @@ namespace AniFile3.MagnetLising
             }
             catch (WebException e)
             {
-                Console.WriteLine("[RSS ERROR:{0}] {1}", uri, e.ToString());
+                Console.WriteLine("[RSS ERROR:{0}] {1}", uri, e.Message);
             }
 
             return content;
@@ -116,6 +117,22 @@ namespace AniFile3.MagnetLising
                         }
                     }
                 }
+            }
+
+            // 성공적으로 새로운 Feed들을 가져왔다면
+            // 정보들을 서버로 다시 전송해준다.
+            HttpInterface http = null;
+            if (_http.TryGetTarget(out http) && _feeds.Count > 0)
+            {
+                var episodes = new List<EpisodeInfo>(_feeds.Count);
+                foreach (var feed in _feeds)
+                {
+                    episodes.Add(EpisodeInfo.Create(feed.Title.Text, feed.Links[0].Uri.ToString()));
+                }
+
+                string rest = "/store_feeds";
+                var errorCode = await http.RequestWithTimeout<List<EpisodeInfo>, string>(rest, episodes);
+                Console.WriteLine("[{0}] {1}", rest, errorCode ?? "Not found error code");
             }
         }
     }

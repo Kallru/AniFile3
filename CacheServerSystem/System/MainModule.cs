@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CacheServerSystem
 {
@@ -105,6 +107,44 @@ namespace CacheServerSystem
                 WriteEndingLog();
                 return PackResponse(response);
             };
+
+            // 클라가 갖고 있는 RSS Feed 정보들을 서버로 보내준다.
+            Post["/store_feeds", true] = async (parameter, cancellation) =>
+            {
+                WirteStartingLog();
+
+                string errorMessage = "OK";
+
+                var clientEpisodes = UnpackRequest<List<EpisodeInfo>>();
+
+                var collection = DataBase.Instance.Contents;
+
+                Console.Write("Insert({0}) to DB...", clientEpisodes.Count);
+
+                var episodes = clientEpisodes.Select(info => new ServerEpisodeInfo()
+                {
+                    Info = info
+                });
+
+                // 일단 그냥 때려 넣지만, [데이터 중복문제]가 남아 있다.
+                var tokenSource = new CancellationTokenSource();
+                var task = collection.InsertManyAsync(episodes, null, tokenSource.Token);
+                if (await Task.WhenAny(task, Task.Delay(TIME_OUT)) != task)
+                {
+                    // 타임아웃 처리
+                    tokenSource.Cancel();
+                    errorMessage = "Timeout";
+                    WriteErrorLog(errorMessage);
+                }
+
+                WriteEndingLog();                
+                return PackResponse(errorMessage);
+            };
+        }
+
+        private void WriteErrorLog(string format, params object[] obj)
+        {
+            Console.WriteLine("[Error] '{0}'...{1}", Request.Path, string.Format(format, obj));
         }
 
         private void WirteStartingLog()
