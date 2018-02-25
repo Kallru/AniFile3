@@ -1,4 +1,5 @@
-﻿using CoreLib.DataStruct;
+﻿using CoreLib;
+using CoreLib.DataStruct;
 using CoreLib.Extentions;
 using CoreLib.MessagePackets;
 using MessagePack;
@@ -96,10 +97,10 @@ namespace CacheServerSystem
 
                 var collection = DataBase.Instance.RssList;
 
-                Console.Write("Query to DB...");
+                Log.WriteLine("Query to DB...");
                 var rsslist = await collection.Find(Builders<RssListInfo>.Filter.Empty)
                                               .ToListAsync();
-                Console.WriteLine("Found '{0}'", rsslist.Count);
+                Log.WriteLine("Found '{0}'", rsslist.Count);
 
                 // 클라에 넘겨줄 포맷으로 바꾼다.
                 List<string> response = rsslist.Select(info => info.RssAddress).ToList();
@@ -119,7 +120,7 @@ namespace CacheServerSystem
 
                 var collection = DataBase.Instance.Contents;
 
-                Console.Write("Insert({0}) to DB...", clientEpisodes.Count);
+                Log.WriteLine("Insert({0}) to DB...", clientEpisodes.Count);
 
                 var episodes = clientEpisodes.Select(info => new ServerEpisodeInfo()
                 {
@@ -134,7 +135,7 @@ namespace CacheServerSystem
                     // 타임아웃 처리
                     tokenSource.Cancel();
                     errorMessage = "Timeout";
-                    WriteErrorLog(errorMessage);
+                    Log.Error("{0}...{1}", Request.Path, errorMessage);
                 }
 
                 WriteEndingLog();                
@@ -142,20 +143,8 @@ namespace CacheServerSystem
             };
         }
 
-        private void WriteErrorLog(string format, params object[] obj)
-        {
-            Console.WriteLine("[Error] '{0}'...{1}", Request.Path, string.Format(format, obj));
-        }
-
-        private void WirteStartingLog()
-        {
-            Console.WriteLine("Post '{0}'", Request.Path);
-        }
-
-        private void WriteEndingLog()
-        {
-            Console.WriteLine("Finished '{0}'", Request.Path);
-        }
+        private void WirteStartingLog() => Log.WriteLine("{0}...Post", Request.Path);
+        private void WriteEndingLog() => Log.WriteLine("{0}...Finished", Request.Path);
 
         private Response PackResponse<T>(T data)
         {

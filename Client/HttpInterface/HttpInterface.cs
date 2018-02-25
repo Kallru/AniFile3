@@ -1,4 +1,5 @@
-﻿using CoreLib.Extentions;
+﻿using CoreLib;
+using CoreLib.Extentions;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace AniFile3
         public HttpInterface(string host)
         {
             _host = host;
+            Log.WriteLine("Connetion..." + host);
         }
 
         public async Task<TOut> RequestWithTimeout<TOut>(string rest)
@@ -44,7 +46,7 @@ namespace AniFile3
             try
             {
                 // Request
-                Console.WriteLine("Request...'{0}'", rest);
+                Log.WriteLine("Request...'{0}'", rest);
                 dataStream = await request.GetRequestStreamAsync();
                 dataStream.Write(byteArray, 0, byteArray.Length);
                 dataStream.Close();
@@ -52,7 +54,7 @@ namespace AniFile3
                 // Response
                 response = await request.GetResponseAsync();
                 var httpResponse = response as HttpWebResponse;
-                Console.WriteLine("Response..." + httpResponse.StatusDescription);
+                Log.WriteLine("Response..." + httpResponse.StatusDescription);
 
                 if (httpResponse.StatusCode == HttpStatusCode.OK)
                 {
@@ -68,11 +70,11 @@ namespace AniFile3
                     hint = _host + rest;
                 }
 
-                Console.WriteLine("{0} '{1}'", e.Message, hint);
+                Log.WriteLine("{0} '{1}'", e.Message, hint);
             }
             catch (System.Exception e)
             {
-                Console.WriteLine("{0}", e.Message);
+                Log.WriteLine("{0}", e.Message);
             }
             finally
             {

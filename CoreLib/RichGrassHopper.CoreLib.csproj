@@ -52,6 +52,7 @@
     <Compile Include="CompareName.cs" />
     <Compile Include="IO\LogWriter.cs" />
     <Compile Include="DataStruct\EpisodeInfo.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="MessagePackets\SearchResultPack.cs" />
     <Compile Include="MessagePackets\UpdateSubscriptionPack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

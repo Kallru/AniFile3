@@ -76,7 +76,7 @@ namespace AniFile3
             Console.SetOut(new Logger(_testLog));
 
             Preference.Load();
-
+            
             _http = new HttpInterface(Preference.Instance.CacheServerUri);
 
             BuildUpTabItems();
