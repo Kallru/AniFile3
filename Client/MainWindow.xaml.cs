@@ -1,4 +1,4 @@
-﻿using AniFile3.Contetns;
+﻿using AniFile3.Contents;
 using AniFile3.DataStruct;
 using CoreLib;
 using CoreLib.DataStruct;
@@ -124,6 +124,20 @@ namespace AniFile3
             // 스크랩퍼 초기화
             _magnetLister = new MagnetLising.MagnetListUp(_http);
             _magnetLister.UpdateRSS();
+
+            // TestCode - 결과창 UI를 테스트 하기 위해
+            {
+                _MainTab.SelectedIndex = _searchTabIndex;
+                var searchTab = _MainTab.Items[_searchTabIndex] as SearchResultTabItem;
+                var test = new List<SearchResultContent>();
+                test.Add(new SearchResultContent("https://search.pstatic.net/common?type=o&amp;size=120x172&amp;quality=90&amp;direct=true&amp;src=http%3A%2F%2Fsstatic.naver.net%2Fkeypage%2Fimage%2Fdss%2F57%2F65%2F99%2F10%2F57_659910_poster_image_1506416659493.jpg", "무한도전",300));
+                test.Add(new SearchResultContent("http", "무한", 1));
+                test.Add(new SearchResultContent("http", "무한", 1));
+                test.Add(new SearchResultContent("http", "무한", 1));
+                test.Add(new SearchResultContent("http", "무한", 1));
+                test.Add(new SearchResultContent("http", "무한", 1));
+                searchTab.UpdateResult(test);
+            }
         }
 
         // Every tabitems are built up at here
@@ -160,6 +174,10 @@ namespace AniFile3
             controller.SetIndeterminate();
             
             var response = await _http.Request<string, List<EpisodeInfo>>("/search_episode", _SerachText.Text).WithTimeout(Preference.Instance.DefaultTimeOut);
+            
+            // 먼저 검색 결과 탭으로 바꿈
+            _MainTab.SelectedIndex = _searchTabIndex;
+
             if (response != null)
             {
                 _testLog.Clear();

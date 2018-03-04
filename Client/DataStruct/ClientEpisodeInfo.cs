@@ -43,6 +43,9 @@ namespace AniFile3.DataStruct
 
         public void Start()
         {
+            //TestCode - 임시로 토렌트 스타트를 막아둠 for UI Work
+            return;
+
             if (IsCompleted == false)
             {
                 TorrentManager.Download(_header, UpdateState, (id) => _torrentId = id, (id, stateInfo) =>
@@ -81,11 +84,11 @@ namespace AniFile3.DataStruct
             if (state == state_t.finished
                || state == state_t.seeding)
             {
-                return string.Format("{0:F2} {1}", wanted, unit[unitIndex]);
+                return string.Format("{0:0.##} {1}", wanted, unit[unitIndex]);
             }
             else
             {
-                return string.Format("{0:F2}/{1:F2} {2}", done, wanted, unit[unitIndex]);
+                return string.Format("{0:0.##}/{1:0.##} {2}", done, wanted, unit[unitIndex]);
             }
         }
 

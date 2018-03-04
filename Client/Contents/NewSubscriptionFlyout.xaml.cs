@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AniFile3.Contetns
+namespace AniFile3.Contents
 {
     /// <summary>
     /// Interaction logic for NewSubscriptionFlyout.xaml

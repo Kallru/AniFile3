@@ -6,7 +6,7 @@
                       xmlns:Behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:local="clr-namespace:AniFile3"
-                      xmlns:localContetns="clr-namespace:AniFile3.Contetns"
+                      xmlns:localContetns="clr-namespace:AniFile3.Contents"
                       Title="아직 이름이 없다" 
                       Height="600"
                       Width="800"                      

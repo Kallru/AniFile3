@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace AniFile3.Contetns
+namespace AniFile3.Contents
 {
     /// <summary>
     /// Interaction logic for EpisodeTabItem.xaml

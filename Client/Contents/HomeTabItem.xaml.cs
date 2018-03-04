@@ -1,7 +1,7 @@
 ﻿using MahApps.Metro.Controls;
 using System.Windows;
 
-namespace AniFile3.Contetns
+namespace AniFile3.Contents
 {
     /// <summary>
     /// HomeTabItem.xaml에 대한 상호 작용 논리

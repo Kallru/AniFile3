@@ -74,16 +74,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Contetns\EpisodeTabItem.xaml.cs">
+    <Compile Include="Contents\EpisodeTabItem.xaml.cs">
       <DependentUpon>EpisodeTabItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Contetns\HomeTabItem.xaml.cs">
+    <Compile Include="Contents\HomeTabItem.xaml.cs">
       <DependentUpon>HomeTabItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Contetns\NewSubscriptionFlyout.xaml.cs">
+    <Compile Include="Contents\NewSubscriptionFlyout.xaml.cs">
       <DependentUpon>NewSubscriptionFlyout.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Contetns\SearchResultTabItem.xaml.cs">
+    <Compile Include="Contents\SearchResultContent.cs" />
+    <Compile Include="Contents\SearchResultTabItem.xaml.cs">
       <DependentUpon>SearchResultTabItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataStruct\ClientEpisodeInfo.Properties.cs" />
@@ -105,19 +106,19 @@
       <DependentUpon>TorrentControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\RectConverter.cs" />
-    <Page Include="Contetns\EpisodeTabItem.xaml">
+    <Page Include="Contents\EpisodeTabItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Contetns\HomeTabItem.xaml">
+    <Page Include="Contents\HomeTabItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Contetns\NewSubscriptionFlyout.xaml">
+    <Page Include="Contents\NewSubscriptionFlyout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Contetns\SearchResultTabItem.xaml">
+    <Page Include="Contents\SearchResultTabItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
