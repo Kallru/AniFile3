@@ -13,6 +13,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using TMDbLib.Client;
 
 namespace AniFile3
 {
@@ -39,6 +40,8 @@ namespace AniFile3
         {
             get { return this.Flyouts.Items[0] as NewSubscriptionFlyout; }
         }
+
+        public TMDbClient TMDbClient { get; } = new TMDbClient("9821beb972254f2129c3af73ca5a4419");
 
         public MainWindow()
         {
@@ -123,7 +126,8 @@ namespace AniFile3
 
             // 스크랩퍼 초기화
             _magnetLister = new MagnetLising.MagnetListUp(_http);
-            _magnetLister.UpdateRSS();
+            //_magnetLister.UpdateRSS();
+            _magnetLister.TestSome();
 
             // /*
             // TestCode - 결과창 UI를 테스트 하기 위해
@@ -138,6 +142,13 @@ namespace AniFile3
                 test.Add(new SearchResultContent("http", "무한", 1));
                 test.Add(new SearchResultContent("http", "무한", 1));
                 searchTab.UpdateResult(test);
+
+                var a = new TMDbClient("9821beb972254f2129c3af73ca5a4419");
+                var dd = a.SearchMultiAsync("무한도전").Result;
+
+                //var c = new TMDbLib.Objects.Search.SearchMovieTvBase();
+                // c.PosterPath
+                //dd.Results
             }// */
         }
 

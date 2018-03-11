@@ -1,7 +1,9 @@
-﻿using CoreLib.DataStruct;
+﻿using CoreLib;
+using CoreLib.DataStruct;
 using Scriping;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.ServiceModel.Syndication;
@@ -95,6 +97,8 @@ namespace AniFile3.MagnetLising
         {
             _feeds = new List<SyndicationItem>();
 
+            Log.WriteLine("Updating RSS...");
+
             // 리스트를 클로닝 해서 처리한다, 다른 스레드에서 리스트를 업뎃 할수 있기에
             var rssList = new List<string>(Preference.Instance.RSSList);
             foreach (var uri in rssList)
@@ -106,10 +110,16 @@ namespace AniFile3.MagnetLising
                     Regex regex = new Regex(@"&(?![a-z]{2,5};)");
                     xmlstring = regex.Replace(xmlstring, "&amp;");
 
+                    // for Debuging
+                    Debug_SaveXml("testRSS.xml");
+
                     using (XmlReader reader = XmlReader.Create(new StringReader(xmlstring)))
                     {
                         SyndicationFeed feed = SyndicationFeed.Load(reader);
                         reader.Close();
+
+                        Log.WriteLine(" '{0}' Found Feeds({1})...", uri, feed.Items);
+
                         foreach (SyndicationItem item in feed.Items)
                         {
                             _feeds.Add(item);
@@ -124,6 +134,8 @@ namespace AniFile3.MagnetLising
             HttpInterface http = null;
             if (_http.TryGetTarget(out http) && _feeds.Count > 0)
             {
+                Log.WriteLine("Request to store feeds to server");
+
                 var episodes = new List<EpisodeInfo>(_feeds.Count);
                 foreach (var feed in _feeds)
                 {
@@ -135,5 +147,80 @@ namespace AniFile3.MagnetLising
                 Console.WriteLine("[{0}] {1}", rest, errorCode ?? "Not found error code");
             }
         }
+
+        public void TestSome()
+        {
+            var list = new List<string>();
+
+            using (var reader = new MyXmlReader(new FileStream("testRSS.xml", FileMode.Open)))
+            {
+                SyndicationFeed feed = SyndicationFeed.Load(reader);
+                reader.Close();
+
+                foreach(var item in feed.Items)
+                {
+                    list.Add(item.Title.Text);
+                }
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private void Debug_SaveXml(string xmlstring)
+        {
+            var xdoc = new XmlDocument();
+            xdoc.LoadXml(xmlstring);
+            xdoc.Save("testRSS.xml");
+            xdoc = null;
+        }
+
+        class MyXmlReader : XmlTextReader
+        {
+            private bool readingDate = false;
+            const string CustomUtcDateTimeFormat = "ddd MMM dd HH:mm:ss Z yyyy"; // Wed Oct 07 08:00:07 GMT 2009
+
+            public MyXmlReader(Stream s) : base(s) { }
+
+            public MyXmlReader(string inputUri) : base(inputUri) { }
+
+            public override void ReadStartElement()
+            {
+                if (string.Equals(base.NamespaceURI, string.Empty, StringComparison.InvariantCultureIgnoreCase) &&
+                    (string.Equals(base.LocalName, "lastBuildDate", StringComparison.InvariantCultureIgnoreCase) ||
+                    string.Equals(base.LocalName, "pubDate", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    readingDate = true;
+                }
+                base.ReadStartElement();
+            }
+
+            public override void ReadEndElement()
+            {
+                if (readingDate)
+                {
+                    readingDate = false;
+                }
+                base.ReadEndElement();
+            }
+
+            public override string ReadString()
+            {
+                if (readingDate)
+                {
+                    string dateString = base.ReadString();
+                    DateTime dt;
+                    if (!DateTime.TryParse(dateString, out dt))
+                    {
+                        dt = DateTime.Now;
+                        //dt = DateTime.ParseExact(dateString, CustomUtcDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    return dt.ToUniversalTime().ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    return base.ReadString();
+                }
+            }
+        }
+
     }
 }

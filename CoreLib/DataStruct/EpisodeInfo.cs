@@ -39,6 +39,49 @@ namespace CoreLib.DataStruct
             return result;
         }
 
+        public static List<string> SplitSubject(string fullSubject)
+        {
+            // 모든 괄호 쳐진 문자 정규식 : \[[가-힇\w]+\]
+            // ex : [JTBC], [가나다라]
+
+            // 날짜 정규식 : [\W]\d{6}[\W]
+            // ex : .180311.
+
+            // 화질 정규식: [\W]\d{1,4}p[\W]
+
+            var splits = new List<string>();
+
+            string[] resolutions =
+            {
+                "360p",
+                "720p",
+                "1080p"
+            };
+
+            // 이름파싱
+            foreach (var item in resolutions)
+            {
+                if (fullSubject.Contains(item))
+                {
+                    splits.Add(item);
+                    fullSubject = fullSubject.Replace(item, "");
+                    break;
+                }
+            }
+
+            // Episode, E로 시작하며 숫자 1~3개까지
+            Regex regex = new Regex(@"E\d{1,3}");
+            var results = regex.Matches(fullSubject);
+            if (results.Count >= 1)
+            {
+                fullSubject = fullSubject.Replace(results[0].Value, "");
+                splits.Add(results[0].Value);
+            }
+
+            splits.Add(fullSubject);
+            return splits;
+        }
+
         // 각종 정보를 subject에서 가져와서 생성한다.
         public static EpisodeInfo Create(string subject, string magnet)
         {
@@ -66,8 +109,8 @@ namespace CoreLib.DataStruct
                 }
             }
 
-            // Episode, E로 시작하며 숫자 1~3개까지
-            Regex regex = new Regex(@"E\d{1,3}");
+            // Episode, E로 시작하며 숫자 1~4개까지
+            Regex regex = new Regex(@"E\d{1,4}");
             var results = regex.Matches(subject);
             if (results.Count >= 1)
             {
@@ -82,7 +125,7 @@ namespace CoreLib.DataStruct
             else
             {
                 // Error
-                //Console.WriteLine("[Error] Episode 정규식 매칭 에러!, Episode 추출 실패");
+                Log.Error("Episode 정규식 매칭 에러!, Episode 추출 실패");
             }
             return instance;
         }
