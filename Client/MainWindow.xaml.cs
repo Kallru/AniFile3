@@ -35,9 +35,9 @@ namespace AniFile3
         private Subscriptions.Node HomeNode { get; set; }
         private Subscriptions.Node SubscriptionNode { get; set; }
 
-        public Flyout NewSubscriptionFlyout
+        public NewSubscriptionFlyout NewSubscriptionFlyout
         {
-            get { return this.Flyouts.Items[0] as Flyout; }
+            get { return this.Flyouts.Items[0] as NewSubscriptionFlyout; }
         }
 
         public MainWindow()
@@ -125,6 +125,7 @@ namespace AniFile3
             _magnetLister = new MagnetLising.MagnetListUp(_http);
             _magnetLister.UpdateRSS();
 
+            // /*
             // TestCode - 결과창 UI를 테스트 하기 위해
             {
                 _MainTab.SelectedIndex = _searchTabIndex;
@@ -137,7 +138,7 @@ namespace AniFile3
                 test.Add(new SearchResultContent("http", "무한", 1));
                 test.Add(new SearchResultContent("http", "무한", 1));
                 searchTab.UpdateResult(test);
-            }
+            }// */
         }
 
         // Every tabitems are built up at here
@@ -146,7 +147,6 @@ namespace AniFile3
             _MainTab.Items.Add(new HomeTabItem());
             _episodeTabIndex = _MainTab.Items.Add(new EpisodeTabItem());
             var searchTabItem = new SearchResultTabItem();
-            searchTabItem.SubsriptionClicked += Subscription_Click;
             _searchTabIndex = _MainTab.Items.Add(searchTabItem);
         }
 
@@ -257,13 +257,6 @@ namespace AniFile3
             {
                 Console.WriteLine("이미 같은 것을 구독중입니다");
             }
-        }
-
-        private void Subscription_Click(object sender)
-        {
-            var button = sender as Button;
-
-            AddSubscription(button.DataContext as string);
         }
 
         private void _MainTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

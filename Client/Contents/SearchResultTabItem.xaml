@@ -12,30 +12,23 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        </ResourceDictionary>        
     </Controls:MetroTabItem.Resources>
     
     <Grid>
-        <ListView Name="_ResultList" BorderThickness="0">
+        <ListView Name="ResultList" BorderThickness="0" SelectionChanged="ResultList_SelectionChanged">
             <!-- 아이템 패널 커스텀 -->
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid Columns="5" HorizontalAlignment="Stretch" />
                 </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>            
-           
+            </ItemsControl.ItemsPanel>
+            
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Vertical">
-                        <Grid>
-                            <Image Name="_imageUI" Source="{Binding ImageUrl}" />
-                            <Rectangle Fill="Black" Width="32" Height="32">
-                                <Rectangle.OpacityMask>
-                                    <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
-                                </Rectangle.OpacityMask>
-                            </Rectangle>
-                        </Grid>
-                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                        <Image Name="_imageUI" Source="{Binding ImageUrl}" />
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" />
                         <TextBlock Text="{Binding Count}" VerticalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>

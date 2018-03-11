@@ -20,6 +20,17 @@ namespace AniFile3.Contents
     /// </summary>
     public partial class NewSubscriptionFlyout
     {
+        public enum CloseEventArg
+        {
+            Confirm,
+            Cancel
+        }
+
+        public delegate void CloseEventHander(object sender, CloseEventArg result);
+        public event CloseEventHander CloseEvent;
+
+        private CloseEventArg _closeEventArg;
+
         public NewSubscriptionFlyout()
         {
             InitializeComponent();
@@ -27,35 +38,39 @@ namespace AniFile3.Contents
 
         private void Clear()
         {
-            _name.Clear();
+            NameField.Clear();
+            NameField.IsReadOnly = false;
         }
 
         private void Close()
         {
             this.IsOpen = false;
             Clear();
+            CloseEvent?.Invoke(this, _closeEventArg);
         }
         
         private void Confirm()
         {
             // 구독 리스트에 등록
             var mainWindow = Window.GetWindow(this) as MainWindow;
-            mainWindow.AddSubscription(_name.Text);
+            mainWindow.AddSubscription(NameField.Text);
             Close();
         }
 
 #region 각종 이벤트 메소드들
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
+            _closeEventArg = CloseEventArg.Confirm;
             Confirm();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
+            _closeEventArg = CloseEventArg.Cancel;
             Close();
         }
 
-        private void _name_KeyUp(object sender, KeyEventArgs e)
+        private void NameField_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
             {

@@ -8,24 +8,45 @@ namespace AniFile3.Contents
     /// Interaction logic for SearchResultPage.xaml
     /// </summary>
     public partial class SearchResultTabItem : MetroTabItem
-    {        
-        public delegate void SubscriptionClickEvent(object sender);
-        public event SubscriptionClickEvent SubsriptionClicked;
-
+    {   
         public SearchResultTabItem()
         {
             InitializeComponent();
         }
 
-        private void Subscription_Click(object sender, RoutedEventArgs e)
+        public void UpdateResult(List<SearchResultContent> result)
         {
-            if (SubsriptionClicked != null)
-                SubsriptionClicked(sender);
+            ResultList.ItemsSource = result;
+        }
+        
+        private void ResultList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                var selectedItem = e.AddedItems[0] as SearchResultContent;
+
+                var mainWindow = Window.GetWindow(this) as MainWindow;
+                var newSubscriptionFlyout = mainWindow.NewSubscriptionFlyout;
+                newSubscriptionFlyout.NameField.Text = selectedItem.Name;
+                newSubscriptionFlyout.NameField.IsReadOnly = true;
+                newSubscriptionFlyout.IsOpen = true;
+
+                newSubscriptionFlyout.CloseEvent += Subscripted;
+            }
         }
 
-        public void UpdateResult(List<SearchResultContent> result)
-        {            
-            _ResultList.ItemsSource = result;
+        private void Subscripted(object sender, NewSubscriptionFlyout.CloseEventArg e)
+        {
+            if (e == NewSubscriptionFlyout.CloseEventArg.Confirm)
+            {
+                var list = ResultList.ItemsSource as List<SearchResultContent>;
+                list.Remove(ResultList.SelectedItem as SearchResultContent);
+                ResultList.Items.Refresh();
+            }
+            else
+                ResultList.SelectedItem = null;
+
+            (sender as NewSubscriptionFlyout).CloseEvent -= Subscripted;
         }
     }
 }

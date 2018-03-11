@@ -80,7 +80,7 @@
     <Compile Include="Contents\HomeTabItem.xaml.cs">
       <DependentUpon>HomeTabItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Contents\NewSubscriptionFlyout.xaml.cs">
+    <Compile Include="Contents\Flyout\NewSubscriptionFlyout.xaml.cs">
       <DependentUpon>NewSubscriptionFlyout.xaml</DependentUpon>
     </Compile>
     <Compile Include="Contents\SearchResultContent.cs" />
@@ -114,7 +114,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Contents\NewSubscriptionFlyout.xaml">
+    <Page Include="Contents\Flyout\NewSubscriptionFlyout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
