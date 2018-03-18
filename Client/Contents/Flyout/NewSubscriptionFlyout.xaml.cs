@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AniFile3.Contents
 {
@@ -31,17 +22,13 @@ namespace AniFile3.Contents
         public event CloseEventHander CloseEvent;
 
         private CloseEventArg _closeEventArg;
+        private CancellationTokenSource _waitCtSource;
 
         public NewSubscriptionFlyout()
         {
             InitializeComponent();
 
-            _candidate = new ObservableCollection<TestSearchFromTMDB>();
-            _candidate.Add(new TestSearchFromTMDB());
-            _candidate.Add(new TestSearchFromTMDB());
-            _candidate.Add(new TestSearchFromTMDB());
-
-            NameComboBox.ItemsSource = Candidate;
+            InitializeMethod();
         }
 
         private void Clear()
@@ -65,7 +52,33 @@ namespace AniFile3.Contents
             Close();
         }
 
-#region 각종 이벤트 메소드들
+        private async void NameField_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            _waitCtSource?.Cancel();
+            _waitCtSource = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(500, _waitCtSource.Token);
+
+                string text = (e.Source as TextBox).Text;
+                if (string.IsNullOrEmpty(text) == false)
+                    ChangedText(text);
+            }
+            catch (OperationCanceledException)
+            { }
+        }
+
+        private void CandidateView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                var item = e.AddedItems[0] as SearchResult;
+                NameField.Text = item.Title;
+            }
+        }
+
+        #region 각종 이벤트 메소드들
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
             _closeEventArg = CloseEventArg.Confirm;
@@ -87,10 +100,5 @@ namespace AniFile3.Contents
         }
         #endregion
         
-        private void NameComboBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            //await Task.Delay(1000);
-            //NameComboBox.IsDropDownOpen = true;
-        }
     }
 }
