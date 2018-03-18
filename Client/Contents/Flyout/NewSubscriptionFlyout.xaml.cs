@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,13 @@ namespace AniFile3.Contents
         public NewSubscriptionFlyout()
         {
             InitializeComponent();
+
+            _candidate = new ObservableCollection<TestSearchFromTMDB>();
+            _candidate.Add(new TestSearchFromTMDB());
+            _candidate.Add(new TestSearchFromTMDB());
+            _candidate.Add(new TestSearchFromTMDB());
+
+            NameComboBox.ItemsSource = Candidate;
         }
 
         private void Clear()
@@ -77,6 +85,12 @@ namespace AniFile3.Contents
                 Confirm();
             }
         }
-#endregion
+        #endregion
+        
+        private void NameComboBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            //await Task.Delay(1000);
+            //NameComboBox.IsDropDownOpen = true;
+        }
     }
 }

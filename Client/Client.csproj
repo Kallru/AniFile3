@@ -83,6 +83,7 @@
     <Compile Include="Contents\EpisodeTabItem.xaml.cs">
       <DependentUpon>EpisodeTabItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Contents\Flyout\NewSubscriptionFlyout.Method.cs" />
     <Compile Include="Contents\HomeTabItem.xaml.cs">
       <DependentUpon>HomeTabItem.xaml</DependentUpon>
     </Compile>

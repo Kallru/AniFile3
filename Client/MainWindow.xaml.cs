@@ -127,9 +127,9 @@ namespace AniFile3
             // 스크랩퍼 초기화
             _magnetLister = new MagnetLising.MagnetListUp(_http);
             //_magnetLister.UpdateRSS();
-            _magnetLister.TestSome();
+            //_magnetLister.TestSome();
 
-            // /*
+            /*
             // TestCode - 결과창 UI를 테스트 하기 위해
             {
                 _MainTab.SelectedIndex = _searchTabIndex;
@@ -145,6 +145,13 @@ namespace AniFile3
 
                 var a = new TMDbClient("9821beb972254f2129c3af73ca5a4419");
                 var dd = a.SearchMultiAsync("무한도전").Result;
+
+                var d2 = a.SearchMultiAsync("무한").Result;
+
+                foreach(TMDbLib.Objects.Search.SearchMovieTvBase item in d2.Results)
+                {
+                    Console.WriteLine(item.ToString());
+                }
 
                 //var c = new TMDbLib.Objects.Search.SearchMovieTvBase();
                 // c.PosterPath
