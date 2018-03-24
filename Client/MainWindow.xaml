@@ -153,6 +153,7 @@
             <!-- ============================= -->
             <DockPanel LastChildFill="True" DockPanel.Dock="Top">
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" DockPanel.Dock="Top">
+                    <!--
                     <TextBox Name="_SerachText" 
                              Width="200" 
                              KeyUp="_SerachText_KeyUp"
@@ -169,10 +170,8 @@
                                 </Style.Triggers>
                             </Style>
                         </TextBox.Style>
-                    </TextBox>
-                    <localControls:SearchTextbox>
-                        
-                    </localControls:SearchTextbox>
+                    </TextBox>-->
+                    <localControls:SearchTextbox x:Name="SearchText" Search="SearchTextbox_Search" />
                 </StackPanel>
 
                 <Controls:MetroAnimatedTabControl Name="_MainTab"

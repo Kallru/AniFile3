@@ -6,14 +6,18 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:local="clr-namespace:AniFile3.UIControls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" Loaded="UserControl_Loaded">
     <StackPanel Orientation="Vertical">
-        <TextBox Name="SerachText" 
-                             Width="200" 
-                             KeyUp="SerachText_KeyUp"
-                             Controls:TextBoxHelper.ClearTextButton="True"
-                             Controls:TextBoxHelper.UseFloatingWatermark="True"
-                             Controls:TextBoxHelper.Watermark="검색...">
+        <TextBox Name="MainTextBox" 
+                 Width="200" 
+                 Controls:TextBoxHelper.ClearTextButton="True"
+                 Controls:TextBoxHelper.UseFloatingWatermark="True"
+                 Controls:TextBoxHelper.Watermark="검색..." 
+                 KeyUp="MainTextBox_KeyUp"
+                 LostFocus="MainTextBox_LostFocus" 
+                 PreviewKeyDown="MainTextBox_PreviewKeyDown" 
+                 PreviewTextInput="MainTextBox_PreviewTextInput"
+                 TextChanged="MainTextBox_TextChanged">
             <TextBox.Style>
                 <Style BasedOn="{StaticResource SearchMetroTextBox}" TargetType="{x:Type TextBox}">
                     <Style.Triggers>

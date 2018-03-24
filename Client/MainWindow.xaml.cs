@@ -179,7 +179,7 @@ namespace AniFile3
             _subscriptionStorage.Add(node);
         }
         
-        private async void Search()
+        private async void Search(string text)
         {
             var settings = new MetroDialogSettings()
             {
@@ -191,7 +191,7 @@ namespace AniFile3
             var controller = await this.ShowProgressAsync("진행중...", "응답을 기다리는 중", settings: settings);
             controller.SetIndeterminate();
             
-            var response = await _http.Request<string, List<EpisodeInfo>>("/search_episode", _SerachText.Text).WithTimeout(Preference.Instance.DefaultTimeOut);
+            var response = await _http.Request<string, List<EpisodeInfo>>("/search_episode", text).WithTimeout(Preference.Instance.DefaultTimeOut);
             
             // 먼저 검색 결과 탭으로 바꿈
             _MainTab.SelectedIndex = _searchTabIndex;
@@ -206,7 +206,7 @@ namespace AniFile3
             }
             else
             {
-                _SerachText.Clear();
+                SearchText.MainTextBox.Clear();
             }
 
             await controller.CloseAsync();
@@ -304,17 +304,14 @@ namespace AniFile3
             _subscriptionStorage.SaveToBin();
         }
 
-        private void _SerachText_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == Key.Return)
-            {
-                Search();
-            }
-        }
-
         private void TestUpdate_Click(object sender, RoutedEventArgs e)
         {
             UpdateSubscription();
+        }
+
+        private void SearchTextbox_Search(object sender, RoutedEventArgs e)
+        {
+            Search((e as UIControls.SearchEventArgs).Text);
         }
     }
 }

@@ -94,6 +94,7 @@
     <Compile Include="Contents\SearchResultTabItem.xaml.cs">
       <DependentUpon>SearchResultTabItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UIControls\SearchEventArgs.cs" />
     <Compile Include="UIControls\SearchTextbox.xaml.cs">
       <DependentUpon>SearchTextbox.xaml</DependentUpon>
     </Compile>
