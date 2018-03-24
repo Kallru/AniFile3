@@ -94,6 +94,9 @@
     <Compile Include="Contents\SearchResultTabItem.xaml.cs">
       <DependentUpon>SearchResultTabItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UIControls\SearchTextbox.xaml.cs">
+      <DependentUpon>SearchTextbox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataStruct\ClientEpisodeInfo.Properties.cs" />
     <Compile Include="DataStruct\ClientEpisodeInfo.cs" />
     <Compile Include="DataStruct\EpisodeCollection.cs" />
@@ -108,11 +111,11 @@
     <Compile Include="NativeInterface\TorrentManager.cs" />
     <Compile Include="Preference.cs" />
     <Compile Include="ScheduleTask.cs" />
-    <Compile Include="UI\StateTextConverter.cs" />
-    <Compile Include="UI\TorrentControl.xaml.cs">
+    <Compile Include="UIControls\StateTextConverter.cs" />
+    <Compile Include="UIControls\TorrentControl.xaml.cs">
       <DependentUpon>TorrentControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\RectConverter.cs" />
+    <Compile Include="UIControls\RectConverter.cs" />
     <Page Include="Contents\EpisodeTabItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -126,6 +129,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Contents\SearchResultTabItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIControls\SearchTextbox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -150,7 +157,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\TorrentControl.xaml">
+    <Page Include="UIControls\TorrentControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

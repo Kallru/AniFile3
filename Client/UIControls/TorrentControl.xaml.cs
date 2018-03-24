@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AniFile3
+namespace AniFile3.UIControls
 {
     /// <summary>
     /// Interaction logic for TorrentControl.xaml
