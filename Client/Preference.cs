@@ -33,6 +33,8 @@ namespace AniFile3
         public List<string> RSSList { get; set; } = new List<string>();
         [Key(6)]
         public string CacheDirectory { get; set; } = "cache";
+        [Key(7)]
+        public string TMDBBaseImageUrl { get; set; } = "https://image.tmdb.org/t/p/w500";
 
         // MessagePack 버그인지 모르겠지만, 'StandardResolverAllowPrivate' 이 옵션이 제대로 동작하지 않는것 같다.
         // 일단 임시로 생성자를 public 으로 사용함

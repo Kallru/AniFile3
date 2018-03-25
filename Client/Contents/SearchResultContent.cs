@@ -1,4 +1,5 @@
 ﻿using CoreLib;
+using CoreLib.DataStruct;
 using CoreLib.Extentions;
 using System;
 using System.Collections.Generic;
@@ -23,23 +24,28 @@ namespace AniFile3.Contents
         }
         public string Name { get; }
         public int Count { get; }
+        public List<EpisodeInfo> Episodes { get; }
 
-        public SearchResultContent(string imageUrl, string name, int count)
+        public SearchResultContent(string imageUrl, string name, List<EpisodeInfo> episodes)
         {
             Name = name;
-            Count = count;
+            Episodes = episodes;
+            Count = Episodes.Count;
 
-            _imageHashPath = MakeHashPath(imageUrl);
+            if (string.IsNullOrEmpty(imageUrl) == false)
+            {
+                _imageHashPath = MakeHashPath(imageUrl);
 
-            // 캐시 이미지가 있다면, 
-            if (File.Exists(_imageHashPath))
-            {
-                // 바인딩되어 있는 프로퍼티에 넣고 끝
-                ImageUrl = _imageHashPath;
-            }
-            else
-            {
-                CacheImage(imageUrl);
+                // 캐시 이미지가 있다면, 
+                if (File.Exists(_imageHashPath))
+                {
+                    // 바인딩되어 있는 프로퍼티에 넣고 끝
+                    ImageUrl = _imageHashPath;
+                }
+                else
+                {
+                    CacheImage(imageUrl);
+                }
             }
         }
 

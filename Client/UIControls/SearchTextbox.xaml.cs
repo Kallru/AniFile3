@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using TMDbLib.Client;
+using System.Linq;
 
 namespace AniFile3.UIControls
 {
@@ -19,11 +20,6 @@ namespace AniFile3.UIControls
         {
             public string Title { get; set; }
             public string ThumbnailUrl { get; set; }
-
-            public SearchResult()
-            {
-                Title = "Test";
-            }
         }
 
         private TMDbClient _client;
@@ -87,9 +83,9 @@ namespace AniFile3.UIControls
             _listPopup.Child = _candidateListBox;
         }
 
-        private void RaiseSearchEvent(string text)
+        private void RaiseSearchEvent()
         {
-            SearchEventArgs args = new SearchEventArgs(SearchTextbox.SearchEvent, text);
+            var args = new SearchEventArgs(SearchTextbox.SearchEvent, MainTextBox.Text);
             RaiseEvent(args);
         }
 
@@ -132,19 +128,25 @@ namespace AniFile3.UIControls
                 foreach (var item in searchContainer.Results)
                 {
                     string name = string.Empty;
+                    string thumbnailUrl = string.Empty;
                     switch (item.MediaType)
                     {
                         case TMDbLib.Objects.General.MediaType.Movie:
-                            name = (item as TMDbLib.Objects.Search.SearchMovie).OriginalTitle;
+                            var movie = item as TMDbLib.Objects.Search.SearchMovie;
+                            name = movie.OriginalTitle;
+                            thumbnailUrl = movie.PosterPath;
                             break;
                         case TMDbLib.Objects.General.MediaType.Tv:
-                            name = (item as TMDbLib.Objects.Search.SearchTv).OriginalName;
+                            var tvItem = item as TMDbLib.Objects.Search.SearchTv;
+                            name = tvItem.OriginalName;
+                            thumbnailUrl = tvItem.PosterPath;
                             break;
                     }
 
                     Candidate.Add(new SearchResult()
                     {
-                        Title = name
+                        Title = name,
+                        ThumbnailUrl = Preference.Instance.TMDBBaseImageUrl + thumbnailUrl
                     });
                 }
             }
@@ -170,7 +172,7 @@ namespace AniFile3.UIControls
         {
             if (e.Key == Key.Return)
             {
-                RaiseSearchEvent(MainTextBox.Text);
+                RaiseSearchEvent();
             }
         }
 

@@ -27,9 +27,9 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Vertical">
-                        <Image Name="_imageUI" Source="{Binding ImageUrl}" />
+                        <Image Name="_imageUI" Source="{Binding ImageUrl}" MaxWidth="120" />
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" />
-                        <TextBlock Text="{Binding Count}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Path=Count, StringFormat=총 에피소드 {0}개}" VerticalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

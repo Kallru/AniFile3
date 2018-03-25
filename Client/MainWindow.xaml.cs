@@ -198,11 +198,43 @@ namespace AniFile3
 
             if (response != null)
             {
-                _testLog.Clear();
-                foreach (var info in response)
+                // 검색창에서 받은 이름과 Cache 서버에서 받은 실 데이터들을 그룹화 한다.
+                var textWithIgnoreCase = text.ToLower().Replace(" ", "");
+                var group = response.GroupBy(key =>
                 {
-                    Console.WriteLine("{0}, {1}, {2}", info.Fullname, info.Resolution, info.Episode);
+                    // 검색창에서 입력 받은 이름을 기준으로 삼는다.
+                    var lowerName = key.Name.ToLower().Replace(" ", "");
+                    if (lowerName.Contains(textWithIgnoreCase))
+                        return text;
+
+                    // 없으면 그냥 Cache 서버에서 가져온 데이터의 원래 이름을 쓴다.
+                    return key.Name;
+                });
+
+                var searchTab = _MainTab.SelectedItem as SearchResultTabItem;
+                var resultContents = new List<SearchResultContent>();
+
+                // 검색 페이지에 보여줄 데이터들을 가공 및 만든다
+                foreach (var pair in group)
+                {
+                    // TMDB에서 검색됬던 캔디데이터에서 이름으로 기본 정보를 가져온다.
+                    var tmdbResult = SearchText
+                                    .Candidate
+                                    .FirstOrDefault(item => string.Compare(item.Title, pair.Key, true) == 0);
+
+                    var name = tmdbResult?.Title ?? pair.Key;
+                    resultContents.Add(new SearchResultContent(tmdbResult?.ThumbnailUrl,
+                                                     name,
+                                                     pair.ToList()));
+
+                    Log.WriteLine("- Searched group : '{0}'", name);
+                    foreach (var info in pair)
+                    {
+                        Log.WriteLine("+ {0}, {1}, {2}", info.Fullname, info.Resolution, info.Episode);
+                    }
+                    Log.WriteLine("- ---------------------------------------- -");
                 }
+                searchTab.UpdateResult(resultContents);
             }
             else
             {
@@ -311,7 +343,8 @@ namespace AniFile3
 
         private void SearchTextbox_Search(object sender, RoutedEventArgs e)
         {
-            Search((e as UIControls.SearchEventArgs).Text);
+            var args = e as UIControls.SearchEventArgs;
+            Search(args.Text);
         }
     }
 }
