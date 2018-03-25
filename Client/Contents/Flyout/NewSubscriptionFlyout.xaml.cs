@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,7 +11,7 @@ namespace AniFile3.Contents
     /// <summary>
     /// Interaction logic for NewSubscriptionFlyout.xaml
     /// </summary>
-    public partial class NewSubscriptionFlyout
+    public partial class NewSubscriptionFlyout : INotifyPropertyChanged
     {
         public enum CloseEventArg
         {
@@ -24,10 +25,20 @@ namespace AniFile3.Contents
         private CloseEventArg _closeEventArg;
         private CancellationTokenSource _waitCtSource;
 
+        private int _startEpisode;
+        public int StartEpisode
+        {
+            get { return _startEpisode; }
+            set
+            {
+                _startEpisode = value;
+                RaisePropertyChanged("StartEpisode");
+            }
+        }
+        
         public NewSubscriptionFlyout()
         {
             InitializeComponent();
-
             InitializeMethod();
         }
 
@@ -48,7 +59,7 @@ namespace AniFile3.Contents
         {
             // 구독 리스트에 등록
             var mainWindow = Window.GetWindow(this) as MainWindow;
-            mainWindow.AddSubscription(NameField.Text);
+            mainWindow.AddSubscription(NameField.Text, StartEpisode);
             Close();
         }
 
@@ -98,7 +109,16 @@ namespace AniFile3.Contents
                 Confirm();
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void RaisePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
         #endregion
-        
+
     }
 }
