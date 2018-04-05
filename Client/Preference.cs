@@ -24,7 +24,7 @@ namespace AniFile3
         public int UpdateSubscriptionInterval { get; set; } = 30 * 1000; // 기본값을 몇시간 정도로 해야될듯
         [Key(2)]
         //public string CacheServerUri { get; set; } = "http://localhost:2323";
-        public string CacheServerUri { get; set; } = "http://35.231.110.128:2323";
+        public string CacheServerUri { get; set; } = "http://35.196.37.168:2323";
         [Key(3)]
         public string RootDownloadPath { get; set; } = "data";
         [Key(4)]

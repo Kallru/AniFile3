@@ -40,6 +40,7 @@ namespace AniFile3.Contents
         {
             InitializeComponent();
             InitializeMethod();
+            StartEpisode = 1;
         }
 
         private void Clear()

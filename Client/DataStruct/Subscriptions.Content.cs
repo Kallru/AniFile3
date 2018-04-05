@@ -2,6 +2,7 @@
 using MessagePack;
 using MessagePack.Resolvers;
 using System.IO;
+using System.Linq;
 using System.Windows.Controls;
 
 namespace AniFile3.DataStruct
@@ -13,6 +14,7 @@ namespace AniFile3.DataStruct
             private EpisodeCollection _episodes;
 
             public EpisodeCollection Episodes { get => _episodes; }
+            public int LatestEpisode { get; set; }
 
             private ContentNode()
             {
@@ -21,6 +23,10 @@ namespace AniFile3.DataStruct
                 {
                     Count = _episodes.Count;
                     NewCount = _episodes.Count;
+
+                    // 가장 최신 에피소드화수는 가장 큰 값으로 셋팅함
+                    int latestInCollection = (_episodes.Count > 0) ? _episodes.Max(info => info.Episode) : 0;
+                    LatestEpisode = System.Math.Max(LatestEpisode, latestInCollection);
 
                     if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
                     {
