@@ -18,6 +18,7 @@
             <local:StateTextConverter x:Key="StateTextConverter" />
 
             <local:RectConverter x:Key="RectConverter" />
+            <local:StringToVectorIconConverter x:Key="StringToVectorIconConverter" />
             <Style x:Key="ProgressBarInsideTextStyle" TargetType="{x:Type ProgressBar}">
                 <Setter Property="Template">
                     <Setter.Value>

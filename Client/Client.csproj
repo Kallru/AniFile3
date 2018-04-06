@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
@@ -94,6 +97,7 @@
     <Compile Include="Contents\SearchResultTabItem.xaml.cs">
       <DependentUpon>SearchResultTabItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UIControls\StringToVectorIconConverter.cs" />
     <Compile Include="UIControls\SearchEventArgs.cs" />
     <Compile Include="UIControls\SearchTextbox.xaml.cs">
       <DependentUpon>SearchTextbox.xaml</DependentUpon>
@@ -181,6 +185,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Icons\Thumbs.db" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -220,6 +225,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Dlls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Bulb.ico" />
+    <Resource Include="Icons\Computers.ico" />
+    <Resource Include="Icons\Error.ico" />
+    <Resource Include="Icons\Inactive.ico" />
+    <Resource Include="Icons\NetDrives.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

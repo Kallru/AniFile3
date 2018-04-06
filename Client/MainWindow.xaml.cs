@@ -47,6 +47,10 @@ namespace AniFile3
         {
             InitializeComponent();
             Initialize();
+
+            var a = this.FindResource("appbar_social_cloudapp");
+
+            //trayIcon.IconSource
         }
         
         private void TestSomething()
