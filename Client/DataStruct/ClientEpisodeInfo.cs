@@ -41,19 +41,22 @@ namespace AniFile3.DataStruct
         public ClientEpisodeInfo()
         { }
 
-        public void Start()
+        public void Start(string childPathName)
         {
             //TestCode - 임시로 토렌트 스타트를 막아둠 for UI Work
             return;
 
             if (IsCompleted == false)
             {
-                TorrentManager.Download(_header, UpdateState, (id) => _torrentId = id, (id, stateInfo) =>
-                {
-                    IsCompleted = true;
-                    TotalSize = GetTotalSizeFormat(stateInfo);
-                    DownloadPayloadRate = string.Empty;
-                });
+                TorrentManager.Download(_header, 
+                                        childPathName, 
+                                        UpdateState, 
+                                        (id) => _torrentId = id, (id, stateInfo) =>
+                                        {
+                                            IsCompleted = true;
+                                            TotalSize = GetTotalSizeFormat(stateInfo);
+                                            DownloadPayloadRate = string.Empty;
+                                        });
             }
         }
 

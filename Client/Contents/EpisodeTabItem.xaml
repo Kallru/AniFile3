@@ -55,6 +55,29 @@
                     <GridViewColumn Header="해상도" Width="70" DisplayMemberBinding="{Binding Resolution}" />
                 </GridView>
             </ListView.View>
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="재생" >
+                        <MenuItem.Icon>
+                            <Rectangle Width="13" Height="13">
+                                <Rectangle.Fill>
+                                    <VisualBrush Visual="{StaticResource appbar_control_play}" Stretch="Fill" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="삭제" >
+                        <MenuItem.Icon>
+                            <Rectangle Width="13" Height="13">
+                                <Rectangle.Fill>
+                                    <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </ListView.ContextMenu>
         </ListView>
     </Grid>
 </Controls:MetroTabItem>

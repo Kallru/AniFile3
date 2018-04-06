@@ -14,6 +14,7 @@ namespace AniFile3
         private struct DownloadRequest
         {
             public EpisodeInfo _header;
+            public string _childPathName;
             public Action<StateInfo> _updateEvent;
             public Action<long> _startEvent;
             public Action<long, StateInfo> _finishEvent;
@@ -39,6 +40,7 @@ namespace AniFile3
         }
 
         public static void Download(EpisodeInfo header,
+                                    string childPathName,
                                     Action<StateInfo> stateUpdatedCallback,
                                     Action<long> startCallback = null,
                                     Action<long, StateInfo> finishCallback = null)
@@ -46,6 +48,7 @@ namespace AniFile3
             Instance._queue.Add(new DownloadRequest()
             {
                 _header = header,
+                _childPathName = childPathName,
                 _updateEvent = stateUpdatedCallback,
                 _startEvent = startCallback,
                 _finishEvent = finishCallback
@@ -84,7 +87,12 @@ namespace AniFile3
 
                 var id = NativeInterface.CreateTorrent();
 
-                var result = NativeInterface.StartDownload(id, info._header.Magnet, Preference.GetAbsoluteDownloadPath(), (stateInfo) =>
+                // for child directory
+                var savePath = Path.Combine(Preference.GetAbsoluteDownloadPath(), info._childPathName);
+                if (Directory.Exists(savePath) == false)
+                    Directory.CreateDirectory(savePath);
+
+                var result = NativeInterface.StartDownload(id, info._header.Magnet, savePath, (stateInfo) =>
                  {
                      info._updateEvent(stateInfo);
 
