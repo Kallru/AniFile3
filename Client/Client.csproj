@@ -86,6 +86,9 @@
     <Compile Include="Contents\EpisodeTabItem.xaml.cs">
       <DependentUpon>EpisodeTabItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Contents\Flyout\PreferenceFlyout.xaml.cs">
+      <DependentUpon>PreferenceFlyout.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Contents\Flyout\NewSubscriptionFlyout.Method.cs" />
     <Compile Include="Contents\HomeTabItem.xaml.cs">
       <DependentUpon>HomeTabItem.xaml</DependentUpon>
@@ -124,6 +127,10 @@
     <Page Include="Contents\EpisodeTabItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Contents\Flyout\PreferenceFlyout.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Contents\HomeTabItem.xaml">
       <SubType>Designer</SubType>

@@ -6,10 +6,10 @@
                       xmlns:Behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:local="clr-namespace:AniFile3"
-                      xmlns:localContetns="clr-namespace:AniFile3.Contents"
+                      xmlns:localContents="clr-namespace:AniFile3.Contents"
                       xmlns:localControls="clr-namespace:AniFile3.UIControls"
                       xmlns:tb="http://www.hardcodet.net/taskbar"
-                      Title="아직 이름이 없다" 
+                      Title="AniFile3" 
                       Height="600"
                       Width="800"                      
                       MinWidth="600"
@@ -30,10 +30,26 @@
     </Window.Resources>
 
     <Controls:MetroWindow.Flyouts>
-        <Controls:FlyoutsControl x:Name="_flyoutsControl">
-            <localContetns:NewSubscriptionFlyout />
+        <Controls:FlyoutsControl>
+            <localContents:NewSubscriptionFlyout />
+            <localContents:PreferenceFlyout />
         </Controls:FlyoutsControl>
     </Controls:MetroWindow.Flyouts>
+
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands ShowLastSeparator="True">
+            <Button Click="Preference_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="14" Height="14">
+                        <Rectangle.Fill>
+                            <VisualBrush Visual="{StaticResource appbar_cog}" Stretch="Fill" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Label Content="설정" />
+                </StackPanel>
+            </Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
 
     <!-- 이거 어따씀? 작동안하는거 같은데 -->
     <i:Interaction.Behaviors>

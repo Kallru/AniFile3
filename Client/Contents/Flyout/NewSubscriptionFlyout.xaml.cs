@@ -59,9 +59,16 @@ namespace AniFile3.Contents
         private void Confirm()
         {
             // 구독 리스트에 등록
-            var mainWindow = Window.GetWindow(this) as MainWindow;
-            mainWindow.AddSubscription(NameField.Text, StartEpisode);
-            Close();
+            if (string.IsNullOrEmpty(NameField.Text) == false)
+            {
+                var mainWindow = Window.GetWindow(this) as MainWindow;
+                mainWindow.AddSubscription(NameField.Text, StartEpisode);
+                Close();
+            }
+            else
+            {
+                // error 빈값 씀
+            }
         }
 
         private async void NameField_TextChanged(object sender, TextChangedEventArgs e)

@@ -38,7 +38,12 @@ namespace AniFile3
 
         public NewSubscriptionFlyout NewSubscriptionFlyout
         {
-            get { return this.Flyouts.Items[0] as NewSubscriptionFlyout; }
+            get => Flyouts.Items[0] as NewSubscriptionFlyout;
+        }
+
+        public PreferenceFlyout PreferenceFlyout
+        {
+            get => Flyouts.Items[1] as PreferenceFlyout;
         }
 
         public TMDbClient TMDbClient { get; } = new TMDbClient("9821beb972254f2129c3af73ca5a4419");
@@ -83,7 +88,7 @@ namespace AniFile3
             Console.SetOut(new Logger(_testLog));
 
             Preference.Load();
-            
+
             _http = new HttpInterface(Preference.Instance.CacheServerUri);
 
             BuildUpTabItems();
@@ -350,6 +355,12 @@ namespace AniFile3
         {
             var args = e as UIControls.SearchEventArgs;
             Search(args.Text);
+        }
+
+        private void Preference_Click(object sender, RoutedEventArgs e)
+        {
+            
+            PreferenceFlyout.IsOpen = true;
         }
     }
 }
