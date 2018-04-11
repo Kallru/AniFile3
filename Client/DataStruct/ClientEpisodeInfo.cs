@@ -8,7 +8,7 @@ namespace AniFile3.DataStruct
     public partial class ClientEpisodeInfo : INotifyPropertyChanged
     {
         [MessagePack.IgnoreMember]
-        private long _torrentId;
+        private long _torrentId = -1;
 
         public class Comparer : IEqualityComparer<ClientEpisodeInfo>
         {
@@ -41,23 +41,29 @@ namespace AniFile3.DataStruct
         public ClientEpisodeInfo()
         { }
 
-        public void Start(string childPathName)
+        public void StartTorrent(string childPathName)
         {
             //TestCode - 임시로 토렌트 스타트를 막아둠 for UI Work
-            return;
-
+            //return;
             if (IsCompleted == false)
             {
                 TorrentManager.Download(_header, 
                                         childPathName, 
                                         UpdateState, 
-                                        (id) => _torrentId = id, (id, stateInfo) =>
+                                        (id) => _torrentId = id, 
+                                        (id, stateInfo) =>
                                         {
                                             IsCompleted = true;
                                             TotalSize = GetTotalSizeFormat(stateInfo);
                                             DownloadPayloadRate = string.Empty;
                                         });
             }
+        }
+
+        public void DestoryTorrent()
+        {
+            TorrentManager.DestoryDownload(_torrentId, _header);
+            _torrentId = -1;
         }
 
         public bool Compare(ClientEpisodeInfo left)

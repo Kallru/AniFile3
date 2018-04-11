@@ -125,6 +125,13 @@ bool EngineInterface::QueryState(boost::int64_t id, const msgpack::object& input
 
 bool EngineInterface::DestroyId(boost::int64_t id, const msgpack::object& input)
 {
+	if (_pSession != nullptr)
+	{
+		auto handle = GetHandle(id);
+		_pSession->remove_torrent(handle);
+	}
+
+	SAFT_DELETE(_torrents[id]);
 	_torrents.erase(id);
 	return true;
 }

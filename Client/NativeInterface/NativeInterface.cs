@@ -106,7 +106,7 @@ namespace AniFile3.Native
                 {
                     while (true)
                     {
-                        if (_cancelTokenSource.IsCancellationRequested)
+                        if (_cancelTokenSource.Token.IsCancellationRequested)
                             break;
 
                         StateInfo stateInfo;
@@ -116,9 +116,9 @@ namespace AniFile3.Native
                                 StateUpdated(stateInfo);
                         }
 
-                        Thread.Sleep(10);
+                        Thread.Sleep(1);
                     }
-                }, _cancelTokenSource.Token);
+                });
 
                 await _main;
             }
@@ -227,22 +227,6 @@ namespace AniFile3.Native
             }
             return false;
         }
-
-        //public static Int64 Download(string magnetLink, string savePath, Action<StateInfo> stateUpdatedCallback)
-        //{
-        //    var id = CreateInstance();
-        //    if(id != -1)
-        //    {
-        //        if (Request(id, "StartDownload", new Tuple<string, string>(magnetLink, savePath)))
-        //        {
-        //            _instances[id].StateUpdated = stateUpdatedCallback;
-        //            return id;
-        //        }
-        //    }
-
-        //    DestroyInstance(id);
-        //    return -1;
-        //}
 
         public static bool RequestInfo(Int64 id)
         {

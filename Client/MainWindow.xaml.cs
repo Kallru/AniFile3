@@ -333,10 +333,17 @@ namespace AniFile3
                 var button = sender as Button;
                 var node = button.DataContext as Subscriptions.ContentNode;
 
-                if(SubscriptionNode.Children.Remove(node) == false)
+                var controller = await this.ShowProgressAsync("잠시만 기다려주세요.", "삭제 중...");
+                controller.SetIndeterminate();
+
+                await node.StopAllAsync();
+
+                if (SubscriptionNode.Children.Remove(node) == false)
                 {
                     Console.WriteLine("잉 삭제 실패");
                 }
+
+                await controller.CloseAsync();
             }
         }
 

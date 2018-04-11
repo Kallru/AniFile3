@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AniFile3
 {
@@ -53,6 +54,20 @@ namespace AniFile3
                 _startEvent = startCallback,
                 _finishEvent = finishCallback
             });
+        }
+
+        public static void DestoryDownload(long id, EpisodeInfo header)
+        {
+            // 먼저 큐에 있는지 체크
+            var found = Instance._queue.FirstOrDefault(item => item._header == header);
+            if (found._header == header)
+            {
+                Instance._queue.Remove(found);
+            }
+            else
+            {
+                NativeInterface.DestroyTorrent(id);
+            }
         }
 
         public static void Initialize()

@@ -3,6 +3,7 @@ using MessagePack;
 using MessagePack.Resolvers;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace AniFile3.DataStruct
@@ -31,7 +32,7 @@ namespace AniFile3.DataStruct
                     if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
                     {
                         var myCollection = sender as EpisodeCollection;
-                        myCollection[e.NewStartingIndex].Start(Subject);
+                        myCollection[e.NewStartingIndex].StartTorrent(Subject);
                     }
                 };
             }
@@ -72,13 +73,24 @@ namespace AniFile3.DataStruct
                 base.Navigate(control);
             }
 
-            public void Start()
+            public void StartAll()
             {
                 // 여기서 어떤걸 시작 시킬지 처리?
                 foreach (var item in _episodes)
                 {
-                    item.Start(Subject);
+                    item.StartTorrent(Subject);
                 }
+            }
+
+            public async Task StopAllAsync()
+            {
+                await Task.Run(() =>
+                {
+                    foreach (var item in _episodes)
+                    {
+                        item.DestoryTorrent();
+                    }
+                });
             }
         }
     }
