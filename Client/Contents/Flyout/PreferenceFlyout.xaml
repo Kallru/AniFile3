@@ -56,32 +56,32 @@
         <Label Tag="캐시 경로" Content="{Binding Properties[CacheDirectory], Mode=TwoWay}" />
         <Label Tag="TMDB Base URL" Content="{Binding Properties[TMDBBaseImageUrl], Mode=TwoWay}" />
 
-        <Grid Height="120" Margin="5,5,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="9*"/>
-                <RowDefinition Height="31*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="277*"/>
-                <ColumnDefinition Width="93*"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="1" Grid.Row="1" Margin="10,0,0,0">
-                <Button Content="추가" Style="{DynamicResource SquareButtonStyle}" Click="AddToList_Click"/>
-                <Button Margin="0,5,0,0" Content="삭제" Style="{DynamicResource SquareButtonStyle}" Click="DeleteInList_Click"/>
-            </StackPanel>
-            
-            <TextBlock Text="RSS List" 
+        <Expander Margin="0 10 0 0" Header="고급 옵션(Debug)">
+            <Grid Height="120">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="9*"/>
+                    <RowDefinition Height="31*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="277*"/>
+                    <ColumnDefinition Width="93*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="1" Grid.Row="1" Margin="10,0,0,0">
+                    <Button Content="추가" Style="{DynamicResource SquareButtonStyle}" Click="AddToList_Click"/>
+                    <Button Margin="0,5,0,0" Content="삭제" Style="{DynamicResource SquareButtonStyle}" Click="DeleteInList_Click"/>
+                </StackPanel>
+
+                <TextBlock Text="RSS List" 
                        Grid.ColumnSpan="2" Grid.Row="0" 
                        VerticalAlignment="Center" 
-                       FontSize="14" FontWeight="Bold" Height="19" 
-                       Margin="15,0,0,0" />
-            <ListView Name="rssView" 
+                       FontSize="14" FontWeight="Bold" Height="19"/>
+                <ListView Name="rssView" 
                       BorderThickness="1"
-                      Style="{StaticResource VirtualisedMetroListView}" 
-                      Margin="15,0,0,0"
+                      Style="{StaticResource VirtualisedMetroListView}"
                       Grid.Column="0" 
                       Grid.Row="1" />
-        </Grid>
+            </Grid>
+        </Expander>
 
         <StackPanel Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Width="100" Content="확인" Style="{DynamicResource AccentedSquareButtonStyle}" Click="Confirm_Click" />
