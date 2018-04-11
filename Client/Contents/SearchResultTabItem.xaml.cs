@@ -46,6 +46,10 @@ namespace AniFile3.Contents
             else
                 ResultList.SelectedItem = null;
 
+            // Text clear
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            mainWindow.SearchText.MainTextBox.Clear();
+
             (sender as NewSubscriptionFlyout).CloseEvent -= Subscripted;
         }
     }
