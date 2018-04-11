@@ -12,7 +12,7 @@
              d:DesignWidth="600"
              Header="설정"
              Position="Right"
-             Theme="Accent"
+             Theme="Adapt"
              IsModal="True"
              HorizontalContentAlignment="Stretch" IsOpenChanged="Flyout_IsOpenChanged">
 
@@ -56,28 +56,31 @@
         <Label Tag="캐시 경로" Content="{Binding Properties[CacheDirectory], Mode=TwoWay}" />
         <Label Tag="TMDB Base URL" Content="{Binding Properties[TMDBBaseImageUrl], Mode=TwoWay}" />
 
-        <Grid Width="290" Height="120" Margin="5">
+        <Grid Height="120" Margin="5,5,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="9*"/>
                 <RowDefinition Height="31*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="101*"/>
-                <ColumnDefinition Width="39*"/>
+                <ColumnDefinition Width="277*"/>
+                <ColumnDefinition Width="93*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="RSS List" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" />
-            <StackPanel Margin="10" Width="60" Grid.Column="1" Grid.Row="1">
-                <Button Content="추가" Click="AddToList_Click"/>
-                <Button Margin="0,5,0,0" Content="삭제" Click="DeleteInList_Click"/>
+            <StackPanel Grid.Column="1" Grid.Row="1" Margin="10,0,0,0">
+                <Button Content="추가" Style="{DynamicResource SquareButtonStyle}" Click="AddToList_Click"/>
+                <Button Margin="0,5,0,0" Content="삭제" Style="{DynamicResource SquareButtonStyle}" Click="DeleteInList_Click"/>
             </StackPanel>
-            <ListView Name="rssView" BorderThickness="1"
+            
+            <TextBlock Text="RSS List" 
+                       Grid.ColumnSpan="2" Grid.Row="0" 
+                       VerticalAlignment="Center" 
+                       FontSize="14" FontWeight="Bold" Height="19" 
+                       Margin="15,0,0,0" />
+            <ListView Name="rssView" 
+                      BorderThickness="1"
                       Style="{StaticResource VirtualisedMetroListView}" 
-                      Grid.Column="0" Grid.Row="1">
-                <ListViewItem Content="dfdsfdsf"/>
-                <ListViewItem Content="dfdsfdsf"/>
-                <ListViewItem Content="dfdsfdsf"/>
-                <ListViewItem Content="dfdsfdsf"/>
-            </ListView>
+                      Margin="15,0,0,0"
+                      Grid.Column="0" 
+                      Grid.Row="1" />
         </Grid>
 
         <StackPanel Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Center">

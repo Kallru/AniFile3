@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Linq;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace AniFile3.Contents
 {
@@ -35,24 +36,28 @@ namespace AniFile3.Contents
             MainPanel.DataContext = this;
         }
 
-        private void Flyout_IsOpenChanged(object sender, RoutedEventArgs e)
+        private void LoadFromPreference()
         {
-            // Load from Preference to stage
-            if (IsOpen == true)
+            // Normal Properties
+            var preferenceProperties = Preference.Instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var propertyInfo in preferenceProperties)
             {
-                var preferenceProperties = Preference.Instance.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                foreach (var propertyInfo in preferenceProperties)
-                {
-                    var tt = propertyInfo.GetValue(Preference.Instance);
-                    _stageProperties[propertyInfo.Name] = propertyInfo.GetValue(Preference.Instance);
-                }
-
-                MainPanel.DataContext = null;
-                MainPanel.DataContext = this;
+                var tt = propertyInfo.GetValue(Preference.Instance);
+                _stageProperties[propertyInfo.Name] = propertyInfo.GetValue(Preference.Instance);
             }
+
+            // for Rss List
+            rssView.Items.Clear();
+            foreach (var item in Preference.Instance.RSSList)
+            {
+                rssView.Items.Add(item);
+            }
+
+            MainPanel.DataContext = null;
+            MainPanel.DataContext = this;
         }
 
-        private void Confirm_Click(object sender, RoutedEventArgs e)
+        private void SaveToPreference()
         {
             // Save from Preference to stage
             var preferenceProperties = Preference.Instance.GetType()
@@ -75,6 +80,26 @@ namespace AniFile3.Contents
                 }
             }
 
+            // For Rss
+            Preference.Instance.RSSList.Clear();
+            foreach (var item in rssView.Items)
+            {
+                Preference.Instance.RSSList.Add(item as string);
+            }
+        }
+
+        private void Flyout_IsOpenChanged(object sender, RoutedEventArgs e)
+        {
+            // Load from Preference to stage
+            if (IsOpen == true)
+            {
+                LoadFromPreference();
+            }
+        }
+
+        private void Confirm_Click(object sender, RoutedEventArgs e)
+        {
+            SaveToPreference();
             IsOpen = false;
         }
 
@@ -83,9 +108,14 @@ namespace AniFile3.Contents
             IsOpen = false;
         }
 
-        private void AddToList_Click(object sender, RoutedEventArgs e)
+        private async void AddToList_Click(object sender, RoutedEventArgs e)
         {
-            
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            var result = await mainWindow.ShowInputAsync("RSS 주소", "등록할 RSS 주소를 입력해주세요.");
+            if (string.IsNullOrEmpty(result) == false)
+            {
+                rssView.Items.Add(result);
+            }
         }
 
         private void DeleteInList_Click(object sender, RoutedEventArgs e)
@@ -99,8 +129,6 @@ namespace AniFile3.Contents
         {
             if (this.PropertyChanged != null)
                 this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        
+        }        
     }
 }
