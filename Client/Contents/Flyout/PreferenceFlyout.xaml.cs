@@ -74,10 +74,8 @@ namespace AniFile3.Contents
                     var converter = TypeDescriptor.GetConverter(property.PropertyType);
                     value = converter.ConvertFrom(pair.Value);
                 }
-                else
-                {
-                    property.SetValue(Preference.Instance, value);
-                }
+
+                property.SetValue(Preference.Instance, value);
             }
 
             // For Rss
@@ -86,6 +84,8 @@ namespace AniFile3.Contents
             {
                 Preference.Instance.RSSList.Add(item as string);
             }
+
+            Preference.Save();
         }
 
         private void Flyout_IsOpenChanged(object sender, RoutedEventArgs e)

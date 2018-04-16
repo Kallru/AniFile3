@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
@@ -54,7 +55,8 @@ namespace AniFile3.MagnetLising
 
                 if(rsslist?.Count > 0)
                 {
-                    Preference.Instance.RSSList = rsslist;
+                    //Test Code - 서버에서 RSS List를 받아오는 것을 임시로 막는다.
+                    //Preference.Instance.RSSList = rsslist;
                 }
             }
         }
@@ -111,20 +113,27 @@ namespace AniFile3.MagnetLising
                     xmlstring = regex.Replace(xmlstring, "&amp;");
 
                     // for Debuging
-                    Debug_SaveXml("testRSS.xml");
+                    //Debug_SaveXml("testRSS.xml");
 
-                    using (XmlReader reader = XmlReader.Create(new StringReader(xmlstring)))
+                    try
                     {
-                        SyndicationFeed feed = SyndicationFeed.Load(reader);
-                        reader.Close();
-
-                        Log.WriteLine(" '{0}' Found Feeds({1})...", uri, feed.Items);
-
-                        foreach (SyndicationItem item in feed.Items)
+                        using (XmlReader reader = XmlReader.Create(new StringReader(xmlstring)))
                         {
-                            _feeds.Add(item);
-                            //Console.WriteLine("{0}, {1}", item.Title.Text, item.Links[0].Uri);
+                            SyndicationFeed feed = SyndicationFeed.Load(reader);
+                            reader.Close();
+
+                            Log.WriteLine(" '{0}' Found Feeds({1})...", uri, feed.Items.Count());
+
+                            foreach (SyndicationItem item in feed.Items)
+                            {
+                                _feeds.Add(item);
+                                //Console.WriteLine("{0}, {1}", item.Title.Text, item.Links[0].Uri);
+                            }
                         }
+                    }
+                    catch(Exception e)
+                    {
+                        Log.Error(e.Message);
                     }
                 }
             }

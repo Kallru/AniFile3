@@ -15,7 +15,7 @@ namespace AniFile3.DataStruct
         [IgnoreMember]
         private string _totalSize;
 
-        public string Subject { get => _header.Name; }
+        public string Subject { get => _header.Fullname; }
         public int Episode { get => _header.Episode; }
         public string Resolution { get => _header.Resolution; }
         public string Location { get; private set; }

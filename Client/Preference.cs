@@ -40,8 +40,6 @@ namespace AniFile3
         // 일단 임시로 생성자를 public 으로 사용함
         public Preference()
         {
-            // Test Code- 테스트용으로 RSS 리스트를 넣어봄
-            RSSList.Add("https://torrentkim10.net/bbs/rss.php?k=720p&b=torrent_variety");
         }
 
         public static string GetAbsoluteDownloadPath()

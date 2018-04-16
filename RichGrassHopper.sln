@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichGrassHopper.CoreLib", "CoreLib\RichGrassHopper.CoreLib.csproj", "{0D3C052E-AD95-4AE9-97B4-1A58CBD113E9}"
 EndProject
@@ -116,11 +116,13 @@ Global
 		{74DCF45F-0D9E-4CFC-86C9-CFA8E47D2BCE}.Stats|x86.ActiveCfg = Release|Any CPU
 		{74DCF45F-0D9E-4CFC-86C9-CFA8E47D2BCE}.Stats|x86.Build.0 = Release|Any CPU
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{17089713-2E2D-4123-A1F6-913913F79ED1}.Debug|Any CPU.Build.0 = Debug|Win32
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Debug|x64.ActiveCfg = Debug|x64
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Debug|x64.Build.0 = Debug|x64
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Debug|x86.ActiveCfg = Debug|Win32
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Debug|x86.Build.0 = Debug|Win32
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Release|Any CPU.ActiveCfg = Release|Win32
+		{17089713-2E2D-4123-A1F6-913913F79ED1}.Release|Any CPU.Build.0 = Release|Win32
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Release|x64.ActiveCfg = Release|x64
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Release|x64.Build.0 = Release|x64
 		{17089713-2E2D-4123-A1F6-913913F79ED1}.Release|x86.ActiveCfg = Release|Win32

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "libtorrent/peer_info.hpp"
 
 #include <boost/algorithm/string.hpp>
 
@@ -40,33 +41,31 @@ void EngineInterface::Initialize(CShapCallback callback)
 			| lt::alert::storage_notification
 			| lt::alert::status_notification);
 
+	settings.set_bool(lt::settings_pack::announce_to_all_trackers, true);
+	settings.set_bool(lt::settings_pack::announce_to_all_tiers, true);
+	settings.set_bool(lt::settings_pack::smooth_connects, false);
+	settings.set_int(lt::settings_pack::connection_speed, 200);
+	
+	/*
+	settings.set_bool(lt::settings_pack::strict_end_game_mode, false);
+	settings.set_bool(lt::settings_pack::allow_multiple_connections_per_ip, true);
+	settings.set_bool(lt::settings_pack::close_redundant_connections, true);
+
 	settings.set_int(lt::settings_pack::mixed_mode_algorithm
 		, lt::settings_pack::bandwidth_mixed_algo_t::prefer_tcp);
-
-	settings.set_int(lt::settings_pack::connection_speed, 200);
 	settings.set_int(lt::settings_pack::max_queued_disk_bytes, 1024 * 1024);
 
 	settings.set_int(lt::settings_pack::recv_socket_buffer_size, 20 * 1024 * 1024);
 
 	settings.set_bool(lt::settings_pack::rate_limit_ip_overhead, false);
-	settings.set_bool(lt::settings_pack::announce_to_all_trackers, true);
-	settings.set_bool(lt::settings_pack::smooth_connects, false);	
-	settings.set_bool(lt::settings_pack::strict_end_game_mode, false);
+	
 	settings.set_bool(lt::settings_pack::low_prio_disk, false);
-
-	settings.set_bool(lt::settings_pack::enable_natpmp, false);
-	settings.set_bool(lt::settings_pack::enable_upnp, false);
-	settings.set_bool(lt::settings_pack::enable_dht, true);
-
+	
 	settings.set_int(lt::settings_pack::upload_rate_limit, 20 * 1024 * 1024);
 	settings.set_int(lt::settings_pack::download_rate_limit, 20 * 1024 * 1024);
 	settings.set_int(lt::settings_pack::local_download_rate_limit, 20 * 1024 * 1024);
 	settings.set_int(lt::settings_pack::local_upload_rate_limit, 20 * 1024 * 1024);
-	
-	settings.set_bool(lt::settings_pack::announce_to_all_tiers, true);
 
-	settings.set_bool(lt::settings_pack::allow_multiple_connections_per_ip, true);
-	settings.set_bool(lt::settings_pack::close_redundant_connections, true);
 	settings.set_bool(lt::settings_pack::ignore_limits_on_local_network, true);
 	settings.set_bool(lt::settings_pack::ban_web_seeds, true);
 	settings.set_int(lt::settings_pack::active_loaded_limit, 2000);
@@ -81,6 +80,7 @@ void EngineInterface::Initialize(CShapCallback callback)
 	settings.set_int(lt::settings_pack::peer_timeout, 20);
 	settings.set_int(lt::settings_pack::inactivity_timeout, 20);
 	settings.set_int(lt::settings_pack::max_failcount, 20);
+	/**/
 	
 	_pSession = new lt::session(settings);
 

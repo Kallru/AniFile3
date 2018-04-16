@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)external\libtorrent_114\include;$(ProjectDir)external\msgpack_215\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)external\libtorrent_114\debug;$(LibraryPath);$(ProjectDir)external\msgpack_215</LibraryPath>
+    <IncludePath>$(ProjectDir)external\libtorrent_117\include;$(ProjectDir)external\msgpack_215\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)external\libtorrent_117\debug;$(LibraryPath);$(ProjectDir)external\msgpack_215</LibraryPath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)external\libtorrent_114\include;$(ProjectDir)external\msgpack_215\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)external\libtorrent_114;$(LibraryPath);$(ProjectDir)external\msgpack_215</LibraryPath>
+    <IncludePath>$(ProjectDir)external\libtorrent_117\include;$(ProjectDir)external\msgpack_215\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)external\libtorrent_117;$(LibraryPath);$(ProjectDir)external\msgpack_215</LibraryPath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Configuration)\</IntDir>
   </PropertyGroup>

@@ -135,7 +135,7 @@ namespace AniFile3
 
             // 스크랩퍼 초기화
             _magnetLister = new MagnetLising.MagnetListUp(_http);
-            //_magnetLister.UpdateRSS();
+            _magnetLister.UpdateRSS();
             //_magnetLister.TestSome();
 
             /*
