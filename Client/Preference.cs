@@ -28,7 +28,7 @@ namespace AniFile3
         [Key(3)]
         public string RootDownloadPath { get; set; } = "data";
         [Key(4)]
-        public int CurrentlyTorrentCount { get; set; } = 5;
+        public int CurrentlyTorrentCount { get; set; } = 2;
         [Key(5)]
         public List<string> RSSList { get; set; } = new List<string>();
         [Key(6)]

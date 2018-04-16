@@ -34,11 +34,54 @@ void EngineInterface::Initialize(CShapCallback callback)
 {
 	lt::settings_pack settings;
 
+	settings.set_str(lt::settings_pack::user_agent, "richgrass");
 	settings.set_int(lt::settings_pack::alert_mask
 			, lt::alert::error_notification
 			| lt::alert::storage_notification
 			| lt::alert::status_notification);
 
+	settings.set_int(lt::settings_pack::mixed_mode_algorithm
+		, lt::settings_pack::bandwidth_mixed_algo_t::prefer_tcp);
+
+	settings.set_int(lt::settings_pack::connection_speed, 200);
+	settings.set_int(lt::settings_pack::max_queued_disk_bytes, 1024 * 1024);
+
+	settings.set_int(lt::settings_pack::recv_socket_buffer_size, 20 * 1024 * 1024);
+
+	settings.set_bool(lt::settings_pack::rate_limit_ip_overhead, false);
+	settings.set_bool(lt::settings_pack::announce_to_all_trackers, true);
+	settings.set_bool(lt::settings_pack::smooth_connects, false);	
+	settings.set_bool(lt::settings_pack::strict_end_game_mode, false);
+	settings.set_bool(lt::settings_pack::low_prio_disk, false);
+
+	settings.set_bool(lt::settings_pack::enable_natpmp, false);
+	settings.set_bool(lt::settings_pack::enable_upnp, false);
+	settings.set_bool(lt::settings_pack::enable_dht, true);
+
+	settings.set_int(lt::settings_pack::upload_rate_limit, 20 * 1024 * 1024);
+	settings.set_int(lt::settings_pack::download_rate_limit, 20 * 1024 * 1024);
+	settings.set_int(lt::settings_pack::local_download_rate_limit, 20 * 1024 * 1024);
+	settings.set_int(lt::settings_pack::local_upload_rate_limit, 20 * 1024 * 1024);
+	
+	settings.set_bool(lt::settings_pack::announce_to_all_tiers, true);
+
+	settings.set_bool(lt::settings_pack::allow_multiple_connections_per_ip, true);
+	settings.set_bool(lt::settings_pack::close_redundant_connections, true);
+	settings.set_bool(lt::settings_pack::ignore_limits_on_local_network, true);
+	settings.set_bool(lt::settings_pack::ban_web_seeds, true);
+	settings.set_int(lt::settings_pack::active_loaded_limit, 2000);
+	settings.set_int(lt::settings_pack::active_seeds, 2000);
+	settings.set_int(lt::settings_pack::tick_interval, 150);
+	settings.set_int(lt::settings_pack::urlseed_wait_retry, 60);
+	settings.set_int(lt::settings_pack::min_announce_interval, 30);
+	settings.set_int(lt::settings_pack::local_service_announce_interval, 30);
+	settings.set_int(lt::settings_pack::max_rejects, 10);
+	settings.set_int(lt::settings_pack::file_pool_size, 20);
+	settings.set_int(lt::settings_pack::request_timeout, 10);
+	settings.set_int(lt::settings_pack::peer_timeout, 20);
+	settings.set_int(lt::settings_pack::inactivity_timeout, 20);
+	settings.set_int(lt::settings_pack::max_failcount, 20);
+	
 	_pSession = new lt::session(settings);
 
 	_cshapCallback = callback;
@@ -77,6 +120,8 @@ bool EngineInterface::StartDownload(boost::int64_t id, const msgpack::object& in
 	auto requestInfo = input.as<std::tuple<std::string, std::string>>();
 
 	lt::add_torrent_params torrentParams;
+	torrentParams.max_uploads = 0;
+	torrentParams.upload_limit = 0;
 
 	// load resume data from disk and pass it in as we add the magnet link
 	std::ifstream ifs(".resume_file", std::ios_base::binary);
