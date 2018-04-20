@@ -26,12 +26,17 @@ namespace AniFile3.Native
         public Int64 TotalWanted;
         [Key(4)]
         public int Progress;
+        [Key(5)]
+        public bool Paused;
 
         [IgnoreMember]
         public string StateText
         {
             get
             {
+                if (Paused)
+                    return "일시중지";
+
                 switch ((state_t)State)
                 {
                     case state_t.checking_files: return "체크 중";
@@ -100,6 +105,16 @@ namespace AniFile3.Native
                 return false;
             }
 
+            public bool Pause()
+            {
+                return Request(_id, "Pause", 0);
+            }
+
+            public bool Resume()
+            {
+                return Request(_id, "Resume", 0);
+            }
+
             private async void AddTorrentHandle(string hash)
             {
                 _main = Task.Run(() =>
@@ -143,13 +158,13 @@ namespace AniFile3.Native
 
         private static void DestroyInstance(Int64 id)
         {
-            _idIssued.Remove(id);
-
             if(_instances.ContainsKey(id))
             {
                 _instances[id].Destroy();
                 _instances.Remove(id);
             }
+
+            _idIssued.Remove(id);
         }
 
         public static void Initialize()
@@ -224,6 +239,26 @@ namespace AniFile3.Native
                 }
 
                 DestroyInstance(id);
+            }
+            return false;
+        }
+
+        public static bool PauseDownload(Int64 id)
+        {
+            if (_instances.ContainsKey(id))
+            {
+                _instances[id].Pause();
+                return true;
+            }
+            return false;
+        }
+
+        public static bool ResumeDownload(Int64 id)
+        {
+            if (_instances.ContainsKey(id))
+            {
+                _instances[id].Resume();
+                return true;
             }
             return false;
         }

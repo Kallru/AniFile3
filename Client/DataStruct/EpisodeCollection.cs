@@ -10,7 +10,7 @@ namespace AniFile3.DataStruct
         {
             foreach (var item in Items)
             {
-                if (item.Subject == info.Name
+                if (item.Subject == info.Fullname
                     && item.Episode == info.Episode
                     && item.Resolution == info.Resolution)
                 {

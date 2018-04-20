@@ -55,9 +55,34 @@
                     <GridViewColumn Header="해상도" Width="70" DisplayMemberBinding="{Binding Resolution}" />
                 </GridView>
             </ListView.View>
+            
+            <!-- Grouping -->
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Expander IsExpanded="True">
+                                            <Expander.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Name, StringFormat={}{0}화}" />
+                                                    <TextBlock Text="{Binding ItemCount, StringFormat={} {0}개}" />
+                                                </StackPanel>
+                                            </Expander.Header>
+                                            <ItemsPresenter />
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ListView.GroupStyle>
             <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="재생" >
+                    <MenuItem Header="재생" Click="PlayItem_Click" >
                         <MenuItem.Icon>
                             <Rectangle Width="13" Height="13">
                                 <Rectangle.Fill>
@@ -66,8 +91,26 @@
                             </Rectangle>
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="중지" Click="PauseItem_Click" >
+                        <MenuItem.Icon>
+                            <Rectangle Width="13" Height="13">
+                                <Rectangle.Fill>
+                                    <VisualBrush Visual="{StaticResource appbar_control_pause}" Stretch="Fill" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </MenuItem.Icon>
+                    </MenuItem>                    
+                    <MenuItem Header="사용됨" Click="UsedItem_Click" >
+                        <MenuItem.Icon>
+                            <Rectangle Width="13" Height="13">
+                                <Rectangle.Fill>
+                                    <VisualBrush Visual="{StaticResource appbar_check}" Stretch="Fill" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <Separator />
-                    <MenuItem Header="삭제" >
+                    <MenuItem Header="삭제" Click="DeleteItem_Click" >
                         <MenuItem.Icon>
                             <Rectangle Width="13" Height="13">
                                 <Rectangle.Fill>

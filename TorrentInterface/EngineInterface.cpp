@@ -19,7 +19,8 @@ EngineInterface::EngineInterface()
 	{
 		{ toLower("StartDownload"), CommandType(&EngineInterface::StartDownload) },
 		{ toLower("Stop"), CommandType(&EngineInterface::Stop) },
-		{ toLower("Resume"), CommandType(&EngineInterface::Resume) },
+		{ toLower("Pause"), CommandType(&EngineInterface::Pause) },
+		{ toLower("Resume"), CommandType(&EngineInterface::Resume) },		
 		{ toLower("QueryInfo"), CommandType(&EngineInterface::QueryInfo) },
 		{ toLower("QueryState"), CommandType(&EngineInterface::QueryState) },
 		{ toLower("DestroyId"), CommandType(&EngineInterface::DestroyId) }
@@ -142,8 +143,25 @@ bool EngineInterface::Stop(boost::int64_t id, const msgpack::object& input)
 	return true;
 }
 
+bool EngineInterface::Pause(boost::int64_t id, const msgpack::object& input)
+{
+	auto handle = GetHandle(id);
+	if (handle.is_valid())
+	{
+		if (handle.is_paused() == false)
+			handle.pause();
+	}
+	return true;
+}
+
 bool EngineInterface::Resume(boost::int64_t id, const msgpack::object& input)
 {
+	auto handle = GetHandle(id);
+	if (handle.is_valid())
+	{
+		if (handle.is_paused())
+			handle.resume();
+	}
 	return true;
 }
 
@@ -161,6 +179,7 @@ bool EngineInterface::QueryState(boost::int64_t id, const msgpack::object& input
 		stateInfo.TotalDone = status.total_done / 1000;
 		stateInfo.TotalWanted = status.total_wanted / 1000;
 		stateInfo.Progress = status.progress_ppm / 10000;
+		stateInfo.Paused = status.paused;
 
 		// 핸들 또는 세션에 유효성 체크 필요
 		PackOutputBuffer(stateInfo);

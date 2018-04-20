@@ -10,6 +10,7 @@ using RichGrassHopper.Core.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -57,7 +58,7 @@ namespace AniFile3
 
             //trayIcon.IconSource
         }
-        
+
         private void TestSomething()
         {
             var node = Subscriptions.CreateNode<Subscriptions.ContentNode>("Test Name", _episodeTabIndex);
@@ -79,7 +80,7 @@ namespace AniFile3
 
             //_MainTreeView.ItemsSource = null;
             _subscriptionStorage.SaveToBin();
-            _subscriptionStorage.LoadFromBin();            
+            _subscriptionStorage.LoadFromBin();
             //_MainTreeView.ItemsSource = _subscriptionStorage;
         }
 
@@ -112,7 +113,7 @@ namespace AniFile3
                 CreateSubscriptionsTemplete();
             }
             _MainTreeView.ItemsSource = _subscriptionStorage;
-            
+
             // 기본 '홈' 노드 셋팅
             HomeNode = _subscriptionStorage[0];
             // '구독' 셋팅
@@ -127,7 +128,7 @@ namespace AniFile3
             // 최초 페이지 뷰잉
             _MainTab.SelectedItem = HomeNode.CurrentTabItem;
 
-            TorrentManager.Initialize();            
+            TorrentManager.Initialize();
 
             // Setup Auto-update timer
             _scheduler = new ScheduleTask();
@@ -187,7 +188,7 @@ namespace AniFile3
             node.Count = node.Children.Count;
             _subscriptionStorage.Add(node);
         }
-        
+
         private async void Search(string text)
         {
             var settings = new MetroDialogSettings()
@@ -199,9 +200,9 @@ namespace AniFile3
 
             var controller = await this.ShowProgressAsync("진행중...", "응답을 기다리는 중", settings: settings);
             controller.SetIndeterminate();
-            
+
             var response = await _http.Request<string, List<EpisodeInfo>>("/search_episode", text).WithTimeout(Preference.Instance.DefaultTimeOut);
-            
+
             // 먼저 검색 결과 탭으로 바꿈
             _MainTab.SelectedIndex = _searchTabIndex;
 
@@ -252,14 +253,22 @@ namespace AniFile3
 
             await controller.CloseAsync();
         }
-                
+
         // 구독중인 것들 업뎃, 한번에 갖고 있는 모든 '구독'을 업뎃함
+        private Task<UpdateSubscriptionResponse> _updateRequestTask;
         public async void UpdateSubscription()
         {
+            // 이미 테스크가 실행 중인지
+            if (_updateRequestTask != null
+                && _updateRequestTask.IsCompleted == false)
+            {
+                return;
+            }
+
             // minimum '1'
             if (SubscriptionNode.Children.Count == 0)
                 return;
-            
+
             var episodeNodes = SubscriptionNode.Children.OfType<Subscriptions.ContentNode>();
 
             var request = new UpdateSubscriptionRequest();
@@ -272,8 +281,8 @@ namespace AniFile3
                 };
             }).ToList();
 
-            var response = await _http.Request<UpdateSubscriptionRequest, UpdateSubscriptionResponse>("/update_subscription", request)
-                                      .WithTimeout(Preference.Instance.DefaultTimeOut);
+            _updateRequestTask = _http.RequestWithTimeout<UpdateSubscriptionRequest, UpdateSubscriptionResponse>("/update_subscription", request);
+            var response = await _updateRequestTask;
             if (response != null)
             {
                 // 적절하게 구독이름으로 분류하기
@@ -312,6 +321,7 @@ namespace AniFile3
                 //node.Episodes[0].Start();
 
                 SubscriptionNode.Children.Add(node);
+                UpdateSubscription();
             }
             else
             {
@@ -327,8 +337,8 @@ namespace AniFile3
 
         private async void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var result = await this.ShowMessageAsync("확인","모든 데이터가 삭제됩니다\n정말로 삭제하시겠습니까?", MessageDialogStyle.AffirmativeAndNegative);
-            if(result == MessageDialogResult.Affirmative)
+            var result = await this.ShowMessageAsync("확인", "모든 데이터가 삭제됩니다\n정말로 삭제하시겠습니까?", MessageDialogStyle.AffirmativeAndNegative);
+            if (result == MessageDialogResult.Affirmative)
             {
                 var button = sender as Button;
                 var node = button.DataContext as Subscriptions.ContentNode;
@@ -366,7 +376,7 @@ namespace AniFile3
 
         private void Preference_Click(object sender, RoutedEventArgs e)
         {
-            
+
             PreferenceFlyout.IsOpen = true;
         }
     }

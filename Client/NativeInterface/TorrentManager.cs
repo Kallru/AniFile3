@@ -56,6 +56,15 @@ namespace AniFile3
             });
         }
 
+        public static void PauseDownload(long id)
+        {
+            NativeInterface.PauseDownload(id);
+        }
+        public static void ResumeDownload(long id)
+        {
+            NativeInterface.ResumeDownload(id);
+        }
+
         public static void DestoryDownload(long id, EpisodeInfo header)
         {
             // 먼저 큐에 있는지 체크

@@ -14,8 +14,9 @@ struct StateInfo
 	long long TotalDone;
 	long long TotalWanted;
 	int Progress;
+	bool Paused;
 
-	MSGPACK_DEFINE(State, DownloadPayloadRate, TotalDone, TotalWanted, Progress);
+	MSGPACK_DEFINE(State, DownloadPayloadRate, TotalDone, TotalWanted, Progress, Paused);
 };
 
 struct QueryResponseInfo
@@ -48,6 +49,7 @@ public:
 
 	bool StartDownload(boost::int64_t id, const msgpack::object& input);
 	bool Stop(boost::int64_t id, const msgpack::object& input);
+	bool Pause(boost::int64_t id, const msgpack::object& input);
 	bool Resume(boost::int64_t id, const msgpack::object& input);
 	bool QueryInfo(boost::int64_t id, const msgpack::object& input);
 	bool QueryState(boost::int64_t id, const msgpack::object& input);
